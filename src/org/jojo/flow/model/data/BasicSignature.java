@@ -8,9 +8,9 @@ public class BasicSignature extends DataSignature {
     public BasicSignature(final BasicCheckable data) {
         super(data.getDataId());
         this.components = new BasicSignatureComponentSignature[BasicSignatureComponents.values().length];
-        this.components[BasicSignatureComponents.BASIC_TYPE.index] = new BasicTypeDataSignature(data.getBasicType());
+        this.components[BasicSignatureComponents.BASIC_TYPE.index] = data.getBasicType() == null ? null : new BasicTypeDataSignature(data.getBasicType());
         this.components[BasicSignatureComponents.SIZES.index] = new SizesDataSignature(data.getSizes());
-        this.components[BasicSignatureComponents.UNIT.index] = new UnitDataSignature(data.getUnitSignature()); 
+        this.components[BasicSignatureComponents.UNIT.index] = data.getUnitSignature() == null ? null : new UnitDataSignature(data.getUnitSignature()); 
     }
     
     private BasicSignature(final BasicSignature toCopy) {

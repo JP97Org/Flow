@@ -10,6 +10,11 @@ public abstract class Data {
     }
     
     @Override
+    public int hashCode() {
+        return getDataSignature().hashCode();
+    }
+    
+    @Override
     public boolean equals(final Object other) {
         if (other != null && other instanceof Data) {
             return hasSameType((DataSignature)other);
