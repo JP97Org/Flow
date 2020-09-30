@@ -8,10 +8,12 @@ import java.util.stream.Collectors;
 public class RecursiveSignature extends DataSignature {
     private final List<DataSignature> components;
     
-    public RecursiveSignature(/*TODO recursive checkable*/) {
-        super(0); //TODO DataID of recursive checkable
+    public RecursiveSignature(final RecursiveCheckable data) {
+        super(data.getDataId());
         this.components = new ArrayList<>();
-        // TODO set components to that from recursive checkable
+        for (int i = 0; i < data.size(); i++) {
+            this.components.add(data.get(i).getDataSignature());
+        }
     }
     
     private RecursiveSignature(final RecursiveSignature toCopy) {

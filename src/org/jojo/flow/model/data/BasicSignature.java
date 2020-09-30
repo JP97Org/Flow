@@ -5,10 +5,12 @@ import java.util.Arrays;
 public class BasicSignature extends DataSignature {
     private final BasicSignatureComponentSignature[] components;
     
-    public BasicSignature(/*TODO basic checkable*/) {
-        super(0); //TODO DataID of basic checkable
+    public BasicSignature(final BasicCheckable data) {
+        super(data.getDataId());
         this.components = new BasicSignatureComponentSignature[BasicSignatureComponents.values().length];
-        // TODO set components to that from basic checkable
+        this.components[BasicSignatureComponents.BASIC_TYPE.index] = new BasicTypeDataSignature(data.getBasicType());
+        this.components[BasicSignatureComponents.SIZES.index] = new SizesDataSignature(data.getSizes());
+        this.components[BasicSignatureComponents.UNIT.index] = new UnitDataSignature(data.getUnitSignature()); 
     }
     
     private BasicSignature(final BasicSignature toCopy) {
