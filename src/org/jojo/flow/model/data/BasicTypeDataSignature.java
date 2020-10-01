@@ -22,4 +22,9 @@ public class BasicTypeDataSignature extends BasicSignatureComponentSignature {
         }
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return toStringDs() + this.basicType;
+    }
 }

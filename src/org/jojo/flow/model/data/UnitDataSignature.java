@@ -22,4 +22,9 @@ public class UnitDataSignature extends BasicSignatureComponentSignature {
         }
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return toStringDs() + this.unit;
+    }
 }

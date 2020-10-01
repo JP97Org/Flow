@@ -17,7 +17,7 @@ public abstract class Data {
     @Override
     public boolean equals(final Object other) {
         if (other != null && other instanceof Data) {
-            return hasSameType((DataSignature)other);
+            return hasSameType(((Data)other).getDataSignature());
         }
         return false;
     }

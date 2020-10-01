@@ -80,8 +80,45 @@ public abstract class DataSignature {
         return this.dataId;
     }
     
-    @Override
-    public String toString() {
-        return "DataSignature for DataID " + dataId;
+    public Class<?> getDataClass() {
+        switch(getDataId()) {
+            case SCALAR: return ScalarDataSet.class;
+            case MATRIX: return Matrix.class;
+            case STRING: return StringDataSet.class;
+            case BUNDLE: return DataBundle.class;
+            case VECTOR: return DataVector.class;
+            case ARRAY: return DataArray.class;
+            case MATH_MATRIX: return MathMatrix.class;
+            case TENSOR: return Tensor.class;
+            case MULTI_MATRIX: return MultiMatrix.class;
+            case RAW: return RawDataSet.class;
+            case BASIC_COMPONENT_SIZES: return int[].class;
+            case BASIC_COMPONENT_TYPE: return BasicType.class;
+            case BASIC_COMPONENT_UNIT: return UnitSignature.class;
+            default: 
+                if (getDataId() >= BASIC_COMPONENT_SIZE_0) {
+                    return int.class;
+                }
+            }
+        return null;
     }
+
+    protected String toStringDs() {
+        return "" + getNameOfDataId() + " | ";
+    }
+    
+    private String getNameOfDataId() {
+        switch(getDataId()) {
+            case BASIC_COMPONENT_SIZES: return "sizes";
+            default:
+                if (getDataId() >= BASIC_COMPONENT_SIZE_0) {
+                    return "one size int";
+                }
+                final Class<?> dataClass = getDataClass();
+                return dataClass == null ? "unknown" : dataClass.getName();
+        }
+    }
+
+    @Override
+    public abstract String toString();
 }

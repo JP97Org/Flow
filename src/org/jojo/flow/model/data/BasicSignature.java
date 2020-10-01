@@ -42,4 +42,9 @@ public class BasicSignature extends DataSignature {
     public int size() {
         return this.components.length;
     }
+
+    @Override
+    public String toString() {
+        return toStringDs() + Arrays.toString(this.components);
+    }
 }

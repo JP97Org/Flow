@@ -45,4 +45,9 @@ public class RecursiveSignature extends DataSignature {
     public int size() {
         return this.components.size();
     }
+    
+    @Override
+    public String toString() {
+        return toStringDs() + this.components;
+    }
 }
