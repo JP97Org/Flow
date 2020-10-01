@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public enum BasicType {
-    BOOL, CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL;
+    BOOL, CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL, UNKNOWN;
 
     public static Unit.Type of(final Number value) {
         if (value instanceof Byte) {
@@ -42,5 +42,16 @@ public enum BasicType {
                 .filter(x -> x.name().equals(type.name()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public static BasicType of(final Object o) {
+        if (o instanceof Boolean) {
+            return BOOL;
+        }
+        if (o instanceof Character) {
+            return CHAR;
+        }
+        
+        return o instanceof Number ? of(of((Number)o)) : UNKNOWN;
     }
 }

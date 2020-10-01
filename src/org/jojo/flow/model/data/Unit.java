@@ -11,6 +11,54 @@ import java.util.Objects;
 public class Unit<T extends Number> {
     public enum Type {
         BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL;
+
+        public Number transformToCorrectType(final int value) {
+            switch (this) {
+            case BIG_DECIMAL:
+                return new BigDecimal("" + value);
+            case BIG_INT:
+                return new BigInteger("" + value);
+            case BYTE:
+                return (byte) value;
+            case DOUBLE:
+                return (double) value;
+            case FLOAT:
+                return (float) value;
+            case INT:
+                return (int) value;
+            case LONG:
+                return (long) value;
+            case SHORT:
+                return (short) value;
+            default:
+                assert false;
+                return null;
+            }
+        }
+        
+        public Number transformToCorrectType(final double value) {
+            switch (this) {
+            case BIG_DECIMAL:
+                return new BigDecimal(value);
+            case BIG_INT:
+                return new BigInteger("" + value);
+            case BYTE:
+                return (byte) value;
+            case DOUBLE:
+                return (double) value;
+            case FLOAT:
+                return (float) value;
+            case INT:
+                return (int) value;
+            case LONG:
+                return (long) value;
+            case SHORT:
+                return (short) value;
+            default:
+                assert false;
+                return null;
+            }
+        }
     }
     
     protected enum Operation {
