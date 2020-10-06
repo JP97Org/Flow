@@ -16,7 +16,7 @@ public class BasicSignature extends DataSignature {
     private BasicSignature(final BasicSignature toCopy) {
         super(toCopy.getDataId());
         this.components = Arrays.stream(toCopy.components)
-                .map(x -> x.getCopy())
+                .map(x -> x == null ? null : x.getCopy())
                 .toArray(BasicSignatureComponentSignature[]::new);
     }
 

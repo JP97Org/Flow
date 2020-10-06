@@ -1,14 +1,19 @@
 package org.jojo.flow.model.data;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 public class DataVector extends RecursiveCheckable implements Iterable<Data> {
+    private int lastKnownSize;
     private final List<Data> data;
-    private final DataSignature dataSignature;
+    private final DataSignature componentSignature;
+    private DataSignature dataSignature;
     
     public DataVector(final List<Data> data, final DataSignature componentSignature) throws DataTypeIncompatException {
+        Objects.requireNonNull(data);
+        this.lastKnownSize = data.size();
         this.data = data;
         if (!componentSignature.isCheckingRecursive()) {
             throw new DataTypeIncompatException("the component signature must be checking recursive");
@@ -16,7 +21,19 @@ public class DataVector extends RecursiveCheckable implements Iterable<Data> {
         if (data.stream().anyMatch(x -> !x.hasSameType(componentSignature))) {
             throw new DataTypeIncompatException("all data must have this signature: " + componentSignature);
         }
+        this.componentSignature = componentSignature;
         this.dataSignature = new RecursiveSignature(this);
+    }
+    
+    public void add(final Data toAdd) throws DataTypeIncompatException {
+        if (!toAdd.hasSameType(this.componentSignature)) {
+            throw new DataTypeIncompatException("all data must have this signature: " + componentSignature);
+        }
+        this.data.add(toAdd);
+    }
+    
+    public void remove(final int index) {
+        this.data.remove(index);
     }
     
     @Override
@@ -51,14 +68,26 @@ public class DataVector extends RecursiveCheckable implements Iterable<Data> {
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.data);
+        return Arrays.deepHashCode(this.data.toArray());
+    }
+    
+    private void update() {
+        if (this.lastKnownSize != this.data.size()) {
+            this.lastKnownSize = this.data.size();
+            this.dataSignature = new RecursiveSignature(this);
+        }
     }
     
     @Override
     public boolean equals(final Object other) {
+        update();
+        if (other instanceof DataVector) {
+            ((DataVector) other).update();
+        }
+        
         if (super.equals(other)) {
             final DataVector otherM = (DataVector)other;
-            return this.data.equals(otherM.data);
+            return Arrays.deepEquals(this.data.toArray(), otherM.data.toArray());
         }
         return false;
     }
