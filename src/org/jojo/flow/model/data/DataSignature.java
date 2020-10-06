@@ -1,6 +1,10 @@
 package org.jojo.flow.model.data;
 
-public abstract class DataSignature {
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Objects;
+
+public abstract class DataSignature implements Iterable<DataSignature> {
     protected static final int NO_SIZES = -2;
     protected static final int DONT_CARE = -1;
     protected static final int SCALAR = 0;
@@ -24,8 +28,16 @@ public abstract class DataSignature {
     
     private int dataId;
     
+    private boolean isHashEfficient;
+    
     public DataSignature(final int dataId) {
         this.dataId = dataId;
+        this.isHashEfficient = false;
+    }
+    
+    private DataSignature(final int dataId, final boolean isHashEfficient) {
+        this(dataId);
+        this.isHashEfficient = isHashEfficient;
     }
     
     @Override
@@ -45,6 +57,56 @@ public abstract class DataSignature {
     }
     
     public abstract DataSignature getCopy();
+    
+    public DataSignature tryGetHashEfficientCopy() {
+        final DataSignature copy = getCopy();
+        final DataSignature ret = new DataSignature(this.dataId, copy.isCheckingRecursive()) {
+            @Override
+            public DataSignature getCopy() {
+                return copy.getCopy(); // loses hash efficiency
+            }
+
+            @Override
+            public DataSignature getComponent(int index) {
+                return copy.getComponent(index);
+            }
+
+            @Override
+            public int size() {
+                return copy.size();
+            }
+
+            @Override
+            public String toString() {
+                return copy.toString();
+            }
+            
+            @Override
+            public int hashCode() {
+                if (isCheckingRecursive()) {
+                    final DataSignature[] components = getComponents();
+                    return Objects.hash(getDataId(), Arrays.deepHashCode(components));
+                } else {
+                    return copy.hashCode();
+                }
+            }
+            
+            @Override
+            public boolean equals(final Object other) {
+                if (isCheckingRecursive()) {
+                    if (other != null && other instanceof DataSignature) {
+                        final DataSignature otherSig = (DataSignature)other;
+                        final DataSignature[] components = getComponents();
+                        final DataSignature[] otherComponents = otherSig.getComponents();
+                        return copy.dataId == otherSig.dataId && Arrays.deepEquals(components, otherComponents);
+                    }
+                    return false;
+                }
+                return copy.equals(other);
+            }
+        };
+        return ret;
+    }
     
     public boolean isRecursiveSignature() {
         return this.dataId == BUNDLE || this.dataId == ARRAY || this.dataId == VECTOR;
@@ -72,9 +134,21 @@ public abstract class DataSignature {
         return ret;
     }
     
+    public boolean isHashEfficient() {
+        return isCheckingRecursive() && this.isHashEfficient;
+    }
+    
     public abstract DataSignature getComponent(final int index);
     
     public abstract int size();
+    
+    public DataSignature[] getComponents() {
+        final DataSignature[] components = new DataSignature[size()];
+        for (int i = 0; i < size(); i++) {
+            components[i] = getComponent(i);
+        }
+        return components;
+    }
     
     protected int getDataId() {
         return this.dataId;
@@ -108,6 +182,12 @@ public abstract class DataSignature {
     }
     
     private String getNameOfDataId() {
+        if (getDataId() == DONT_CARE) {
+            return "not checking";
+        } else if (getDataId() == NO_SIZES) {
+            return "no_sizes";
+        }
+        
         switch(getDataId()) {
             case BASIC_COMPONENT_SIZES: return "sizes";
             default:
@@ -121,4 +201,8 @@ public abstract class DataSignature {
 
     @Override
     public abstract String toString();
+    
+    public Iterator<DataSignature> iterator() {
+        return Arrays.asList(getComponents()).iterator();
+    }
 }

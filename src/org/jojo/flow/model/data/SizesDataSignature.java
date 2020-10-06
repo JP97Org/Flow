@@ -34,6 +34,9 @@ public class SizesDataSignature extends BasicSignatureComponentSignature {
     @Override
     public boolean equals(final Object other) {
         if (super.equals(other)) {
+            if (!isChecking() || !((DataSignature)other).isChecking()) {
+                return true;
+            }
             return Arrays.equals(this.sizes, ((SizesDataSignature) other).sizes);
         }
         return false;

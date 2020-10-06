@@ -18,6 +18,9 @@ public class BasicTypeDataSignature extends BasicSignatureComponentSignature {
     @Override
     public boolean equals(final Object other) {
         if (super.equals(other)) {
+            if (!isChecking() || !((DataSignature)other).isChecking()) {
+                return true;
+            }
             return this.basicType.equals(((BasicTypeDataSignature) other).basicType);
         }
         return false;
