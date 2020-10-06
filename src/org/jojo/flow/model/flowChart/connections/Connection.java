@@ -78,8 +78,5 @@ public abstract class Connection extends FlowChartElement {
     
     protected abstract boolean connectionMatchesPins();
     
-    private boolean checkDataTypes() {
-        //TODO
-        return false;
-    }
+    protected abstract boolean checkDataTypes();
 }
