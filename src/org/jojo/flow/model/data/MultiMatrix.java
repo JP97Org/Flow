@@ -2,10 +2,11 @@ package org.jojo.flow.model.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-public final class MultiMatrix<T> extends BasicCheckable {
+public final class MultiMatrix<T> extends BasicCheckable implements Iterable<T> {
     private final int[] sizes;
     private final T[] multiMatrix;
     private final UnitSignature unit;
@@ -19,7 +20,7 @@ public final class MultiMatrix<T> extends BasicCheckable {
             throw new IllegalArgumentException("sizes must contain only non-negative values and at least one value");
         }
         final List<T> dataList = new ArrayList<T>();
-        for (int i = 0; i < Arrays.stream(sizes).reduce(1, (a,b) -> a * b); i++) {
+        for (int i = 0; i < getProductOfSmallerSizes(-1); i++) {
             dataList.add(null);
         }
         @SuppressWarnings("unchecked")
@@ -56,13 +57,22 @@ public final class MultiMatrix<T> extends BasicCheckable {
             throw new IllegalArgumentException("at least one index is out of bounds");
         }
         
-        int index = indices[len - 1];
-        for (int i = len - 2; i >= 0; i--) {
-            index += indices[i] * this.sizes[i];
+        int index = 0;
+        for (int i = len - 1; i >= 0; i--) {
+            final int productOfSmallerSizes = getProductOfSmallerSizes(i);
+            index += indices[i] * productOfSmallerSizes;
         }
         return index;
     }
     
+    private int getProductOfSmallerSizes(final int sizesIndex) {
+        final int[] smallerSizes = new int[this.sizes.length - (sizesIndex + 1)];
+        for (int i = 0; i < smallerSizes.length; i++) {
+            smallerSizes[i] = this.sizes[this.sizes.length - (i + 1)];
+        }
+        return Arrays.stream(smallerSizes).reduce(1, (a,b) -> a * b);
+    }
+
     public T[] getRow(final int[] otherIndices) throws IllegalArgumentException {
         final List<T> ret = new ArrayList<>();
         final List<Integer> indices = new ArrayList<>();
@@ -110,7 +120,7 @@ public final class MultiMatrix<T> extends BasicCheckable {
     
     @Override
     public int hashCode() {
-        return Objects.hash(Arrays.hashCode(sizes), this.unit, Arrays.deepHashCode(this.multiMatrix));
+        return Objects.hash(Arrays.hashCode(this.sizes), this.unit, Arrays.deepHashCode(this.multiMatrix));
     }
     
     @Override
@@ -128,37 +138,56 @@ public final class MultiMatrix<T> extends BasicCheckable {
     public String toString() {
         return Arrays.deepToString(toArray()) + " " + this.unit;
     }
-    
 
-    private Object[] toArray() {
+    public Object[] toArray() {
         return toArray(this.multiMatrix, this.sizes);
     }
 
-    private Object[] toArray(final T[] localMatrix, final int[] localSizes) {
+    private Object[] toArray(final Object[] localMatrix, final int[] localSizes) {
         if (localSizes.length == 1) {
             assert localSizes[0] == localMatrix.length;
             return localMatrix;
         } else {
-            final int sizeNow = localSizes[localSizes.length - 1];
+            final int sizeNow = localSizes[0];
             final List<Object[]> ret = new ArrayList<>();
             for (int k = 0; k < sizeNow; k++) {
-                //TODO schauen ob das alles so passt
                 final int[] newLocalSizes = new int[localSizes.length - 1];
-                for (int i = 0; i < newLocalSizes.length; i++) {
-                    newLocalSizes[i] = localSizes[i]; 
+                for (int i = 1; i-1 < newLocalSizes.length; i++) {
+                    newLocalSizes[i-1] = localSizes[i];
                 }
-                final int beginIndex = localMatrix.length
-                        - (k + 1) * Arrays.stream(newLocalSizes).reduce(1, (a,b) -> a*b);
-                final int endIndex = localMatrix.length - 1; 
-                final List<T> newLocalMatrix = new ArrayList<>();
+                
+                final int productSizes = Arrays.stream(newLocalSizes).reduce(1, (a,b) -> a*b);
+                final int beginIndex = k * productSizes;
+                final int endIndex = (k + 1) * productSizes - 1;
+                final List<Object> newLocalMatrix = new ArrayList<>();
                 for (int i = beginIndex; i <= endIndex ; i++) {
-                    newLocalMatrix.add(localMatrix[beginIndex + i]);
+                    newLocalMatrix.add(localMatrix[i]);
                 }
-                @SuppressWarnings("unchecked")
-                final T[] nlm = (T[]) newLocalMatrix.toArray();
+
+                final Object[] nlm = newLocalMatrix.toArray();
                 ret.add(toArray(nlm, newLocalSizes));
             }
             return ret.toArray();
         }
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < multiMatrix.length;
+            }
+
+            @Override
+            public T next() {
+                if (hasNext()) {
+                    return multiMatrix[index++];
+                }
+                return null;
+            }
+        };
     }
 }

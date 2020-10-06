@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public final class MathMatrix<T extends Number> extends BasicCheckable {
-    private final T[][] matrix;
+    private final Number[][] matrix;
     private final UnitSignature unit;
     private final DataSignature dataSignature;
     
@@ -22,8 +22,15 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         this.dataSignature = new BasicSignature(this);
     }
     
+    @SuppressWarnings("unchecked")
+    private MathMatrix(final Number[][] matrix, final UnitSignature unit, final boolean ignored) {
+        this((T[][])matrix, unit);
+    }
+    
     public Pair<T[][], UnitSignature> getMatrix() {
-        return new Pair<T[][], UnitSignature>(this.matrix, this.unit);
+        @SuppressWarnings("unchecked")
+        final T[][] tmatr = (T[][]) this.matrix;
+        return new Pair<T[][], UnitSignature>(tmatr, this.unit);
     }
     
     public MathMatrix<T> add(final MathMatrix<T> other) throws IllegalArgumentException, IllegalUnitOperationException {
@@ -33,16 +40,16 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
             throw new IllegalArgumentException("incorrect dimensions");
         }
         this.unit.add(other.unit); // check if units are ok
-        final List<List<T>> retList = new ArrayList<>();
+        final List<List<Number>> retList = new ArrayList<>();
         
         for (int o = 0; o < this.matrix.length; o++) {
-            final List<T> toAdd = new ArrayList<T>();
+            final List<Number> toAdd = new ArrayList<>();
             for (int i = 0; i < this.matrix[o].length; i++) {
-                final T value = this.matrix[o][i];
-                final T otherValue = other.matrix[o][i];
-                final Unit<T> unitThisVal = new Unit<>(BasicType.of(value), value, UnitSignature.NO_UNIT);
-                final Unit<T> unitOtherVal = new Unit<>(BasicType.of(otherValue), otherValue, UnitSignature.NO_UNIT);
-                final T result = unitThisVal.add(unitOtherVal).value;
+                final Number value = this.matrix[o][i];
+                final Number otherValue = other.matrix[o][i];
+                final Unit<Number> unitThisVal = new Unit<>(BasicType.of(value), value, UnitSignature.NO_UNIT);
+                final Unit<Number> unitOtherVal = new Unit<>(BasicType.of(otherValue), otherValue, UnitSignature.NO_UNIT);
+                final Number result = unitThisVal.add(unitOtherVal).value;
                 toAdd.add(result);
             }
             retList.add(toAdd);
@@ -51,11 +58,34 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         return new MathMatrix<T>(toArray(retList), this.unit.add(other.unit));
     }
     
-    private T[][] toArray(List<List<T>> retList) {
+    private T[][] toArray(List<List<Number>> retList) {
+        final Number[][] ret = new Number[retList.size()][retList.get(0).size()];
+        for (int o = 0; o < ret.length ; o++) {
+            for (int i = 0; i < ret[o].length; i++) {
+                ret[o][i] = retList.get(o).get(i);
+            }
+        }
         @SuppressWarnings("unchecked")
-        final List<T>[] listArray = (List<T>[]) retList.toArray();
+        final T[][] retT = (T[][]) ret;
+        return retT;
+    }
+    
+    public MathMatrix<T> multiply(final Unit<T> scalar) {
         @SuppressWarnings("unchecked")
-        final T[][] ret = (T[][]) Arrays.stream(listArray).toArray();
+        final MathMatrix<T> ret = new MathMatrix<T>(Arrays
+                .stream(this.matrix)
+                .map(x -> Arrays
+                        .stream(x)
+                        .map(y -> {
+                            try {
+                                return new Unit<T>(scalar.type, (T) y, UnitSignature.NO_UNIT).multiply(scalar).value;
+                            } catch (IllegalUnitOperationException e) {
+                                // should not happen
+                                e.printStackTrace();
+                                return null;
+                            }
+                        }).toArray(Number[]::new))
+                .toArray(Number[][]::new), this.unit.multiply(scalar.unit), true);
         return ret;
     }
     
@@ -63,20 +93,20 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         return new MathMatrix<T>(multiply(this.matrix, other.matrix), this.unit.multiply(other.unit));
     }
     
-    private T[][] multiply(final T[][] matrixA, final T[][] matrixB) {
+    private T[][] multiply(final Number[][] matrixA, final Number[][] matrixB) {
         if (matrixA[0].length != matrixB.length) {
             throw new IllegalArgumentException("incorrect dimensions");
         }
 
         final int height = matrixA.length;
         final int width = matrixB[0].length;
-        final List<List<T>> res = new ArrayList<>();
+        final List<List<Number>> res = new ArrayList<>();
 
         final Unit.Type type = BasicType.of(matrixA[0][0]);
         final UnitSignature no = UnitSignature.NO_UNIT;
         
         for (int i = 0; i < height; i++) {
-            final List<T> toAdd = new ArrayList<T>();
+            final List<Number> toAdd = new ArrayList<>();
             for (int j = 0; j < width; j++) {
                 Unit<Number> resultEntry = new Unit<>(type, type.transformToCorrectType(0), no);
                 for (int k = 0; k < width; k++) {
@@ -90,8 +120,7 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
                         return null;
                     }
                 }
-                @SuppressWarnings("unchecked")
-                final T toAddVal = (T) resultEntry.value;
+                final Number toAddVal = resultEntry.value;
                 toAdd.add(toAddVal);
             }
             res.add(toAdd);
@@ -108,10 +137,12 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         return determinant(this.matrix);
     }
     
-    private T determinant(final T[][] submatrix) {
+    private T determinant(final Number[][] submatrix) {
         // base-case
         if (submatrix.length == 1) {
-            return submatrix[0][0];
+            @SuppressWarnings("unchecked")
+            final T ret = (T) submatrix[0][0];
+            return ret;
         }
         
         // development with first row
@@ -139,12 +170,12 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         return retVal;
     }
 
-    private T[][] smallerMatrix(final T[][] submatrix, int row, int col) {
-        final List<List<T>> retList = new ArrayList<>();
+    private Number[][] smallerMatrix(final Number[][] submatrix, int row, int col) {
+        final List<List<Number>> retList = new ArrayList<>();
         
         for (int o = 0; o < submatrix.length; o++) {
             if (o != row) {
-                final List<T> toAdd = new ArrayList<T>();
+                final List<Number> toAdd = new ArrayList<>();
                 for (int i = 0; i < submatrix[o].length; i++) {
                     if (i != col) {
                         toAdd.add(submatrix[o][i]);

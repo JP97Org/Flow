@@ -12,6 +12,10 @@ public final class RawDataSet extends BasicCheckable {
         this.data = Objects.requireNonNull(data);
         this.dataSignature = new BasicSignature(this);
     }
+    
+    public byte[] getData() {
+        return this.data;
+    }
 
     @Override
     public int[] getSizes() {

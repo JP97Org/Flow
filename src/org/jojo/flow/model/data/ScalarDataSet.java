@@ -11,6 +11,10 @@ public final class ScalarDataSet<T extends Number> extends BasicCheckable {
         this.dataSignature = new BasicSignature(this);
     }
     
+    public ScalarDataSet(final Unit<T> unit) {
+        this(unit.value, unit.unit);
+    }
+    
     public Unit<T> getScalar() {
         return this.scalar;
     }
