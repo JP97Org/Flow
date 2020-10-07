@@ -8,17 +8,17 @@ import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.connections.Connection;
 
 public abstract class ModulePinImp {
-    private final Module module;
+    private final FlowModule module;
     private final List<Connection> connections;
     private Data defaultData;
     
-    public ModulePinImp(final Module module, final Data defaultData) {
+    public ModulePinImp(final FlowModule module, final Data defaultData) {
         this.module = Objects.requireNonNull(module);
         this.connections = new ArrayList<>();
         this.defaultData = defaultData;
     }
     
-    public Module getModule() {
+    public FlowModule getModule() {
         return this.module;
     }
     

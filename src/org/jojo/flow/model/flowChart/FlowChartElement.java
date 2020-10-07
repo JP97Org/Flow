@@ -8,6 +8,8 @@ import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 
 public abstract class FlowChartElement extends Subject {
+    public static final FlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart();
+    
     private final List<Warning> warnings;
     
     public FlowChartElement() {
@@ -21,11 +23,11 @@ public abstract class FlowChartElement extends Subject {
     public abstract String serializeSimulationState();
     public abstract void restoreSerializedSimulationState(String simulationState);
     
-    protected void reportWarning(final Warning warning) {
+    public void reportWarning(final Warning warning) {
         this.warnings.add(warning);
     }
     
-    protected void warningResolved(final Warning warning) {
+    public void warningResolved(final Warning warning) {
         this.warnings.remove(warning);
     }
     

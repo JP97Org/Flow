@@ -15,10 +15,10 @@ import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
 
-public abstract class Module extends FlowChartElement implements Comparable<Module> {
+public abstract class FlowModule extends FlowChartElement implements Comparable<FlowModule> {
     private final ExternalConfig externalConfig;
     
-    public Module(final ExternalConfig externalConfig) {
+    public FlowModule(final ExternalConfig externalConfig) {
         this.externalConfig = externalConfig;
     }
     
@@ -100,8 +100,8 @@ public abstract class Module extends FlowChartElement implements Comparable<Modu
     public abstract List<InputPin> getAllInputs();
     public abstract List<OutputPin> getAllOutputs();
     
-    public List<Module> getStdDependencyList() {
-        final Set<Module> retSet = new HashSet<>();
+    public List<FlowModule> getStdDependencyList() {
+        final Set<FlowModule> retSet = new HashSet<>();
         retSet.addAll(getStdInputs()
                 .stream()
                 .map(x -> x.getConnections())
@@ -112,8 +112,8 @@ public abstract class Module extends FlowChartElement implements Comparable<Modu
         return retSet.stream().collect(Collectors.toList());
     }
     
-    public List<Module> getStdAdjacencyList() {
-        final Set<Module> retSet = new HashSet<>();
+    public List<FlowModule> getStdAdjacencyList() {
+        final Set<FlowModule> retSet = new HashSet<>();
         retSet.addAll(getStdOutputs()
                 .stream()
                 .map(x -> x.getConnections())
@@ -132,9 +132,14 @@ public abstract class Module extends FlowChartElement implements Comparable<Modu
     
     @Override
     public boolean equals(final Object other) {
-        if (other != null && other instanceof Module) {
-            return this.externalConfig.equals(((Module)other).externalConfig);
+        if (other != null && other instanceof FlowModule) {
+            return this.externalConfig.equals(((FlowModule)other).externalConfig);
         }
         return false;
+    }
+    
+    @Override
+    public final int compareTo(final FlowModule other) {
+        return this.externalConfig.compareTo(other.externalConfig);
     }
 }

@@ -12,7 +12,7 @@ public abstract class ModulePin {
         this.imp = imp;
     }
     
-    public Module getModule() {
+    public FlowModule getModule() {
         return this.imp.getModule();
     }
     
