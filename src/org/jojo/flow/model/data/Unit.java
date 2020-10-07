@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class Unit<T extends Number> {
     public enum Type {
-        BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL;
+        BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL, FRACTION;
 
         public Number transformToCorrectType(final int value) {
             switch (this) {
@@ -30,6 +30,8 @@ public class Unit<T extends Number> {
                 return (long) value;
             case SHORT:
                 return (short) value;
+            case FRACTION:
+                return new Fraction(value);
             default:
                 assert false;
                 return null;
@@ -54,6 +56,8 @@ public class Unit<T extends Number> {
                 return (long) value;
             case SHORT:
                 return (short) value;
+            case FRACTION:
+                return new Fraction(value);
             default:
                 assert false;
                 return null;
@@ -180,6 +184,10 @@ public class Unit<T extends Number> {
         return new Unit<Double>(DOUBLE, value, NO_UNIT);
     }
     
+    public static Unit<Fraction> getFractionConstant(final Fraction value) {
+        return new Unit<Fraction>(FRACTION, value, NO_UNIT);
+    }
+    
     public static Unit<BigDecimal> getBigDecimalConstant(final double value) {
         return new Unit<BigDecimal>(BIG_DECIMAL, new BigDecimal(value), NO_UNIT);
     }
@@ -237,6 +245,13 @@ public class Unit<T extends Number> {
                         throw new IllegalUnitOperationException("actual number type does not match declared type");
                     }  
                     break;
+                case FRACTION:
+                    if (this.value instanceof Fraction && other.value instanceof Fraction) {
+                        value = ((Fraction) this.value).add((Fraction) other.value);
+                    } else {
+                        throw new IllegalUnitOperationException("actual number type does not match declared type");
+                    }
+                    break;
                 default:
                     value = null;
                     assert false;
@@ -290,6 +305,13 @@ public class Unit<T extends Number> {
                         throw new IllegalUnitOperationException("actual number type does not match declared type");
                     }  
                     break;
+                case FRACTION:
+                    if (this.value instanceof Fraction && other.value instanceof Fraction) {
+                        value = ((Fraction) this.value).subtract((Fraction) other.value);
+                    } else {
+                        throw new IllegalUnitOperationException("actual number type does not match declared type");
+                    }
+                    break;
                 default:
                     value = null;
                     assert false;
@@ -342,6 +364,13 @@ public class Unit<T extends Number> {
                     } else {
                         throw new IllegalUnitOperationException("actual number type does not match declared type");
                     }  
+                    break;
+                case FRACTION:
+                    if (this.value instanceof Fraction && other.value instanceof Fraction) {
+                        value = ((Fraction) this.value).multiply((Fraction) other.value);
+                    } else {
+                        throw new IllegalUnitOperationException("actual number type does not match declared type");
+                    }
                     break;
                 default:
                     value = null;
@@ -400,6 +429,13 @@ public class Unit<T extends Number> {
                         throw new IllegalUnitOperationException("actual number type does not match declared type");
                     }  
                     break;
+                case FRACTION:
+                    if (this.value instanceof Fraction && other.value instanceof Fraction) {
+                        value = ((Fraction) this.value).divide((Fraction) other.value);
+                    } else {
+                        throw new IllegalUnitOperationException("actual number type does not match declared type");
+                    }
+                    break;
                 default:
                     value = null;
                     assert false;
@@ -450,13 +486,24 @@ public class Unit<T extends Number> {
                         this.unit);
     }
     
+    public Unit<Fraction> toFractionUnit() {
+        if(this.type == Type.FRACTION) {
+            @SuppressWarnings("unchecked")
+            final Unit<Fraction> ret = (Unit<Fraction>) this;
+            return ret;
+        } else if (this.type == Type.BYTE || this.type == Type.SHORT || this.type == Type.INT || this.type == Type.LONG) {
+            return new Unit<Fraction>(FRACTION, new Fraction(this.value.longValue(), 1), this.unit);
+        }
+        return new Unit<Fraction>(FRACTION, new Fraction(this.value.doubleValue()), this.unit);
+    }
+    
     public double inCelsius() {
         return toDoubleUnit().operateSafely(SUBTRACT, new Unit<>(this.type, 273.15, this.unit)).value;
     }
     
     public double inFahrenheit() {
         return toDoubleUnit()
-                .operateSafely(MULTIPLY, new Unit<>(this.type, 1.8, this.unit))
+                .operateSafely(MULTIPLY, new Unit<>(this.type, 1.8, UnitSignature.NO_UNIT))
                 .operateSafely(SUBTRACT, new Unit<>(this.type, 459.67, this.unit)).value;
     }
     

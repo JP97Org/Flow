@@ -27,7 +27,7 @@ public abstract class ModulePinImp {
     }
     
     public synchronized void addConnection(final Connection toAdd)  {
-        this.connections.add(toAdd); //TODO maybe check whether pin is in connection
+        this.connections.add(toAdd); //TODO check whether pin is in connection
     }
     
     public synchronized boolean removeConnection(final Connection toRemove) {

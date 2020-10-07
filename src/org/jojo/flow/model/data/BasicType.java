@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public enum BasicType {
-    BOOL, CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL, UNKNOWN;
+    BOOL, CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL, FRACTION, UNKNOWN;
 
     public static Unit.Type of(final Number value) {
         if (value instanceof Byte) {
@@ -32,6 +32,9 @@ public enum BasicType {
         }
         if (value instanceof BigDecimal) {
             return Unit.Type.BIG_DECIMAL;
+        }
+        if (value instanceof Fraction) {
+            return Unit.Type.FRACTION;
         }
         return null;
     }

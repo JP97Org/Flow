@@ -1,5 +1,7 @@
 package org.jojo.flow.model.data;
 
+import java.util.Arrays;
+
 public class Pair<T1, T2> {
     public final T1 first;
     public final T2 second;
@@ -7,5 +9,20 @@ public class Pair<T1, T2> {
     public Pair(final T1 first, final T2 second) {
         this.first = first;
         this.second = second;
-    }    
+    }
+    
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(new Object[] {this.first, this.second});
+    }
+    
+    @Override
+    public boolean equals(final Object other) {
+        if (other instanceof Pair) {
+            final Pair<?, ?> otherPair = (Pair<?, ?>)other;
+            return Arrays.deepEquals(new Object[] {this.first, this.second}
+                    , new Object[] {otherPair.first, otherPair.second});
+        }
+        return false;
+    }
 }

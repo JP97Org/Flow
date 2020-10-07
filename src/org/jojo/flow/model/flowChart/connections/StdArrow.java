@@ -1,5 +1,7 @@
 package org.jojo.flow.model.flowChart.connections;
 
+import java.util.Objects;
+
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
@@ -24,7 +26,7 @@ public class StdArrow extends Connection {
     }
     
     public boolean putData(final Data data) {
-        if (data.hasSameType(this.dataType)) {
+        if (data == null || data.hasSameType(this.dataType)) {
             this.data = data;
             return true;
         }
@@ -42,7 +44,7 @@ public class StdArrow extends Connection {
      * @return whether putting the new data signature was successful
      */
     public boolean putDataSignature(final DataSignature signature) {
-        if (this.dataType.equals(signature) && signature.isCheckingRecursive()) {
+        if (this.dataType.equals(Objects.requireNonNull(signature)) && signature.isCheckingRecursive()) {
             this.dataType = signature;
             return true;
         }
