@@ -8,11 +8,13 @@ import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 
 public abstract class FlowChartElement extends Subject {
-    public static final FlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart();
+    public static final FlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1);
     
+    private final int id;
     private final List<Warning> warnings;
     
-    public FlowChartElement() {
+    public FlowChartElement(final int id) {
+        this.id = id;
         this.warnings = new ArrayList<>();
     }
     
@@ -31,7 +33,24 @@ public abstract class FlowChartElement extends Subject {
         this.warnings.remove(warning);
     }
     
+    public int getId() {
+        return id;
+    }
+    
     public List<Warning> getWarnings() {
         return new ArrayList<>(this.warnings);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
+    
+    @Override
+    public boolean equals(final Object other) {
+        if (other instanceof FlowChartElement) {
+            return hashCode() == other.hashCode();
+        }
+        return false;
     }
 }

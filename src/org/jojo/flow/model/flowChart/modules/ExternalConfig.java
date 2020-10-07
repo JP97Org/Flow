@@ -34,9 +34,8 @@ public class ExternalConfig implements Comparable<ExternalConfig> {
     }
 
     @Override
-    public int compareTo(final ExternalConfig o) { 
+    public final int compareTo(final ExternalConfig o) { 
         if (this.priority != o.priority) {
-            //TODO je nachdem ob hohe oder niedrigere priority besser ist, noch anpassen, also rumdrehen
             return Integer.valueOf(this.priority).compareTo(o.priority);
         }
         return this.name.compareTo(o.name);

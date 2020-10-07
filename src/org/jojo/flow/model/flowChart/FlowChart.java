@@ -1,14 +1,13 @@
 package org.jojo.flow.model.flowChart;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,8 @@ public class FlowChart extends FlowChartElement{
     private final List<FlowModule> modules;
     private final List<Connection> connections;
     
-    public FlowChart() {
+    public FlowChart(final int id) {
+        super(id);
         this.modules = new ArrayList<>();
         this.connections = new ArrayList<>();
     }
@@ -74,12 +74,12 @@ public class FlowChart extends FlowChartElement{
         if (moduleList.isEmpty()) {
             return null; // no modules --> valid
         }
-        final SortedSet<FlowModule> moduleSet = new TreeSet<>(moduleList);
+        final Set<FlowModule> moduleSet = new HashSet<>(moduleList);
         final FlowModule moduleZero = moduleList.get(0);
         
         // find all roots
-        final SortedSet<FlowModule> visitedModules = new TreeSet<>();
-        final SortedSet<FlowModule> roots = new TreeSet<>();
+        final Set<FlowModule> visitedModules = new HashSet<>();
+        final Set<FlowModule> roots = new HashSet<>();
         for (FlowModule module = moduleZero; visitedModules.size() < moduleList.size(); 
                 module = setComplement(visitedModules, moduleSet).first()
                 /* module is element of modulelList but not of visitedModules  */) {
@@ -91,7 +91,7 @@ public class FlowChart extends FlowChartElement{
         
         // Now we have found all roots, we can now begin validating from the roots on
         // foreach root an own list
-        SortedMap<FlowModule, List<FlowModule>> modulesInCorrectOrder = new TreeMap<>();
+        final Map<FlowModule, List<FlowModule>> modulesInCorrectOrder = new HashMap<>();
         for(final FlowModule module : roots) {
             final Pair<Set<FlowModule>, List<FlowModule>> visitedModulesAndSortedModuleList =
                     bfsAdjacency(module);
@@ -115,7 +115,7 @@ public class FlowChart extends FlowChartElement{
         return null;
     }
 
-    private SortedSet<FlowModule> setComplement(final SortedSet<FlowModule> notOf, final SortedSet<FlowModule> of) {
+    private SortedSet<FlowModule> setComplement(final Set<FlowModule> notOf, final Set<FlowModule> of) {
         return new TreeSet<>(of.stream().filter(x -> !notOf.contains(x)).collect(Collectors.toSet()));
     }
     
@@ -166,14 +166,34 @@ public class FlowChart extends FlowChartElement{
         // generating the return value
         int highestLevel = 0;
         final Set<FlowModule> visited = parentMap.keySet();
-        final SortedSet<FlowModule> setOfModulesSorted = new TreeSet<>();
+        final List<FlowModule> listOfModulesSorted = new ArrayList<>();
         for (final FlowModule module : levelMap.keySet()) {
             final int level = levelMap.get(module);
-            setOfModulesSorted.add(module);
+            listOfModulesSorted.add(module);
             highestLevel = level > highestLevel ? level : highestLevel;
         }
-        final List<FlowModule> listOfModulesSorted = new ArrayList<>(setOfModulesSorted);
+        sort(listOfModulesSorted, levelMap);
         return new Pair<>(visited, listOfModulesSorted);
+    }
+
+    // sort by level and id
+    private void sort(final List<FlowModule> listOfModules, final Map<FlowModule, Integer> levelMap) {
+        List<Pair<FlowModule, Integer>> pairList = new ArrayList<>();
+        for (final FlowModule module : listOfModules) {
+            pairList.add(new Pair<>(module, levelMap.get(module)));
+        }
+        pairList.sort(new Comparator<Pair<FlowModule, Integer>>() {
+            @Override
+            public int compare(final Pair<FlowModule, Integer> p1, final Pair<FlowModule, Integer> p2) {
+                int ret = p1.second.compareTo(p2.second);
+                if (ret == 0) {
+                    ret = Integer.valueOf(p1.first.getId()).compareTo(p2.first.getId());
+                }
+                return ret;
+            }
+        });
+        listOfModules.clear();
+        listOfModules.addAll(pairList.stream().map(x -> x.first).collect(Collectors.toList()));
     }
 
     @Override

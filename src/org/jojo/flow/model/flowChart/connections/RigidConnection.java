@@ -5,8 +5,8 @@ import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
 
 public class RigidConnection extends Connection {
-    public RigidConnection(final RigidPin asFromPin, final RigidPin asToPin, final String name) throws ConnectionException {
-        super(asFromPin.getOutputPin(), name);
+    public RigidConnection(final int id, final RigidPin asFromPin, final RigidPin asToPin, final String name) throws ConnectionException {
+        super(id, asFromPin.getOutputPin(), name);
         addToPin(asToPin.getInputPin());
     }
 

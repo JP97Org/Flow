@@ -18,7 +18,8 @@ import org.jojo.flow.model.flowChart.connections.StdArrow;
 public abstract class FlowModule extends FlowChartElement implements Comparable<FlowModule> {
     private final ExternalConfig externalConfig;
     
-    public FlowModule(final ExternalConfig externalConfig) {
+    public FlowModule(final int id, final ExternalConfig externalConfig) {
+        super(id);
         this.externalConfig = externalConfig;
     }
     
@@ -133,13 +134,17 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     @Override
     public boolean equals(final Object other) {
         if (other != null && other instanceof FlowModule) {
-            return this.externalConfig.equals(((FlowModule)other).externalConfig);
+            return super.equals(other) && this.externalConfig.equals(((FlowModule)other).externalConfig);
         }
         return false;
     }
     
     @Override
     public final int compareTo(final FlowModule other) {
-        return this.externalConfig.compareTo(other.externalConfig);
+        int ret = this.externalConfig.compareTo(other.externalConfig);
+        if (ret == 0) {
+            ret = Integer.valueOf(getId()).compareTo(other.getId());
+        }
+        return ret;
     }
 }

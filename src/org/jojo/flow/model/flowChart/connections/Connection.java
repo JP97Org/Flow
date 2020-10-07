@@ -12,7 +12,8 @@ public abstract class Connection extends FlowChartElement {
     private OutputPin fromPin;
     private final String name;
     
-    public Connection(final OutputPin fromPin, final String name) throws ConnectionException {
+    public Connection(final int id, final OutputPin fromPin, final String name) throws ConnectionException {
+        super(id);
         this.toPins = new ArrayList<>();
         this.fromPin = fromPin;
         this.name = name;

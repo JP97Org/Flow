@@ -14,8 +14,8 @@ public class StdArrow extends Connection {
     private DataSignature dataType;
     private Data data;
     
-    public StdArrow(final OutputPin fromPin, final InputPin toPin, final String name) throws ConnectionException {
-        super(fromPin, name);
+    public StdArrow(final int id, final OutputPin fromPin, final InputPin toPin, final String name) throws ConnectionException {
+        super(id, fromPin, name);
         this.dataType = ((StdPin)fromPin.getModulePinImp()).getCheckDataSignature();
         this.data = null;
         addToPin(toPin);
