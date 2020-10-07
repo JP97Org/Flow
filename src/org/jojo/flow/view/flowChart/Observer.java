@@ -1,16 +1,18 @@
 package org.jojo.flow.view.flowChart;
 
-import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.ISubject;
 
-public abstract class Observer {
-    private final Subject observed;
+public abstract class Observer implements IObserver {
+    private final ISubject observed;
     
-    public Observer(final Subject observed) {
+    public Observer(final ISubject observed) {
         this.observed = observed;
     }
     
-    public abstract void update(Subject subject, Object argument);
+    @Override
+    public abstract void update(ISubject subject, Object argument);
     
+    @Override
     public void update() {
         update(this.observed, this.observed);
     }
