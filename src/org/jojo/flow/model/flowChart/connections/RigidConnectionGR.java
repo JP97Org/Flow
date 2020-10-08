@@ -25,11 +25,7 @@ public class RigidConnectionGR extends ConnectionGR {
 
     @Override
     public DOM getDOM() {
-        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
-        dom.setClassName(getClass().getName());
-        dom.setPosition(getPosition());
-        dom.setHeight(getHeight());
-        dom.setWidth(getWidth());
+        final GraphicalRepresentationDOM dom = (GraphicalRepresentationDOM) super.getDOM();
         dom.appendCustomDOM("fromPin", getFromPin());
         dom.appendList("connections", getSingleConnections());
         if (getLabel() != null) {
@@ -42,5 +38,11 @@ public class RigidConnectionGR extends ConnectionGR {
     public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
         
+    }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
     }
 }

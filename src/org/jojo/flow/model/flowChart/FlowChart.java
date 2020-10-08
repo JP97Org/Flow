@@ -11,13 +11,17 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
+import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.DynamicClassLoader;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
+import org.jojo.flow.model.storeLoad.ModuleDOM;
 
 public class FlowChart extends FlowChartElement{
     private final List<FlowModule> modules;
@@ -248,7 +252,41 @@ public class FlowChart extends FlowChartElement{
 
     @Override
     public void restoreFromDOM(final DOM dom) {
+        if (isDOMValid(dom)) {
+            this.modules.clear();
+            this.connections.clear();
+            final Map<String, Object> domMap = dom.getDOMMap();
+            final DOM idDom = (DOM)domMap.get(FlowChartDOM.NAME_ID);
+            final String idStr = idDom.elemGet();
+            final int id = Integer.parseInt(idStr);
+            setId(id);
+            final DOM modulesDom = (DOM)domMap.get(FlowChartDOM.NAME_MODULES);
+            final Map<String, Object> modulesMap = modulesDom.getDOMMap();
+            for (final var modObj : modulesMap.values()) {
+                final DOM modDom = (DOM) modObj;
+                final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
+                final String moduleToLoad = cnDom.elemGet();
+                final FlowModule module = DynamicClassLoader.loadModule(moduleToLoad);
+                module.restoreFromDOM(modDom);
+                this.modules.add(module);
+            }
+            final DOM connectionsDom = (DOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS);
+            final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
+            for (final var conObj : connectionsMap.values()) {
+                final DOM conDom = (DOM) conObj;
+                final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                final String conToLoad = cnDom.elemGet();
+                final Connection connection = DynamicClassLoader.loadConnection(conToLoad);
+                connection.restoreFromDOM(conDom);
+                this.connections.add(connection);
+            }
+            notifyObservers();
+        }
+    }
+
+    @Override
+    public boolean isDOMValid(DOM dom) {
         // TODO Auto-generated method stub
-        
+        return true;
     }
 }

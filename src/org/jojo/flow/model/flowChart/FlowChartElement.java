@@ -11,7 +11,7 @@ import org.jojo.flow.model.storeLoad.DOMable;
 public abstract class FlowChartElement extends Subject implements DOMable {
     public static final FlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1);
     
-    private final int id;
+    private int id;
     private final List<Warning> warnings;
     
     public FlowChartElement(final int id) {
@@ -37,6 +37,10 @@ public abstract class FlowChartElement extends Subject implements DOMable {
     
     public int getId() {
         return id;
+    }
+    
+    protected void setId(final int id) {
+        this.id = id;
     }
     
     public List<Warning> getWarnings() {

@@ -1,5 +1,7 @@
 package org.jojo.flow.model.flowChart.modules;
 
+import java.util.Objects;
+
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
@@ -10,6 +12,7 @@ public class StdPin extends ModulePinImp {
     
     public StdPin(final FlowModule module, final Data defaultData) {
         super(module, defaultData);
+        Objects.requireNonNull(defaultData);
         this.checkDataSignature = defaultData.getDataSignature().getCopy();
     }
     

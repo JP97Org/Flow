@@ -49,4 +49,10 @@ public class InputPin extends ModulePin {
         // TODO Auto-generated method stub
         
     }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
+    }
 }

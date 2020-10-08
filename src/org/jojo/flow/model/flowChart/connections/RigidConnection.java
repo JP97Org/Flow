@@ -6,10 +6,15 @@ import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 
+import org.jojo.flow.model.flowChart.modules.RigidPinGR;
+
 public class RigidConnection extends Connection {
+    private GraphicalRepresentation gr;
+    
     public RigidConnection(final int id, final RigidPin asFromPin, final RigidPin asToPin, final String name) throws ConnectionException {
         super(id, asFromPin.getOutputPin(), name);
         addToPin(asToPin.getInputPin());
+        this.gr = new RigidConnectionGR((RigidPinGR) asFromPin.getOutputPin().getGraphicalRepresentation(), (RigidPinGR)asToPin.getInputPin().getGraphicalRepresentation());
     }
 
     @Override
@@ -31,8 +36,7 @@ public class RigidConnection extends Connection {
 
     @Override
     public GraphicalRepresentation getGraphicalRepresentation() {
-        // TODO implement
-        return null;
+        return this.gr;
     }
 
     @Override
@@ -72,6 +76,12 @@ public class RigidConnection extends Connection {
     public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
         
+    }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
     }
 
 }

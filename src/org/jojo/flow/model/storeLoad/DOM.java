@@ -1,7 +1,9 @@
 package org.jojo.flow.model.storeLoad;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -12,8 +14,11 @@ import org.jojo.flow.model.Warning;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 public abstract class DOM implements DOMable { 
+    private static Document documentStatic;
+    
     public static final String NAME_OTHERS = "Others";
     
     private final Document document;
@@ -25,17 +30,25 @@ public abstract class DOM implements DOMable {
     }
     
     public static Document getDocumentForCreatingElements() {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        try {
-            builder = dbf.newDocumentBuilder();
-            Document doc = builder.newDocument();
-            return doc;
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-            new Warning(null, e.getMessage(), true).reportWarning();
-            return null;
+        if (documentStatic == null) {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder;
+            try {
+                builder = dbf.newDocumentBuilder();
+                Document doc = builder.newDocument();
+                documentStatic = doc;
+                return doc;
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                new Warning(null, e.getMessage(), true).reportWarning();
+                return null;
+            }
         }
+        return documentStatic;
+    }
+    
+    protected static void resetDocument() {
+        documentStatic = null;
     }
     
     protected void addElement(final Element element) {
@@ -97,6 +110,45 @@ public abstract class DOM implements DOMable {
         append(domable.getDOM().getParentNode());
     }
     
+    public Map<String, Object> getDOMMap() {
+        return getDOMMap(getParentNode());
+    }
+    
+    public String elemGet() {
+        if (this.parent.getChildNodes().getLength() == 0) {
+            return null;
+        }
+        
+        return this.parent.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE
+                ? (((Text) this.parent.getChildNodes().item(0)).getNodeValue()) : null;
+    }
+    
+    private static Map<String, Object> getDOMMap(final Node node) {
+        final Map<String, Object> map = new HashMap<>();
+        
+        final Element elem = node.getNodeType() == Node.ELEMENT_NODE ? (Element)node : null;
+        for (int i = 0; elem != null && i < node.getAttributes().getLength(); i++) {
+            final Node attr = node.getAttributes().item(i);
+            final String name = attr.getNodeName();
+            map.put(name, elem.getAttribute(name));
+        }
+        
+        for (int i = 0; elem != null && i < node.getChildNodes().getLength(); i++) {
+            final Node childNode = node.getChildNodes().item(i);
+            final Element childElem = childNode.getNodeType() == Node.ELEMENT_NODE ? (Element)childNode : null;
+            final Text childText = childNode.getNodeType() == Node.TEXT_NODE ? (Text)childNode : null;
+            String name = (childElem != null) ? (childElem.getTagName()) : (elem.getTagName() + i);
+            while (map.containsKey(name)) {
+                name += i + "_";
+            }
+            final Object value = (childText != null) 
+                    ? childText.getNodeValue() 
+                    : new DOM(getDocumentForCreatingElements(), childNode) {};
+            map.put(name, value);
+        }
+        return map;
+    }
+    
     @Override
     public DOM getDOM() {
         return this;
@@ -105,5 +157,10 @@ public abstract class DOM implements DOMable {
     @Override
     public void restoreFromDOM(final DOM dom) {
         // do nothing because this is already a DOM
+    }
+    
+    @Override
+    public boolean isDOMValid(final DOM dom) {
+        return true;
     }
 }

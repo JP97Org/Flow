@@ -61,11 +61,7 @@ public class ConnectionLineGR extends GraphicalRepresentation {
 
     @Override
     public DOM getDOM() {
-        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
-        dom.setClassName(getClass().getName());
-        dom.setPosition(getPosition());
-        dom.setHeight(getHeight());
-        dom.setWidth(getWidth());
+        final GraphicalRepresentationDOM dom = (GraphicalRepresentationDOM) super.getDOM();
         dom.appendCustomPoint("positionB", getPositionB());
         return dom;
     }
@@ -76,4 +72,9 @@ public class ConnectionLineGR extends GraphicalRepresentation {
         
     }
 
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
+    }
 }

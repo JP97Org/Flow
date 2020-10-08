@@ -191,9 +191,12 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     @Override
     public DOM getDOM() {
         final ModuleDOM dom = new ModuleDOM();
+        dom.setClassName(getClass().getName());
         dom.setName(getExternalConfig().getName());
         dom.setID(getId());
-        dom.setInternalConfig(getInternalConfig());
+        if (getInternalConfig() != null) {
+            dom.setInternalConfig(getInternalConfig());
+        }
         dom.setExternalConfig(getExternalConfig());
         dom.setGraphicalRepresentation(getGraphicalRepresentation());
         dom.setPins(getAllModulePins());
@@ -203,5 +206,11 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     @Override
     public void restoreFromDOM(final DOM dom) {
         //TODO
+    }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
     }
 }

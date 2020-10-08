@@ -10,13 +10,18 @@ import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.w3c.dom.Element;
 
 public class ModuleDOM extends FlowChartElementDOM {
+    public static final String NAME_CLASSNAME = "ClassName";
     public static final String NAME = "Module";
     public static final String NAME_NAME = "name";
-    public static final String NAME_INDEX = "Index";
     public static final String NAME_PINS = "Pins";
     
     public ModuleDOM() {
         super(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements().createElement(NAME));
+    }
+    
+
+    public void setClassName(String className) {
+        appendString(NAME_CLASSNAME, className);
     }
     
     public void setName(final String name) {

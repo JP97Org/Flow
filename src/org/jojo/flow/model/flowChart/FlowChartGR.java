@@ -144,11 +144,7 @@ public class FlowChartGR extends FlowChartElementGR {
 
     @Override
     public DOM getDOM() {
-        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
-        dom.setClassName(getClass().getName());
-        dom.setPosition(getPosition());
-        dom.setHeight(getHeight());
-        dom.setWidth(getWidth());
+        final GraphicalRepresentationDOM dom = (GraphicalRepresentationDOM) super.getDOM();
         dom.appendCustomPoint("absOriginPoint", this.absOriginPoint);
         dom.appendString("isRasterEnabled", "" + this.isRasterEnabled);
         dom.appendList(FlowChartDOM.NAME_MODULES, this.modules);
@@ -160,5 +156,11 @@ public class FlowChartGR extends FlowChartElementGR {
     public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
         
+    }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
     }
 }

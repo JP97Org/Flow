@@ -6,7 +6,9 @@ import java.util.Objects;
 import javax.swing.Icon;
 
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DOMable;
+import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 
 public abstract class GraphicalRepresentation extends Subject implements DOMable {
     private Point position;
@@ -45,5 +47,23 @@ public abstract class GraphicalRepresentation extends Subject implements DOMable
     public void setSelectedIcon(final Icon selectedIcon) {
         this.selectedIcon = Objects.requireNonNull(selectedIcon);
         notifyObservers(selectedIcon);
+    }
+    
+    @Override
+    public DOM getDOM() {
+        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
+        dom.setClassName(getClass().getName());
+        dom.setPosition(getPosition());
+        dom.setHeight(getHeight());
+        dom.setWidth(getWidth());
+        dom.appendString("defaultIcon", "TODO"); //TODO className of icon
+        dom.appendString("selectedIcon", "TODO"); //TODO className of icon
+        return dom;
+    }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
     }
 }

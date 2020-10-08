@@ -66,4 +66,10 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
         // TODO Auto-generated method stub
         
     }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
+    }
 }

@@ -81,7 +81,9 @@ public class OneConnectionGR extends GraphicalRepresentation {
                 this.lines.add(new ConnectionLineGR(divPointBefore, diversionPoint));
                 divPointBefore = diversionPoint;
             }
-            this.lines.add(new ConnectionLineGR(divPointBefore, this.toPin.getPosition()));
+            if (!divPointBefore.equals(this.toPin.getPosition())) {
+                this.lines.add(new ConnectionLineGR(divPointBefore, this.toPin.getPosition()));
+            }
             this.diversionPoints.addAll(diversionPoints);
             notifyObservers(getLines());
         } else {
@@ -118,11 +120,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
 
     @Override
     public DOM getDOM() {
-        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
-        dom.setClassName(getClass().getName());
-        dom.setPosition(getPosition());
-        dom.setHeight(getHeight());
-        dom.setWidth(getWidth());
+        final GraphicalRepresentationDOM dom = (GraphicalRepresentationDOM) super.getDOM();
         dom.appendCustomDOM("fromPin", getFromPin());
         dom.appendCustomDOM("toPin", getToPin());
         dom.appendList("lines", getLines());
@@ -138,5 +136,11 @@ public class OneConnectionGR extends GraphicalRepresentation {
     public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
         
+    }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
     }
 }

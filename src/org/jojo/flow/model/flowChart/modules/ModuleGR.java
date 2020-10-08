@@ -147,11 +147,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
     
     @Override
     public DOM getDOM() {
-        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
-        dom.setClassName(getClass().getName());
-        dom.setPosition(getPosition());
-        dom.setHeight(getHeight());
-        dom.setWidth(getWidth());
+        final GraphicalRepresentationDOM dom = (GraphicalRepresentationDOM) super.getDOM();
         dom.appendInt(ModulePinDOM.NAME_MODULE_ID, getModule().getId());
         dom.appendString("scale", "" + getScale());
         dom.appendString("isIconTextAllowed", "" + isIconTextAllowed());

@@ -81,11 +81,7 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
 
     @Override
     public DOM getDOM() {
-        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
-        dom.setClassName(getClass().getName());
-        dom.setPosition(getPosition());
-        dom.setHeight(getHeight());
-        dom.setWidth(getWidth());
+        final GraphicalRepresentationDOM dom = (GraphicalRepresentationDOM) super.getDOM();
         dom.appendInt("element", getElement().getId());
         dom.appendString("text", getText());
         return dom;
@@ -97,4 +93,9 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
         
     }
 
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
+    }
 }

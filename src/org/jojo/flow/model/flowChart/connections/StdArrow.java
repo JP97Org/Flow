@@ -1,6 +1,7 @@
 package org.jojo.flow.model.flowChart.connections;
 
 import java.util.Objects;
+import java.awt.Shape;
 
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
@@ -12,15 +13,22 @@ import org.jojo.flow.model.flowChart.modules.StdPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 
+import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
+import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
+
 public class StdArrow extends Connection {
     private DataSignature dataType;
     private Data data;
+    private GraphicalRepresentation gr;
     
     public StdArrow(final int id, final OutputPin fromPin, final InputPin toPin, final String name) throws ConnectionException {
         super(id, fromPin, name);
         this.dataType = ((StdPin)fromPin.getModulePinImp()).getCheckDataSignature();
         this.data = null;
         addToPin(toPin);
+        this.gr = new StdArrowGR((StdOutputPinGR)(fromPin.getGraphicalRepresentation()), 
+                (StdInputPinGR)(toPin.getGraphicalRepresentation()), 
+                (Shape)null); //TODO get arrow shape
     }
     
     public Data getData() {
@@ -80,8 +88,7 @@ public class StdArrow extends Connection {
 
     @Override
     public GraphicalRepresentation getGraphicalRepresentation() {
-        // TODO implement
-        return null;
+        return this.gr;
     }
 
     @Override
@@ -124,6 +131,12 @@ public class StdArrow extends Connection {
     public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
         
+    }
+    
+    @Override
+    public boolean isDOMValid(DOM dom) {
+        // TODO Auto-generated method stub
+        return true;
     }
 
 }
