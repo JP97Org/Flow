@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.IObserver;
+import org.jojo.flow.ISubject;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
@@ -15,12 +17,23 @@ import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
 
-public abstract class FlowModule extends FlowChartElement implements Comparable<FlowModule> {
+public abstract class FlowModule extends FlowChartElement implements Comparable<FlowModule>, IObserver {
     private final ExternalConfig externalConfig;
     
     public FlowModule(final int id, final ExternalConfig externalConfig) {
         super(id);
         this.externalConfig = externalConfig;
+        this.externalConfig.registerObserver(this);
+    }
+    
+    @Override
+    public final void update(ISubject subject, Object argument) {
+        update();
+    }
+    
+    @Override
+    public final void update() {
+        notifyObservers(getExternalConfig());
     }
     
     public abstract List<ModulePin> getAllModulePins();

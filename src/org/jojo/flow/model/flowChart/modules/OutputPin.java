@@ -17,6 +17,7 @@ public class OutputPin extends ModulePin {
                 ok &= arrow.putData(data);
             }
         }
+        notifyObservers(data);
         return ok;
     }
 }

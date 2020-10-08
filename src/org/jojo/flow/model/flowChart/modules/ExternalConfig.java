@@ -1,8 +1,9 @@
 package org.jojo.flow.model.flowChart.modules;
 
+import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.data.Pair;
 
-public class ExternalConfig implements Comparable<ExternalConfig> {
+public class ExternalConfig extends Subject implements Comparable<ExternalConfig> {
     private final String name;
     private int priority;
     
@@ -21,6 +22,7 @@ public class ExternalConfig implements Comparable<ExternalConfig> {
     
     public void setPriority(final int newPriority) {
         this.priority = newPriority;
+        notifyObservers(newPriority);
     }
     
     public Pair<String, Integer> getConfig() {

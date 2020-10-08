@@ -1,6 +1,7 @@
 package org.jojo.flow.model.flowChart.connections;
 
 import java.awt.Point;
+import java.util.Objects;
 
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.FlowChartElement;
@@ -43,7 +44,8 @@ public class ConnectionLineGR extends GraphicalRepresentation {
     }
 
     public void setPositionB(final Point positionB) {
-        this.positionB = positionB;
+        this.positionB = Objects.requireNonNull(positionB);
+        notifyObservers(positionB);
     }
 
     @Override

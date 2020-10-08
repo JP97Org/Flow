@@ -1,6 +1,4 @@
-package org.jojo.flow.view;
-
-import org.jojo.flow.model.ISubject;
+package org.jojo.flow;
 
 public interface IObserver {
     void update(ISubject subject, Object argument);

@@ -28,6 +28,7 @@ public class StdArrow extends Connection {
     public boolean putData(final Data data) {
         if (data == null || data.hasSameType(this.dataType)) {
             this.data = data;
+            notifyObservers(data);
             return true;
         }
         return false;
@@ -46,6 +47,7 @@ public class StdArrow extends Connection {
     public boolean putDataSignature(final DataSignature signature) {
         if (this.dataType.equals(Objects.requireNonNull(signature)) && signature.isCheckingRecursive()) {
             this.dataType = signature;
+            notifyObservers(signature);
             return true;
         }
         return false;

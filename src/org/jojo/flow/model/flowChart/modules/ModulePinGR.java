@@ -42,6 +42,7 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
 
     public void setIconTextAllowed(final boolean isIconTextAllowed) {
         this.isIconTextAllowed = isIconTextAllowed;
+        notifyObservers(isIconTextAllowed);
     }
 
     public String getIconText() {
@@ -50,6 +51,7 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
 
     public void setIconText(final String iconText) {
         this.iconText = iconText;
+        notifyObservers(iconText);
     }
 
     public Point getLinePoint() {
@@ -58,6 +60,7 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
 
     public void setLinePoint(final Point linePoint) {
         this.linePoint = Objects.requireNonNull(linePoint);
+        notifyObservers(linePoint);
     }
 
     public PinOrientation getPinOrientation() {
@@ -65,7 +68,8 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
     }
 
     public void setPinOrientation(PinOrientation pinOrientation) {
-        this.pinOrientation = pinOrientation;
+        this.pinOrientation = Objects.requireNonNull(pinOrientation);
+        notifyObservers(pinOrientation);
     }
     
     @Override

@@ -10,11 +10,12 @@ public abstract class FlowChartElementGR extends GraphicalRepresentation {
     }
 
     public final LabelGR getLabel() {
-        return label;
+        return this.label;
     }
 
     public final void setLabel(final LabelGR label) {
         this.label = label;
+        notifyObservers(label);
     }
 
     public final void removeLabel() {

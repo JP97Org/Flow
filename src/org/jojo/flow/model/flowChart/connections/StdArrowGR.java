@@ -35,6 +35,7 @@ public class StdArrowGR extends ConnectionGR {
 
     public void setDefaultArrow(final Shape defaultArrow) {
         this.defaultArrow = Objects.requireNonNull(defaultArrow);
+        notifyObservers(defaultArrow);
     }
 
     public Shape getSelectedArrow() {
@@ -43,6 +44,7 @@ public class StdArrowGR extends ConnectionGR {
 
     public void setSelectedArrow(final Shape selectedArrow) {
         this.selectedArrow = Objects.requireNonNull(selectedArrow);
+        notifyObservers(selectedArrow);
     }
 
 }

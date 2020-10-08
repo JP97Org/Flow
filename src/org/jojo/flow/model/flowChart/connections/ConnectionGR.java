@@ -31,6 +31,7 @@ public abstract class ConnectionGR extends FlowChartElementGR {
             throw new IllegalArgumentException("from pin is not the same as the one of this connection");
         }
         this.connections.add(connection);
+        notifyObservers(connection);
     }
     
     public boolean removeToPin(final ModulePinGR toPin) {
@@ -41,6 +42,9 @@ public abstract class ConnectionGR extends FlowChartElementGR {
         boolean ret = !toRemove.isEmpty();
         for (final OneConnectionGR toRemoveElem : toRemove) {
             ret &= this.connections.remove(toRemoveElem);
+        }
+        if (ret) {
+            notifyObservers(toRemove);
         }
         return ret;
     }
@@ -60,6 +64,7 @@ public abstract class ConnectionGR extends FlowChartElementGR {
     public void setColor(final Color color) {
         Objects.requireNonNull(color);
         this.connections.forEach(c -> c.setColor(color));
+        notifyObservers(color);
     }
     
     @Override

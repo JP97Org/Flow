@@ -48,18 +48,27 @@ public abstract class Connection extends FlowChartElement {
         if (!connectionMatchesPins) {
             throw new ConnectionException("toPin to be added does not match connection type", this);
         }
+        if (ok) {
+            notifyObservers(toPin);
+        }
         return ok;
     }
     
     public synchronized boolean removeToPin(final InputPin toPin) {
-        return this.toPins.remove(toPin);
+        final boolean ret = this.toPins.remove(toPin);
+        if (ret) {
+            notifyObservers(toPin);
+        }
+        return ret;
     }
     
     public synchronized boolean removeToPin(final int index) {
         if (index >= this.toPins.size()) {
             return false;
         }
+        final InputPin toPin = this.toPins.get(index);
         this.toPins.remove(index);
+        notifyObservers(toPin);
         return true;
     }
     
@@ -73,6 +82,9 @@ public abstract class Connection extends FlowChartElement {
         }
         if (!connectionMatchesPins) {
             throw new ConnectionException("fromPin to be set does not match connection type", this);
+        }
+        if (ok) {
+            notifyObservers(fromPin);
         }
         return ok;
     }

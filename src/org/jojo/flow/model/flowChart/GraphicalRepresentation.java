@@ -1,6 +1,7 @@
 package org.jojo.flow.model.flowChart;
 
 import java.awt.Point;
+import java.util.Objects;
 
 import javax.swing.Icon;
 
@@ -22,7 +23,8 @@ public abstract class GraphicalRepresentation extends Subject {
     }
 
     public void setPosition(final Point position) {
-        this.position = position;
+        this.position = Objects.requireNonNull(position);
+        notifyObservers(position);
     }
     
     public abstract int getHeigth();
@@ -33,7 +35,8 @@ public abstract class GraphicalRepresentation extends Subject {
     }
 
     public void setDefaultIcon(final Icon defaultIcon) {
-        this.defaultIcon = defaultIcon;
+        this.defaultIcon = Objects.requireNonNull(defaultIcon);
+        notifyObservers(defaultIcon);
     }
 
     public Icon getSelectedIcon() {
@@ -41,7 +44,8 @@ public abstract class GraphicalRepresentation extends Subject {
     }
 
     public void setSelectedIcon(final Icon selectedIcon) {
-        this.selectedIcon = selectedIcon;
+        this.selectedIcon = Objects.requireNonNull(selectedIcon);
+        notifyObservers(selectedIcon);
     }
 
     public final FlowChartGR getFlowChartGR() {
@@ -49,6 +53,7 @@ public abstract class GraphicalRepresentation extends Subject {
     }
 
     public final void setFlowChartGR(final FlowChartGR flowChartGR) {
-        this.flowChartGR = flowChartGR;
+        this.flowChartGR = Objects.requireNonNull(flowChartGR);
+        notifyObservers(flowChartGR);
     }
 }

@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
@@ -30,7 +31,8 @@ public class FlowChartGR extends FlowChartElementGR {
     }
     
     public void addModule(final ModuleGR moduleGR) {
-        this.modules.add(moduleGR);
+        this.modules.add(Objects.requireNonNull(moduleGR));
+        notifyObservers(moduleGR);
     }
     
     public void addConnection(final ConnectionGR connectionGR) {
@@ -38,28 +40,38 @@ public class FlowChartGR extends FlowChartElementGR {
     }
     
     public boolean removeModule(final ModuleGR moduleGR) {
-        return this.modules.remove(moduleGR);
+        final boolean ret = this.modules.remove(Objects.requireNonNull(moduleGR));
+        if (ret) {
+            notifyObservers(moduleGR);
+        }
+        return ret;
     }
     
     public boolean removeModule(final int index) {
         if (index >= this.modules.size()) {
             return false;
         }
-        
+        final ModuleGR module = this.modules.get(index);
         this.modules.remove(index);
+        notifyObservers(module);
         return true;
     }
     
     public boolean removeConnection(final ConnectionGR connectionGR) {
-        return this.connections.remove(connectionGR);
+        final boolean ret = this.connections.remove(Objects.requireNonNull(connectionGR));
+        if (ret) {
+            notifyObservers(connectionGR);
+        }
+        return ret;
     }
     
     public boolean removeConnection(final int index) {
         if (index >= this.connections.size()) {
             return false;
         }
-        
+        final ConnectionGR con = this.connections.get(index);
         this.connections.remove(index);
+        notifyObservers(con);
         return true;
     }
     
@@ -110,18 +122,20 @@ public class FlowChartGR extends FlowChartElementGR {
     }
 
     public Point getAbsOriginPoint() {
-        return absOriginPoint;
+        return this.absOriginPoint;
     }
 
-    public void setAbsOriginPoint(Point absOriginPoint) {
-        this.absOriginPoint = absOriginPoint;
+    public void setAbsOriginPoint(final Point absOriginPoint) {
+        this.absOriginPoint = Objects.requireNonNull(absOriginPoint);
+        notifyObservers(absOriginPoint);
     }
 
     public boolean isRasterEnabled() {
-        return isRasterEnabled;
+        return this.isRasterEnabled;
     }
 
     public void setRasterEnabled(boolean isRasterEnabled) {
         this.isRasterEnabled = isRasterEnabled;
+        notifyObservers(isRasterEnabled);
     }
 }

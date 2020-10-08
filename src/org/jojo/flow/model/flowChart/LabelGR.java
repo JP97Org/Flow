@@ -1,10 +1,11 @@
 package org.jojo.flow.model.flowChart;
 
 import java.awt.Point;
+import java.util.Objects;
 
-import org.jojo.flow.model.ISubject;
+import org.jojo.flow.IObserver;
+import org.jojo.flow.ISubject;
 import org.jojo.flow.model.Subject;
-import org.jojo.flow.view.IObserver;
 
 public class LabelGR extends GraphicalRepresentation implements ISubject {
     private final Subject subject;
@@ -12,12 +13,17 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
     private String text;
     private final FlowChartElement element;
     
+    private int heigth;
+    private int width;
+    
     public LabelGR(final FlowChartElement element, final String text, 
-            final Point position, final FlowChartGR flowChartGR) {
+            final Point position, final FlowChartGR flowChartGR, final int heigth, final int width) {
         super(position, flowChartGR);
         this.subject = Subject.getSubject(this);
         this.setText(text);
-        this.element = element;
+        this.element = Objects.requireNonNull(element);
+        this.setHeigth(heigth);
+        this.setWidth(width);
     }
 
     @Override
@@ -45,19 +51,30 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
     }
 
     public void setText(final String text) {
-        this.text = text;
+        this.text = Objects.requireNonNull(text);
+        notifyObservers(text);
     }
 
-    @Override
+    public FlowChartElement getElement() {
+        return element;
+    }
+
     public int getHeigth() {
-        // TODO Auto-generated method stub
-        return 0; //TODO
+        return this.heigth;
     }
 
-    @Override
+    public void setHeigth(final int heigth) {
+        this.heigth = heigth;
+        notifyObservers(this.heigth);
+    }
+
     public int getWidth() {
-        // TODO Auto-generated method stub
-        return 0; //TODO
+        return this.width;
+    }
+
+    public void setWidth(final int width) {
+        this.width = width;
+        notifyObservers(this.width);
     }
 
 }

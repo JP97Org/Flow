@@ -27,10 +27,12 @@ public abstract class FlowChartElement extends Subject {
     
     public void reportWarning(final Warning warning) {
         this.warnings.add(warning);
+        notifyObservers(warning);
     }
     
     public void warningResolved(final Warning warning) {
         this.warnings.remove(warning);
+        notifyObservers(warning);
     }
     
     public int getId() {
@@ -40,7 +42,6 @@ public abstract class FlowChartElement extends Subject {
     public List<Warning> getWarnings() {
         return new ArrayList<>(this.warnings);
     }
-    
 
     public Warning getLastWarning() {
         return this.warnings.get(this.warnings.size() - 1);

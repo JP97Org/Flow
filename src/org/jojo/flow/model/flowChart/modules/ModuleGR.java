@@ -87,12 +87,18 @@ public abstract class ModuleGR extends FlowChartElementGR {
         return this.scale;
     }
     
+    public final void setScale(final double scale) {
+        this.scale = scale;
+        notifyObservers(scale);
+    }
+    
     public final void rotateLeft() {
         setPosition(this.corners[1]);
         final int oldHeigth = this.heigth;
         this.heigth = this.width;
         this.width = oldHeigth;
         setCorners();
+        notifyObservers();
     }
     
     public final void rotateRight() {
@@ -101,6 +107,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
         this.heigth = this.width;
         this.width = oldHeigth;
         setCorners();
+        notifyObservers();
     }
     
     public final boolean hasInternalConfig() {
@@ -109,6 +116,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
     
     public final void setHasInternalConfig(final boolean hasInternalConfig) {
         this.hasInternalConfig = hasInternalConfig;
+        notifyObservers(hasInternalConfig);
     }
     
     public final boolean isIconTextAllowed() {
@@ -117,6 +125,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
     
     public final void setIsIconTextAllowed(final boolean isIconTextAllowed) {
         this.isIconTextAllowed = isIconTextAllowed;
+        notifyObservers(isIconTextAllowed);
     }
     
     public final String getIconText() {
@@ -125,6 +134,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
     
     public final void setIconText(final String iconText) {
         this.iconText = iconText;
+        notifyObservers(iconText);
     }
 
     public final FlowModule getModule() {

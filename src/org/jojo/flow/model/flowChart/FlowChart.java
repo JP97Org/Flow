@@ -31,33 +31,47 @@ public class FlowChart extends FlowChartElement{
     
     public void addModule(final FlowModule module) {
         this.modules.add(module);
+        notifyObservers(module);
     }
     
     public void addConnection(final Connection connection) {
         this.connections.add(connection);
+        notifyObservers(connection);
     }
     
     public boolean removeModule(final FlowModule module) {
-        return this.modules.remove(module);
+        final boolean ret = this.modules.remove(module);
+        if (ret) {
+            notifyObservers(module);
+        }
+        return ret;
     }
     
     public boolean removeModule(final int index) {
         if (index >= this.modules.size()) {
             return false;
         }
+        final FlowModule module = this.modules.get(index);
         this.modules.remove(index);
+        notifyObservers(module);
         return true;
     }
     
     public boolean removeConnection(final Connection connection) {
-        return this.connections.remove(connection);
+        final boolean ret = this.connections.remove(connection);
+        if (ret) {
+            notifyObservers(connection);
+        }
+        return ret;
     }
     
     public boolean removeConnection(final int index) {
         if (index >= this.connections.size()) {
             return false;
         }
+        final Connection con = this.connections.get(index);
         this.connections.remove(index);
+        notifyObservers(con);
         return true;
     }
     

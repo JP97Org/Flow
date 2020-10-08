@@ -1,6 +1,4 @@
-package org.jojo.flow.model;
-
-import org.jojo.flow.view.IObserver;
+package org.jojo.flow;
 
 public interface ISubject {
     void registerObserver(final IObserver observer);

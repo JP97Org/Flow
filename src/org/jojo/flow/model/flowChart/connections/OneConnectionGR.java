@@ -38,6 +38,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
         setColor(Color.BLACK);
         this.toPin = toPin;
         setPath(Arrays.asList(diversionPoint), true);
+        notifyObservers();
     }
     
     public List<ConnectionLineGR> getLines() {
@@ -79,6 +80,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
             }
             this.lines.add(new ConnectionLineGR(divPointBefore, this.toPin.getPosition(), getFlowChartGR()));
             this.diversionPoints.addAll(diversionPoints);
+            notifyObservers(getLines());
         } else {
             new Warning(getFlowChartGR().getFlowChart(), "path of connection could not be set", false).reportWarning();
         }
@@ -100,6 +102,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
 
     public void setColor(final Color color) {
         this.color = Objects.requireNonNull(color);
+        notifyObservers(color);
     }
     
     public ModulePinGR getFromPin() {
