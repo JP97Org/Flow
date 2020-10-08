@@ -1,4 +1,4 @@
-package org.jojo.flow.view.flowChart;
+package org.jojo.flow.view;
 
 import org.jojo.flow.model.ISubject;
 

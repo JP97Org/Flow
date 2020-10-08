@@ -1,6 +1,6 @@
 package org.jojo.flow.model;
 
-import org.jojo.flow.view.flowChart.IObserver;
+import org.jojo.flow.view.IObserver;
 
 public interface ISubject {
     void registerObserver(final IObserver observer);

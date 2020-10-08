@@ -2,6 +2,7 @@ package org.jojo.flow.model.flowChart;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
@@ -63,17 +64,50 @@ public class FlowChartGR extends FlowChartElementGR {
     }
     
     @Override
-    public int getHeight() {
-        //TODO
-        return 0; //TODO
+    public int getHeigth() {
+        final int modMax = Math.max(this.modules
+                            .stream()
+                            .map(m -> m.getCorners())
+                            .flatMap(p -> Arrays.stream(p))
+                            .mapToInt(p -> p.x)
+                            .max().orElse(0),
+                            this.modules
+                            .stream()
+                            .map(m -> m.getModule())
+                            .map(m -> m.getAllModulePins())
+                            .flatMap(p -> p.stream())
+                            .map(p -> p.getGraphicalRepresentation())
+                            .mapToInt(g -> g.getPosition().y + g.getHeigth())
+                            .max().orElse(0));
+        final int conMax = this.connections
+                            .stream()
+                            .mapToInt(c -> c.getHeigth())
+                            .max().orElse(0);
+        return Math.max(modMax, conMax);
     }
     
     @Override
     public int getWidth() {
-        //TODO
-        return 0; //TODO
+        final int modMax = Math.max(this.modules
+                .stream()
+                .map(m -> m.getCorners())
+                .flatMap(p -> Arrays.stream(p))
+                .mapToInt(p -> p.y)
+                .max().orElse(0),
+                this.modules
+                    .stream()
+                    .map(m -> m.getModule())
+                    .map(m -> m.getAllModulePins())
+                    .flatMap(p -> p.stream())
+                    .map(p -> p.getGraphicalRepresentation())
+                    .mapToInt(g -> g.getPosition().x + g.getWidth())
+                    .max().orElse(0));
+        final int conMax = this.connections
+                .stream()
+                .mapToInt(c -> c.getWidth())
+                .max().orElse(0);
+        return Math.max(modMax, conMax);
     }
-
 
     public Point getAbsOriginPoint() {
         return absOriginPoint;

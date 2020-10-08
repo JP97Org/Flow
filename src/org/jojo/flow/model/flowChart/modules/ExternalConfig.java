@@ -11,6 +11,14 @@ public class ExternalConfig implements Comparable<ExternalConfig> {
         this.priority = priority;
     }
     
+    public String getName() {
+        return this.name;
+    }
+    
+    public int getPriority() {
+        return this.priority;
+    }
+    
     public void setPriority(final int newPriority) {
         this.priority = newPriority;
     }

@@ -3,7 +3,7 @@ package org.jojo.flow.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jojo.flow.view.flowChart.IObserver;
+import org.jojo.flow.view.IObserver;
 
 public abstract class Subject implements ISubject {
     private final List<IObserver> observerList;

@@ -9,15 +9,15 @@ public abstract class FlowChartElementGR extends GraphicalRepresentation {
         super(position, (FlowChartGR)flowChart.getGraphicalRepresentation());
     }
 
-    public LabelGR getLabel() {
+    public final LabelGR getLabel() {
         return label;
     }
 
-    public void setLabel(final LabelGR label) {
+    public final void setLabel(final LabelGR label) {
         this.label = label;
     }
 
-    public void removeLabel() {
+    public final void removeLabel() {
         setLabel(null);
     }
 }

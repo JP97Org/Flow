@@ -5,8 +5,8 @@ import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
 
 public class OutputPin extends ModulePin {
-    public OutputPin(final ModulePinImp imp) {
-        super(imp);
+    public OutputPin(final ModulePinImp imp, final ModulePinGR gr) {
+        super(imp, gr);
     }
     
     public boolean putData(final Data data) {

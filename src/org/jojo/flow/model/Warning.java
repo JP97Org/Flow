@@ -52,4 +52,24 @@ public class Warning {
     public boolean isError() {
         return this.isError;
     }
+    
+    public void reportWarning() {
+        if (hasAffectedElement()) {
+            getAffectedElement().reportWarning(this);
+        } else {
+            FlowChartElement.GENERIC_ERROR_ELEMENT.reportWarning(this);
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
+    
+    public boolean equals(final Object other) {
+        if (other instanceof Warning) {
+            return hashCode() == other.hashCode();
+        }
+        return false;
+    }
 }

@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import org.jojo.flow.model.ISubject;
 import org.jojo.flow.model.Subject;
-import org.jojo.flow.view.flowChart.IObserver;
+import org.jojo.flow.view.IObserver;
 
 public class LabelGR extends GraphicalRepresentation implements ISubject {
     private final Subject subject;
@@ -49,7 +49,7 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeigth() {
         // TODO Auto-generated method stub
         return 0; //TODO
     }

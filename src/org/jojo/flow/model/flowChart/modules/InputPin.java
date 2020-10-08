@@ -5,9 +5,9 @@ import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
 
-public class InputPin extends ModulePin {
-    public InputPin(final ModulePinImp imp) {
-        super(imp);
+public class InputPin extends ModulePin {  
+    public InputPin(final ModulePinImp imp, final ModulePinGR gr) {
+        super(imp, gr);
     }
     
     @Override

@@ -4,10 +4,10 @@ public class RigidPin extends ModulePinImp {
     private final InputPin inputPin;
     private final OutputPin outputPin;
     
-    public RigidPin(final FlowModule module) {
+    public RigidPin(final FlowModule module, final RigidPinGR gr) {
         super(module, null);
-        this.inputPin = new InputPin(this);
-        this.outputPin = new OutputPin(this);
+        this.inputPin = new InputPin(this, gr);
+        this.outputPin = new OutputPin(this, gr);
     }
     
     public InputPin getInputPin() {

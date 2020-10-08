@@ -41,6 +41,11 @@ public abstract class FlowChartElement extends Subject {
         return new ArrayList<>(this.warnings);
     }
     
+
+    public Warning getLastWarning() {
+        return this.warnings.get(this.warnings.size() - 1);
+    }
+    
     @Override
     public int hashCode() {
         return this.id;

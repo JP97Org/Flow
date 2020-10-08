@@ -3,13 +3,20 @@ package org.jojo.flow.model.flowChart.modules;
 import java.util.List;
 
 import org.jojo.flow.model.data.Data;
+import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.connections.Connection;
 
 public abstract class ModulePin {
     private final ModulePinImp imp;
+    private final ModulePinGR gr;
     
-    public ModulePin(final ModulePinImp imp) {
+    public ModulePin(final ModulePinImp imp, final ModulePinGR gr) {
         this.imp = imp;
+        this.gr = gr;
+    }
+    
+    public GraphicalRepresentation getGraphicalRepresentation() {
+        return this.gr;
     }
     
     public FlowModule getModule() {
