@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public abstract class ModulePinGR extends GraphicalRepresentation {
     private final int heigth;
@@ -83,5 +84,11 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
             return this.linePoint.equals(((ModulePinGR)other).linePoint);
         }
         return false;
+    }
+    
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

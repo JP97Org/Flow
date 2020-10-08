@@ -6,8 +6,10 @@ import java.util.Objects;
 import javax.swing.Icon;
 
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.DOMable;
 
-public abstract class GraphicalRepresentation extends Subject {
+public abstract class GraphicalRepresentation extends Subject implements DOMable {
     private Point position;
     private Icon defaultIcon;
     private Icon selectedIcon;
@@ -17,6 +19,9 @@ public abstract class GraphicalRepresentation extends Subject {
         this.setPosition(position);
         this.setFlowChartGR(flowChartGR);
     }
+    
+    @Override
+    public abstract DOM getDOM();
 
     public Point getPosition() {
         return this.position;

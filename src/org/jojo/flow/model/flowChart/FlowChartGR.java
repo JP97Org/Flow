@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class FlowChartGR extends FlowChartElementGR {
     private final FlowChart flowChart;
@@ -137,5 +138,11 @@ public class FlowChartGR extends FlowChartElementGR {
     public void setRasterEnabled(boolean isRasterEnabled) {
         this.isRasterEnabled = isRasterEnabled;
         notifyObservers(isRasterEnabled);
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -6,8 +6,9 @@ import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.connections.Connection;
+import org.jojo.flow.model.storeLoad.DOMable;
 
-public abstract class ModulePin extends Subject {
+public abstract class ModulePin extends Subject implements DOMable {
     private final ModulePinImp imp;
     private final ModulePinGR gr;
     

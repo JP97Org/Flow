@@ -16,6 +16,7 @@ import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class FlowChart extends FlowChartElement{
     private final List<FlowModule> modules;
@@ -235,5 +236,11 @@ public class FlowChart extends FlowChartElement{
     @Override
     public void restoreSerializedSimulationState(String simulationState) {
         // TODO implement
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

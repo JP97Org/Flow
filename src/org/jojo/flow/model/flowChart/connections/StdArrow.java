@@ -9,6 +9,7 @@ import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.StdPin;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class StdArrow extends Connection {
     private DataSignature dataType;
@@ -102,6 +103,12 @@ public class StdArrow extends Connection {
     public void restoreSerializedSimulationState(String simulationState) {
         // TODO implement
         
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

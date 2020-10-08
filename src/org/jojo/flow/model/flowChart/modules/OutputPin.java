@@ -3,6 +3,7 @@ package org.jojo.flow.model.flowChart.modules;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class OutputPin extends ModulePin {
     public OutputPin(final ModulePinImp imp, final ModulePinGR gr) {
@@ -19,5 +20,11 @@ public class OutputPin extends ModulePin {
         }
         notifyObservers(data);
         return ok;
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

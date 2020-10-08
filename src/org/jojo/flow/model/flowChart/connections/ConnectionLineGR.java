@@ -7,6 +7,7 @@ import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class ConnectionLineGR extends GraphicalRepresentation {
     private Point positionB;
@@ -56,6 +57,12 @@ public class ConnectionLineGR extends GraphicalRepresentation {
     @Override
     public int getWidth() {
         return Math.abs(getPositionA().y - getPositionB().y);
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

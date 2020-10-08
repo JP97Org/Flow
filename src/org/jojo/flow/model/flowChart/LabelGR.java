@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.jojo.flow.IObserver;
 import org.jojo.flow.ISubject;
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class LabelGR extends GraphicalRepresentation implements ISubject {
     private final Subject subject;
@@ -75,6 +76,12 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
     public void setWidth(final int width) {
         this.width = width;
         notifyObservers(this.width);
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

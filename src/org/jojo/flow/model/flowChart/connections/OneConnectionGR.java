@@ -11,6 +11,7 @@ import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
+import org.jojo.flow.model.storeLoad.DOM;
 
 import static org.jojo.flow.model.flowChart.connections.ConnectionLineGR.isLine;
 
@@ -111,5 +112,11 @@ public class OneConnectionGR extends GraphicalRepresentation {
 
     public ModulePinGR getToPin() {
         return this.toPin;
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

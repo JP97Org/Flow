@@ -6,8 +6,10 @@ import java.util.List;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
+import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.DOMable;
 
-public abstract class FlowChartElement extends Subject {
+public abstract class FlowChartElement extends Subject implements DOMable {
     public static final FlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1);
     
     private final int id;
@@ -18,7 +20,9 @@ public abstract class FlowChartElement extends Subject {
         this.warnings = new ArrayList<>();
     }
     
-    //public abstract DOM getDOM(); //TODO DOM
+    @Override
+    public abstract DOM getDOM();
+    
     public abstract GraphicalRepresentation getGraphicalRepresentation();
     public abstract InternalConfig serializeInternalConfig();
     public abstract void restoreSerializedInternalConfig(InternalConfig internalConfig);

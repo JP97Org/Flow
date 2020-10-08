@@ -3,6 +3,7 @@ package org.jojo.flow.model.flowChart.connections;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class RigidConnection extends Connection {
     public RigidConnection(final int id, final RigidPin asFromPin, final RigidPin asToPin, final String name) throws ConnectionException {
@@ -52,6 +53,12 @@ public class RigidConnection extends Connection {
     @Override
     public void restoreSerializedSimulationState(String simulationState) {
         // TODO implement
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

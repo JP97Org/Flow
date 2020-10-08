@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class RigidConnectionGR extends ConnectionGR {
     public RigidConnectionGR(final RigidPinGR asFromPin, final RigidPinGR asToPin
@@ -21,5 +22,11 @@ public class RigidConnectionGR extends ConnectionGR {
             throw new IllegalArgumentException("to pin GR must be rigid pin GR");
         }
         addConnection(new OneConnectionGR(getFromPin(), toPin, getFlowChartGR()));
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

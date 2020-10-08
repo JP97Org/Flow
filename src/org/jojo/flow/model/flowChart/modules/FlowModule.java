@@ -1,5 +1,6 @@
 package org.jojo.flow.model.flowChart.modules;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -105,16 +106,35 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     public abstract void setInternalConfig(final InternalConfig internalConfig);
     public abstract InternalConfig getInternalConfig();
     
-    public ExternalConfig getExternalConfig() {
+    public final ExternalConfig getExternalConfig() {
         return this.externalConfig;
     }
     
-    public abstract List<InputPin> getStdInputs();
-    public abstract List<OutputPin> getStdOutputs();
+    public final List<InputPin> getStdInputs() {
+        return getAllInputs()
+                .stream()
+                .filter(p -> p.getModulePinImp() instanceof StdPin)
+                .collect(Collectors.toList());
+    }
+    
+    public final List<OutputPin> getStdOutputs() {
+        return getAllOutputs()
+                .stream()
+                .filter(p -> p.getModulePinImp() instanceof StdPin)
+                .collect(Collectors.toList());
+    }
+    
     public abstract List<InputPin> getAllInputs();
     public abstract List<OutputPin> getAllOutputs();
     
-    public List<FlowModule> getStdDependencyList() {
+    public final List<ModulePin> getAllPins() {
+        final List<ModulePin> all = new ArrayList<>();
+        all.addAll(getAllInputs());
+        all.addAll(getAllOutputs());
+        return all;
+    }
+    
+    public final List<FlowModule> getStdDependencyList() {
         final Set<FlowModule> retSet = new HashSet<>();
         retSet.addAll(getStdInputs()
                 .stream()
@@ -126,7 +146,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         return retSet.stream().collect(Collectors.toList());
     }
     
-    public List<FlowModule> getStdAdjacencyList() {
+    public final List<FlowModule> getStdAdjacencyList() {
         final Set<FlowModule> retSet = new HashSet<>();
         retSet.addAll(getStdOutputs()
                 .stream()

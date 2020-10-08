@@ -2,8 +2,10 @@ package org.jojo.flow.model.flowChart.modules;
 
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.data.Pair;
+import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.DOMable;
 
-public class ExternalConfig extends Subject implements Comparable<ExternalConfig> {
+public class ExternalConfig extends Subject implements Comparable<ExternalConfig>, DOMable {
     private final String name;
     private int priority;
     
@@ -49,5 +51,10 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
             return Integer.valueOf(this.priority).compareTo(o.priority);
         }
         return this.name.compareTo(o.name);
+    }
+
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

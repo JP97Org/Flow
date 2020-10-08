@@ -8,6 +8,7 @@ import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
 import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
+import org.jojo.flow.model.storeLoad.DOM;
 
 public class StdArrowGR extends ConnectionGR {
     private Shape defaultArrow; //TODO evtl. anderer Typ jenachdem ob das so geht
@@ -45,6 +46,12 @@ public class StdArrowGR extends ConnectionGR {
     public void setSelectedArrow(final Shape selectedArrow) {
         this.selectedArrow = Objects.requireNonNull(selectedArrow);
         notifyObservers(selectedArrow);
+    }
+
+    @Override
+    public DOM getDOM() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
