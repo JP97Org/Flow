@@ -3,6 +3,7 @@ package org.jojo.flow.model.flowChart.connections;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
+import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 
 public class RigidConnection extends Connection {
@@ -57,8 +58,20 @@ public class RigidConnection extends Connection {
 
     @Override
     public DOM getDOM() {
+        final ConnectionDOM dom = new ConnectionDOM();
+        dom.setName(getName());
+        dom.setID(getId());
+        dom.setClassName(getClass().getName());
+        dom.setGraphicalRepresentation(getGraphicalRepresentation());
+        dom.setFromPin(getFromPin());
+        dom.setToPins(getToPins());
+        return dom;
+    }
+
+    @Override
+    public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
 
 }

@@ -3,12 +3,10 @@ package org.jojo.flow.model.flowChart.modules;
 import java.awt.Point;
 import java.util.Objects;
 
-import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
-import org.jojo.flow.model.storeLoad.DOM;
 
 public abstract class ModulePinGR extends GraphicalRepresentation {
-    private final int heigth;
+    private final int height;
     private final int width;
     
     private boolean isIconTextAllowed;
@@ -17,10 +15,10 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
     private Point linePoint;
     private PinOrientation pinOrientation;
     
-    public ModulePinGR(final Point position, final FlowChartGR flowChartGR,
-            final String iconText, final int heigth, final int width) {
-        super(position, flowChartGR);
-        this.heigth = heigth;
+    public ModulePinGR(final Point position, final String iconText,
+            final int height, final int width) {
+        super(position);
+        this.height = height;
         this.width = width;
         setIconTextAllowed(iconText != null);
         setIconText(iconText);
@@ -28,8 +26,8 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
     }
     
     @Override
-    public int getHeigth() {
-        return this.heigth;
+    public int getHeight() {
+        return this.height;
     }
 
     @Override
@@ -84,11 +82,5 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
             return this.linePoint.equals(((ModulePinGR)other).linePoint);
         }
         return false;
-    }
-    
-    @Override
-    public DOM getDOM() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

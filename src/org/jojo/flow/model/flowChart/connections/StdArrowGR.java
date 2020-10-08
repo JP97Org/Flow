@@ -4,19 +4,18 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.util.Objects;
 
-import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
 import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 
 public class StdArrowGR extends ConnectionGR {
     private Shape defaultArrow; //TODO evtl. anderer Typ jenachdem ob das so geht
     private Shape selectedArrow; //TODO evtl. anderer Typ jenachdem ob das so geht
     
-    public StdArrowGR(final StdOutputPinGR fromPin, final StdInputPinGR toPin, final FlowChart flowChart,
-            final Shape defaultArrow) {
-        super(fromPin, toPin, flowChart);
+    public StdArrowGR(final StdOutputPinGR fromPin, final StdInputPinGR toPin, final Shape defaultArrow) {
+        super(fromPin, toPin);
         this.defaultArrow = defaultArrow;
     }
 
@@ -27,7 +26,7 @@ public class StdArrowGR extends ConnectionGR {
         if (!(toPin instanceof StdInputPinGR)) {
             throw new IllegalArgumentException("to pin GR must be std input pin GR");
         }
-        addConnection(new OneConnectionGR(getFromPin(), toPin, getFlowChartGR()));
+        addConnection(new OneConnectionGR(getFromPin(), toPin));
     }
 
     public Shape getDefaultArrow() {
@@ -50,8 +49,25 @@ public class StdArrowGR extends ConnectionGR {
 
     @Override
     public DOM getDOM() {
+        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
+        dom.setClassName(getClass().getName());
+        dom.setPosition(getPosition());
+        dom.setHeight(getHeight());
+        dom.setWidth(getWidth());
+        dom.appendCustomDOM("fromPin", getFromPin());
+        dom.appendList("connections", getSingleConnections());
+        dom.appendString("defaultArrow", "TODO"); //TODO class name of arrow for recreation of shape
+        dom.appendString("selectedArrow", "TODO");//TODO class name of arrow for recreation of shape
+        if (getLabel() != null) {
+            dom.appendCustomDOM("label", getLabel());
+        }
+        return dom;
+    }
+
+    @Override
+    public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
 
 }

@@ -5,8 +5,8 @@ import java.awt.Point;
 public abstract class FlowChartElementGR extends GraphicalRepresentation {
     private LabelGR label;
     
-    public FlowChartElementGR(final Point position, final FlowChart flowChart) {
-        super(position, (FlowChartGR)flowChart.getGraphicalRepresentation());
+    public FlowChartElementGR(final Point position) {
+        super(position);
     }
 
     public final LabelGR getLabel() {

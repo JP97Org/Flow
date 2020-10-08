@@ -9,15 +9,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 
 public abstract class ConnectionGR extends FlowChartElementGR {
     private final ModulePinGR fromPin;
     private final List<OneConnectionGR> connections;
     
-    public ConnectionGR(final ModulePinGR fromPin, final ModulePinGR toPin, final FlowChart flowChart) { 
-        super(fromPin.getPosition(), flowChart);
+    public ConnectionGR(final ModulePinGR fromPin, final ModulePinGR toPin) { 
+        super(fromPin.getPosition());
         this.fromPin = Objects.requireNonNull(fromPin);
         this.connections = new ArrayList<>();
         addToPin(new Point(fromPin.getPosition().x, toPin.getPosition().y), toPin);
@@ -68,7 +67,7 @@ public abstract class ConnectionGR extends FlowChartElementGR {
     }
     
     @Override
-    public int getHeigth() {
+    public int getHeight() {
         final int maxTo = getMaxTo(false);
         return Math.abs(this.fromPin.getLinePoint().y - maxTo);
     }

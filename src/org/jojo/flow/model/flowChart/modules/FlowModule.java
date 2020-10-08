@@ -1,6 +1,5 @@
 package org.jojo.flow.model.flowChart.modules;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +16,8 @@ import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
+import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.ModuleDOM;
 
 public abstract class FlowModule extends FlowChartElement implements Comparable<FlowModule>, IObserver {
     private final ExternalConfig externalConfig;
@@ -124,14 +125,20 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 .collect(Collectors.toList());
     }
     
-    public abstract List<InputPin> getAllInputs();
-    public abstract List<OutputPin> getAllOutputs();
+    public final List<InputPin> getAllInputs() {
+        return this.getAllModulePins()
+                .stream()
+                .filter(x -> x instanceof InputPin)
+                .map(x -> (InputPin)x)
+                .collect(Collectors.toList());
+    }
     
-    public final List<ModulePin> getAllPins() {
-        final List<ModulePin> all = new ArrayList<>();
-        all.addAll(getAllInputs());
-        all.addAll(getAllOutputs());
-        return all;
+    public final List<OutputPin> getAllOutputs() {
+        return this.getAllModulePins()
+                .stream()
+                .filter(x -> x instanceof OutputPin)
+                .map(x -> (OutputPin)x)
+                .collect(Collectors.toList());
     }
     
     public final List<FlowModule> getStdDependencyList() {
@@ -179,5 +186,22 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
             ret = Integer.valueOf(getId()).compareTo(other.getId());
         }
         return ret;
+    }
+    
+    @Override
+    public DOM getDOM() {
+        final ModuleDOM dom = new ModuleDOM();
+        dom.setName(getExternalConfig().getName());
+        dom.setID(getId());
+        dom.setInternalConfig(getInternalConfig());
+        dom.setExternalConfig(getExternalConfig());
+        dom.setGraphicalRepresentation(getGraphicalRepresentation());
+        dom.setPins(getAllModulePins());
+        return dom;
+    }
+    
+    @Override
+    public void restoreFromDOM(final DOM dom) {
+        //TODO
     }
 }

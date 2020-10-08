@@ -2,12 +2,32 @@ package org.jojo.flow.model.flowChart.modules;
 
 import java.awt.Point;
 
-import org.jojo.flow.model.flowChart.FlowChartGR;
+import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 
 public class StdOutputPinGR extends ModulePinGR {
-    public StdOutputPinGR(final Point position, 
-            final FlowChartGR flowChartGR, final String iconText, final int heigth, final int width) {
-        super(position, flowChartGR, iconText, heigth, width);
+    public StdOutputPinGR(final Point position, final String iconText, final int height, final int width) {
+        super(position, iconText, height, width);
         setPinOrientation(PinOrientation.RIGHT);
+    }
+    
+    @Override
+    public DOM getDOM() {
+        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
+        dom.setClassName(getClass().getName());
+        dom.setPosition(getPosition());
+        dom.setHeight(getHeight());
+        dom.setWidth(getWidth());
+        dom.appendString("isIconTextAllowed", "" + isIconTextAllowed());
+        dom.appendString("iconText", "" + getIconText());
+        dom.appendCustomPoint("linePoint", getLinePoint());
+        dom.appendString("pinOrientation", getPinOrientation().toString());
+        return null;
+    }
+
+    @Override
+    public void restoreFromDOM(DOM dom) {
+        // TODO Auto-generated method stub
+        
     }
 }

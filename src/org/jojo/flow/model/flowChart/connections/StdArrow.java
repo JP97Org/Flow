@@ -9,6 +9,7 @@ import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.StdPin;
+import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 
 public class StdArrow extends Connection {
@@ -107,8 +108,22 @@ public class StdArrow extends Connection {
 
     @Override
     public DOM getDOM() {
+        final ConnectionDOM dom = new ConnectionDOM();
+        dom.setName(getName());
+        dom.setID(getId());
+        dom.setClassName(getClass().getName());
+        dom.setGraphicalRepresentation(getGraphicalRepresentation());
+        dom.setFromPin(getFromPin());
+        dom.setToPins(getToPins());
+        dom.appendString("dataType", this.dataType.toString());
+        dom.appendString("data", this.data == null ? "null" : this.data.toString());
+        return dom;
+    }
+
+    @Override
+    public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
 
 }

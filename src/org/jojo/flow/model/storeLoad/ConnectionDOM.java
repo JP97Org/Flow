@@ -6,44 +6,36 @@ import java.util.Objects;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class ConnectionDOM extends DOM {
+public class ConnectionDOM extends FlowChartElementDOM {
     public static final String NAME = "Connection";
-    public static final String NAME_INDEX = "Index";
+    public static final String NAME_NAME = "name";
     public static final String NAME_CLASSNAME = "ClassName";
-    public static final String NAME_GR = "GR";
     public static final String NAME_FROM_PIN = "PinFrom";
     public static final String NAME_TO_PINS = "PinsTo";
     
-    public ConnectionDOM(Document document, Element parent) {
-        super(document, parent);
+    public ConnectionDOM() {
+        super(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements().createElement(NAME));
     }
     
-    public void setIndex(final int index) {
-        final var elem = getDocument().createElement(NAME_INDEX);
-        elem.appendChild(getDocument().createTextNode("" + index));
-        append(elem);
+    public void setName(final String name) {
+        ((Element)getParentNode()).setAttribute(NAME_NAME, Objects.requireNonNull(name));
     }
     
     public void setClassName(final String className) {
-        final var elem = getDocument().createElement(NAME_CLASSNAME);
-        elem.appendChild(getDocument().createTextNode(Objects.requireNonNull(className)));
-        append(elem);
+        appendString(NAME_CLASSNAME, className);
     }
     
     public void setGraphicalRepresentation(final GraphicalRepresentation gr) {
-        appendCustomDOM(NAME_GR, gr);
+        appendCustomDOM(gr);
     }
     
     public void setFromPin(final OutputPin fromPin) {
-        appendCustomDOM(NAME_FROM_PIN, fromPin);
+        appendCustomDOM(fromPin);
     }
     
     public void setToPins(final List<InputPin> toPins) {
-        final var elem = getDocument().createElement(NAME_TO_PINS);
-        toPins.forEach(p -> elem.appendChild(p.getDOM().getParentNode()));
-        append(elem);
+        appendList(NAME_TO_PINS, toPins);
     }
 }

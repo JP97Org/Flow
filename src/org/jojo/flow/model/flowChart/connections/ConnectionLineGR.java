@@ -5,15 +5,15 @@ import java.util.Objects;
 
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.FlowChartElement;
-import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 
 public class ConnectionLineGR extends GraphicalRepresentation {
     private Point positionB;
     
-    public ConnectionLineGR(final Point positionA, final Point positionB, FlowChartGR flowChartGR) {
-        super(positionA, flowChartGR);
+    public ConnectionLineGR(final Point positionA, final Point positionB) {
+        super(positionA);
         this.setPositionB(positionB);
         if (!isLine(positionA, positionB)) {
             final Warning warning = FlowChartElement.GENERIC_ERROR_ELEMENT.getLastWarning();
@@ -50,7 +50,7 @@ public class ConnectionLineGR extends GraphicalRepresentation {
     }
 
     @Override
-    public int getHeigth() {
+    public int getHeight() {
         return Math.abs(getPositionA().x - getPositionB().x);
     }
 
@@ -61,8 +61,19 @@ public class ConnectionLineGR extends GraphicalRepresentation {
 
     @Override
     public DOM getDOM() {
+        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
+        dom.setClassName(getClass().getName());
+        dom.setPosition(getPosition());
+        dom.setHeight(getHeight());
+        dom.setWidth(getWidth());
+        dom.appendCustomPoint("positionB", getPositionB());
+        return dom;
+    }
+
+    @Override
+    public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
 
 }

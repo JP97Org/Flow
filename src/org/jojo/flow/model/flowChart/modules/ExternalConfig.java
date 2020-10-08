@@ -2,6 +2,7 @@ package org.jojo.flow.model.flowChart.modules;
 
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.data.Pair;
+import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DOMable;
 
@@ -54,7 +55,15 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
     }
 
     public DOM getDOM() {
+        final ConfigDOM dom = ConfigDOM.getExternal();
+        dom.setName(getName());
+        dom.setPriority(getPriority());
+        return dom;
+    }
+
+    @Override
+    public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
 }

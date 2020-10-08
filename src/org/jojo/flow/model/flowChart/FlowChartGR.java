@@ -9,6 +9,8 @@ import java.util.Objects;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.FlowChartDOM;
+import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 
 public class FlowChartGR extends FlowChartElementGR {
     private final FlowChart flowChart;
@@ -19,7 +21,7 @@ public class FlowChartGR extends FlowChartElementGR {
     private boolean isRasterEnabled;
     
     public FlowChartGR(final FlowChart flowChart) {
-        super(new Point(0, 0), flowChart);
+        super(new Point(0, 0));
         this.flowChart = flowChart;
         this.modules = new ArrayList<>();
         this.connections = new ArrayList<>();
@@ -77,7 +79,7 @@ public class FlowChartGR extends FlowChartElementGR {
     }
     
     @Override
-    public int getHeigth() {
+    public int getHeight() {
         final int modMax = Math.max(this.modules
                             .stream()
                             .map(m -> m.getCorners())
@@ -90,11 +92,11 @@ public class FlowChartGR extends FlowChartElementGR {
                             .map(m -> m.getAllModulePins())
                             .flatMap(p -> p.stream())
                             .map(p -> p.getGraphicalRepresentation())
-                            .mapToInt(g -> g.getPosition().y + g.getHeigth())
+                            .mapToInt(g -> g.getPosition().y + g.getHeight())
                             .max().orElse(0));
         final int conMax = this.connections
                             .stream()
-                            .mapToInt(c -> c.getHeigth())
+                            .mapToInt(c -> c.getHeight())
                             .max().orElse(0);
         return Math.max(modMax, conMax);
     }
@@ -142,7 +144,21 @@ public class FlowChartGR extends FlowChartElementGR {
 
     @Override
     public DOM getDOM() {
+        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
+        dom.setClassName(getClass().getName());
+        dom.setPosition(getPosition());
+        dom.setHeight(getHeight());
+        dom.setWidth(getWidth());
+        dom.appendCustomPoint("absOriginPoint", this.absOriginPoint);
+        dom.appendString("isRasterEnabled", "" + this.isRasterEnabled);
+        dom.appendList(FlowChartDOM.NAME_MODULES, this.modules);
+        dom.appendList(FlowChartDOM.NAME_CONNECTIONS, this.connections);
+        return dom;
+    }
+
+    @Override
+    public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
 }

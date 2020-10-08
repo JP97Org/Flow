@@ -17,6 +17,7 @@ import org.jojo.flow.model.flowChart.connections.StdArrow;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.FlowChartDOM;
 
 public class FlowChart extends FlowChartElement{
     private final List<FlowModule> modules;
@@ -27,8 +28,6 @@ public class FlowChart extends FlowChartElement{
         this.modules = new ArrayList<>();
         this.connections = new ArrayList<>();
     }
-    
-    /*TODO add constr. with final DOM dom*/
     
     public void addModule(final FlowModule module) {
         this.modules.add(module);
@@ -240,7 +239,16 @@ public class FlowChart extends FlowChartElement{
 
     @Override
     public DOM getDOM() {
+        final FlowChartDOM ret = new FlowChartDOM();
+        ret.setID(getId());
+        this.modules.forEach(m -> ret.addModule(m));
+        this.connections.forEach(c -> ret.addConnection(c));
+        return ret;
+    }
+
+    @Override
+    public void restoreFromDOM(final DOM dom) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
 }

@@ -7,6 +7,7 @@ import org.jojo.flow.IObserver;
 import org.jojo.flow.ISubject;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 
 public class LabelGR extends GraphicalRepresentation implements ISubject {
     private final Subject subject;
@@ -14,16 +15,16 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
     private String text;
     private final FlowChartElement element;
     
-    private int heigth;
+    private int height;
     private int width;
     
     public LabelGR(final FlowChartElement element, final String text, 
-            final Point position, final FlowChartGR flowChartGR, final int heigth, final int width) {
-        super(position, flowChartGR);
+            final Point position, final FlowChartGR flowChartGR, final int height, final int width) {
+        super(position);
         this.subject = Subject.getSubject(this);
         this.setText(text);
         this.element = Objects.requireNonNull(element);
-        this.setHeigth(heigth);
+        this.setHeight(height);
         this.setWidth(width);
     }
 
@@ -60,13 +61,13 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
         return element;
     }
 
-    public int getHeigth() {
-        return this.heigth;
+    public int getHeight() {
+        return this.height;
     }
 
-    public void setHeigth(final int heigth) {
-        this.heigth = heigth;
-        notifyObservers(this.heigth);
+    public void setHeight(final int height) {
+        this.height = height;
+        notifyObservers(this.height);
     }
 
     public int getWidth() {
@@ -80,8 +81,20 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
 
     @Override
     public DOM getDOM() {
+        final GraphicalRepresentationDOM dom = new GraphicalRepresentationDOM();
+        dom.setClassName(getClass().getName());
+        dom.setPosition(getPosition());
+        dom.setHeight(getHeight());
+        dom.setWidth(getWidth());
+        dom.appendInt("element", getElement().getId());
+        dom.appendString("text", getText());
+        return dom;
+    }
+
+    @Override
+    public void restoreFromDOM(DOM dom) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
 
 }
