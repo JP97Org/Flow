@@ -1,13 +1,20 @@
 package org.jojo.flow.model.flowChart.connections;
 
+import static org.jojo.flow.model.storeLoad.OK.ok;
+
 import java.awt.Point;
+import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
+import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.storeLoad.ParsingException;
+import org.jojo.flow.model.storeLoad.PointDOM;
 
 public class ConnectionLineGR extends GraphicalRepresentation {
     private Point positionB;
@@ -68,13 +75,27 @@ public class ConnectionLineGR extends GraphicalRepresentation {
 
     @Override
     public void restoreFromDOM(DOM dom) {
-        // TODO Auto-generated method stub
-        
+        if (isDOMValid(dom)) {
+            super.restoreFromDOM(dom);
+            final Map<String, Object> domMap = dom.getDOMMap();
+            final DOM posBDom = (DOM)domMap.get("positionB");
+            this.positionB = PointDOM.pointOf(posBDom);
+        }
     }
 
     @Override
     public boolean isDOMValid(DOM dom) {
-        // TODO Auto-generated method stub
-        return true;
+        Objects.requireNonNull(dom);
+        try {
+            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getFlowChart());
+            final Map<String, Object> domMap = dom.getDOMMap();
+            ok(domMap.get("positionB") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM posBDom = (DOM)domMap.get("positionB");
+            ok(d -> PointDOM.pointOf(d), posBDom);
+            return true;
+        } catch (ParsingException e) {
+            e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning();
+            return false;
+        }
     }
 }
