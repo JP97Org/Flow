@@ -152,7 +152,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
             this.fromPin = (ModulePinGR) DynamicClassLoader.loadGR(cnFrom);
             this.fromPin.restoreFromDOM(fromPinDom);
             final DOM toPinDom = (DOM)domMap.get("toPin");
-            final DOM toPinDomGr = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
+            final DOM toPinDomGr = (DOM) toPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
             final DOM cnDomTo = (DOM) toPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnTo = cnDomTo.elemGet();
             this.toPin = (ModulePinGR) DynamicClassLoader.loadGR(cnTo);
@@ -199,9 +199,9 @@ public class OneConnectionGR extends GraphicalRepresentation {
             ok(domMap.get("toPin") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM toPinDom = (DOM)domMap.get("toPin");
             ok(fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM toPinDomGr = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
+            final DOM toPinDomGr = (DOM) toPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
             ok(toPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM cnDomTo = (DOM) fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+            final DOM cnDomTo = (DOM) toPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnTo = cnDomTo.elemGet();
             ok(cnTo != null, OK.ERR_MSG_NULL);
             final ModulePinGR toPin = ok(c -> (ModulePinGR) DynamicClassLoader.loadGR(c), cnTo);

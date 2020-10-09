@@ -27,7 +27,7 @@ public class ConnectionDOM extends FlowChartElementDOM {
     }
     
     public void setFromPin(final OutputPin fromPin) {
-        appendCustomDOM(fromPin);
+        appendCustomDOM(NAME_FROM_PIN, fromPin);
     }
     
     public void setToPins(final List<InputPin> toPins) {

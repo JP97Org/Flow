@@ -28,6 +28,7 @@ import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
+import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
 import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
 import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
@@ -89,6 +90,29 @@ public class DynamicClassLoader {
             System.err.println("class not found: " + className + "!"); //TODO EXC
             return null;
         }
+    }
+    
+    public static ModulePin loadPin(final String className, final String classNameImp) {
+        //TODO evtl. auch noch anders machen anstatt das MockModule zur erzeugung
+        final FlowModule mock = ModelFacade.mock;
+        if (className.equals(InputPin.class.getName())) {
+            if (classNameImp.equals(StdPin.class.getName())) {
+                return new InputPin(new StdPin(mock, new StringDataSet("")), (StdInputPinGR)loadGR(StdInputPinGR.class.getName()));
+            } else if (classNameImp.equals(RigidPin.class.getName())) {
+                final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
+                return new InputPin(new RigidPin(mock, gr), gr);
+            }
+        } else if (className.equals(OutputPin.class.getName())) {
+            if (classNameImp.equals(StdPin.class.getName())) {
+                return new OutputPin(new StdPin(mock, new StringDataSet("")), (StdOutputPinGR)loadGR(StdOutputPinGR.class.getName()));
+            } else if (classNameImp.equals(RigidPin.class.getName())) {
+                final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
+                return new OutputPin(new RigidPin(mock, gr), gr);
+            }
+        }
+        
+        System.err.println("class not found: " + className + "!"); //TODO EXC
+        return null;
     }
     
     public static FlowModule loadModule(final String className) {

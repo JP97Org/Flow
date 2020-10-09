@@ -70,7 +70,10 @@ public abstract class GraphicalRepresentation extends Subject implements DOMable
     @Override
     public void restoreFromDOM(final DOM dom) {
         if (isDOMValid(dom)) {
-            final Map<String, Object> domMap = dom.getDOMMap();
+            Map<String, Object> domMap = dom.getDOMMap();
+            if (domMap.containsKey(GraphicalRepresentationDOM.NAME)) {
+                domMap = ((DOM)domMap.get(GraphicalRepresentationDOM.NAME)).getDOMMap();
+            }
             final DOM posDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME_POSITION);
             this.position = PointDOM.pointOf(posDom);
             //TODO icons. Height and width can be done in subclasses
@@ -81,7 +84,11 @@ public abstract class GraphicalRepresentation extends Subject implements DOMable
     public boolean isDOMValid(final DOM dom) {
         Objects.requireNonNull(dom);
         try {
-            final Map<String, Object> domMap = dom.getDOMMap();
+            Map<String, Object> domMap = dom.getDOMMap();
+            if (domMap.containsKey(GraphicalRepresentationDOM.NAME)) {
+                ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                domMap = ((DOM)domMap.get(GraphicalRepresentationDOM.NAME)).getDOMMap();
+            }
             ok(domMap.get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM cnDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cn = cnDom.elemGet();

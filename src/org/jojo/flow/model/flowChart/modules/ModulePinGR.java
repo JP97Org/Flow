@@ -87,7 +87,7 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
         dom.appendString("iconText", "" + getIconText());
         dom.appendCustomPoint("linePoint", getLinePoint());
         dom.appendString("pinOrientation", getPinOrientation().toString());
-        return null;
+        return dom;
     }
     
     @Override
@@ -95,6 +95,9 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
             Map<String, Object> domMap = dom.getDOMMap();
+            if (domMap.containsKey(GraphicalRepresentationDOM.NAME)) {
+                domMap = ((DOM)domMap.get(GraphicalRepresentationDOM.NAME)).getDOMMap();
+            }
             final DOM domIs = (DOM) domMap.get("isIconTextAllowed");
             final String str = domIs.elemGet();
             this.isIconTextAllowed = Boolean.parseBoolean(str);
@@ -115,6 +118,10 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
         try {
             ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID);
             Map<String, Object> domMap = dom.getDOMMap();
+            if (domMap.containsKey(GraphicalRepresentationDOM.NAME)) {
+                ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                domMap = ((DOM)domMap.get(GraphicalRepresentationDOM.NAME)).getDOMMap();
+            }
             ok(domMap.get("isIconTextAllowed") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM domIs = (DOM) domMap.get("isIconTextAllowed");
             final String str = domIs.elemGet();

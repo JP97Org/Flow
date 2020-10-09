@@ -10,11 +10,13 @@ import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.StdPin;
-import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
-
+import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
 import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
+
+import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class StdArrow extends Connection {
     private DataSignature dataType;
@@ -115,28 +117,31 @@ public class StdArrow extends Connection {
 
     @Override
     public DOM getDOM() {
-        final ConnectionDOM dom = new ConnectionDOM();
-        dom.setName(getName());
-        dom.setID(getId());
-        dom.setClassName(getClass().getName());
-        dom.setGraphicalRepresentation(getGraphicalRepresentation());
-        dom.setFromPin(getFromPin());
-        dom.setToPins(getToPins());
+        final DOM dom = super.getDOM();
         dom.appendString("dataType", this.dataType.toString());
         dom.appendString("data", this.data == null ? "null" : this.data.toString());
         return dom;
     }
 
     @Override
-    public void restoreFromDOM(DOM dom) {
-        // TODO Auto-generated method stub
-        
+    public void restoreFromDOM(final DOM dom) {
+        if (isDOMValid(dom)) {
+            super.restoreFromDOM(dom);
+            //TODO data type and data if possible
+        }
     }
     
     @Override
-    public boolean isDOMValid(DOM dom) {
-        // TODO Auto-generated method stub
-        return true;
+    public boolean isDOMValid(final DOM dom) {
+        Objects.requireNonNull(dom);
+        try {
+            ok(super.isDOMValid(dom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
+            //TODO data type and data if possible
+            return true;
+        } catch (ParsingException e) {
+            e.getWarning().setAffectedElement(this).reportWarning();
+            return false;
+        }
     }
 
 }
