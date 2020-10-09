@@ -5,6 +5,7 @@ import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
@@ -100,7 +101,10 @@ public class DynamicClassLoader {
         }*/
         
         // TODO create correct module instance
-        return new MockModule(0, new ExternalConfig(className, 0));
+        if (ModelFacade.mock == null) {
+            ModelFacade.mock = new MockModule(100, new ExternalConfig(className, 0));
+        }
+        return ModelFacade.mock;
     }
     
     public static class MockModule extends FlowModule {
