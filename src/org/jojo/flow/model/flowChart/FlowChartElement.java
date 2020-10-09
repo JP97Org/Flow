@@ -9,7 +9,7 @@ import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.storeLoad.DOMable;
 
 public abstract class FlowChartElement extends Subject implements DOMable {
-    public static final FlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1);
+    public static final FlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1, new FlowChartGR());
     
     private int id;
     private final List<Warning> warnings;

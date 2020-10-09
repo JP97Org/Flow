@@ -107,6 +107,10 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     public abstract void setInternalConfig(final InternalConfig internalConfig);
     public abstract InternalConfig getInternalConfig();
     
+    public final boolean hasInternalConfig() {
+        return getInternalConfig() != null;
+    }
+    
     public final ExternalConfig getExternalConfig() {
         return this.externalConfig;
     }
@@ -194,7 +198,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         dom.setClassName(getClass().getName());
         dom.setName(getExternalConfig().getName());
         dom.setID(getId());
-        if (getInternalConfig() != null) {
+        if (hasInternalConfig()) {
             dom.setInternalConfig(getInternalConfig());
         }
         dom.setExternalConfig(getExternalConfig());

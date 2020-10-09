@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
@@ -11,26 +12,34 @@ import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
+import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.storeLoad.ParsingException;
+import org.jojo.flow.model.storeLoad.PointDOM;
+
+import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class FlowChartGR extends FlowChartElementGR {
-    private final FlowChart flowChart;
-    
     private final List<ModuleGR> modules;
     private final List<ConnectionGR> connections;
     private Point absOriginPoint;
     private boolean isRasterEnabled;
     
-    public FlowChartGR(final FlowChart flowChart) {
+    private FlowChart fc;
+    
+    public FlowChartGR() {
         super(new Point(0, 0));
-        this.flowChart = flowChart;
         this.modules = new ArrayList<>();
         this.connections = new ArrayList<>();
         this.absOriginPoint = new Point(0,0);
         this.isRasterEnabled = true;
     }
-
+    
+    protected void setFlowChart(final FlowChart fc) {
+        this.fc = fc;
+    }
+    
     public FlowChart getFlowChart() {
-        return flowChart;
+        return this.fc;
     }
     
     public void addModule(final ModuleGR moduleGR) {
@@ -153,14 +162,32 @@ public class FlowChartGR extends FlowChartElementGR {
     }
 
     @Override
-    public void restoreFromDOM(DOM dom) {
-        // TODO Auto-generated method stub
-        
+    public void restoreFromDOM(final DOM dom) {
+        if (isDOMValid(dom)) {
+            this.modules.clear();
+            this.connections.clear();
+            final Map<String, Object> domMap = dom.getDOMMap();
+            final DOM absDom = (DOM)domMap.get("absOriginPoint");
+            this.absOriginPoint = PointDOM.pointOf(absDom);
+            final DOM reDom = (DOM)domMap.get("isRasterEnabled");
+            final String reDomStr = reDom.elemGet();
+            this.isRasterEnabled = Boolean.parseBoolean(reDomStr);
+            //TODO modules and connections grs
+            notifyObservers();
+        }
     }
     
     @Override
-    public boolean isDOMValid(DOM dom) {
-        // TODO Auto-generated method stub
-        return true;
+    public boolean isDOMValid(final DOM dom) {
+        Objects.requireNonNull(dom);
+        try {
+            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID);
+            //TODO
+            
+            return true;
+        } catch (ParsingException e) {
+            e.getWarning().setAffectedElement(getFlowChart()).reportWarning();
+            return false;
+        }
     }
 }

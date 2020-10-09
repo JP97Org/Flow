@@ -9,34 +9,40 @@ import javax.swing.Icon;
 
 import org.jojo.flow.model.flowChart.FlowChartElementGR;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.DynamicClassLoader.MockModule;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
 public abstract class ModuleGR extends FlowChartElementGR {
-    private final FlowModule module;
+    private FlowModule module;
     
     private double scale;
     private boolean isIconTextAllowed;
     private String iconText;
-    private boolean hasInternalConfig;
     private int height;
     private int width;
     
     private final Point[] corners = new Point[4]; // {<^,^>,v>,<v} , i.e. clockwise, starting upper-left
     
-    public ModuleGR(final Point position, final FlowModule module, final int height,
+    public ModuleGR(final Point position, final int height,
             final int width, final String iconText) {
         super(position);
-        this.module = module;
         this.scale = 1;
         this.isIconTextAllowed = iconText != null;
         this.iconText = iconText;
-        this.hasInternalConfig = module.getInternalConfig() != null;
         this.height = height;
         this.width = width;
 
         setCorners();
+    }
+    
+    protected void setModule(final FlowModule module) {
+        this.module = module;
+    }
+    
+    public void setModuleMock(final MockModule mock) {
+        this.module = mock;
     }
     
     private void setCorners() {
@@ -114,15 +120,6 @@ public abstract class ModuleGR extends FlowChartElementGR {
         notifyObservers();
     }
     
-    public final boolean hasInternalConfig() {
-        return this.hasInternalConfig;
-    }
-    
-    public final void setHasInternalConfig(final boolean hasInternalConfig) {
-        this.hasInternalConfig = hasInternalConfig;
-        notifyObservers(hasInternalConfig);
-    }
-    
     public final boolean isIconTextAllowed() {
         return this.isIconTextAllowed;
     }
@@ -152,7 +149,6 @@ public abstract class ModuleGR extends FlowChartElementGR {
         dom.appendString("scale", "" + getScale());
         dom.appendString("isIconTextAllowed", "" + isIconTextAllowed());
         dom.appendString("iconText", "" + getIconText());
-        dom.appendString("hasInternalConfig", "" + hasInternalConfig());
         dom.appendList("corners", Arrays
                 .stream(getCorners())
                 .map(c -> PointDOM.of("corner", c))

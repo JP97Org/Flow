@@ -62,6 +62,11 @@ public class Warning {
     }
     
     @Override
+    public String toString() {
+        return (isError() ? "ERROR: " : "WARNING: ") + getDescription() + " was encountered in element with ID " + (hasAffectedElement() ? "" + getAffectedElement().getId() : "unknown element");
+    }
+    
+    @Override
     public int hashCode() {
         return this.id;
     }

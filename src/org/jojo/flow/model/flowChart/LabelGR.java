@@ -13,17 +13,17 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
     private final Subject subject;
     
     private String text;
-    private final FlowChartElement element;
+    private FlowChartElement element;
     
     private int height;
     private int width;
     
     public LabelGR(final FlowChartElement element, final String text, 
-            final Point position, final FlowChartGR flowChartGR, final int height, final int width) {
+            final Point position, final int height, final int width) {
         super(position);
         this.subject = Subject.getSubject(this);
         this.setText(text);
-        this.element = Objects.requireNonNull(element);
+        this.element = element;
         this.setHeight(height);
         this.setWidth(width);
     }
@@ -59,6 +59,10 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
 
     public FlowChartElement getElement() {
         return element;
+    }
+    
+    public void setElement(final FlowChartElement element) {
+        this.element = element;
     }
 
     public int getHeight() {

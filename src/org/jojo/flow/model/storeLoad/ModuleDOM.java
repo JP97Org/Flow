@@ -3,7 +3,6 @@ package org.jojo.flow.model.storeLoad;
 import java.util.List;
 import java.util.Objects;
 
-import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.ExternalConfig;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
@@ -18,7 +17,6 @@ public class ModuleDOM extends FlowChartElementDOM {
     public ModuleDOM() {
         super(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements().createElement(NAME));
     }
-    
 
     public void setClassName(String className) {
         appendString(NAME_CLASSNAME, className);
@@ -34,10 +32,6 @@ public class ModuleDOM extends FlowChartElementDOM {
     
     public void setExternalConfig(final ExternalConfig config) {
         appendCustomDOM(config);
-    }
-    
-    public void setGraphicalRepresentation(final GraphicalRepresentation gr) {
-        appendCustomDOM(gr);
     }
     
     public void setPins(final List<ModulePin> pins) {

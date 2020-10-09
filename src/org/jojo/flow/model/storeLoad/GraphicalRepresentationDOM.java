@@ -31,6 +31,6 @@ public class GraphicalRepresentationDOM extends DOM {
     }
     
     public void appendCustomPoint(final String name, final Point point) {
-        appendCustomDOM(PointDOM.of(Objects.requireNonNull(name), Objects.requireNonNull(point)));
+        appendCustomDOM(name, PointDOM.of(Objects.requireNonNull(name), Objects.requireNonNull(point)));
     }
 }

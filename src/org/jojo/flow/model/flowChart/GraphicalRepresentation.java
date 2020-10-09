@@ -1,6 +1,9 @@
 package org.jojo.flow.model.flowChart;
 
+import static org.jojo.flow.model.storeLoad.OK.ok;
+
 import java.awt.Point;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.swing.Icon;
@@ -9,6 +12,9 @@ import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DOMable;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
+import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.storeLoad.ParsingException;
+import org.jojo.flow.model.storeLoad.PointDOM;
 
 public abstract class GraphicalRepresentation extends Subject implements DOMable {
     private Point position;
@@ -62,8 +68,33 @@ public abstract class GraphicalRepresentation extends Subject implements DOMable
     }
     
     @Override
-    public boolean isDOMValid(DOM dom) {
-        // TODO Auto-generated method stub
-        return true;
+    public void restoreFromDOM(final DOM dom) {
+        if (isDOMValid(dom)) {
+            final Map<String, Object> domMap = dom.getDOMMap();
+            final DOM posDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME_POSITION);
+            this.position = PointDOM.pointOf(posDom);
+            //TODO icons. Height and width can be done in subclasses
+        }
+    }
+    
+    @Override
+    public boolean isDOMValid(final DOM dom) {
+        Objects.requireNonNull(dom);
+        try {
+            final Map<String, Object> domMap = dom.getDOMMap();
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM cnDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+            final String cn = cnDom.elemGet();
+            ok(cn != null, OK.ERR_MSG_NULL);
+            ok(cn.equals(getClass().getName()), OK.ERR_MSG_WRONG_CAST);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_POSITION) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM posDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME_POSITION);
+            ok(p -> PointDOM.pointOf(p), posDom);
+            //TODO icons. Height and width can be done in subclasses
+            return true;
+        } catch (ParsingException e) {
+            e.getWarning().reportWarning();
+            return false;
+        }
     }
 }

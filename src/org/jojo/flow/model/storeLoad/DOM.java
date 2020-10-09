@@ -128,6 +128,7 @@ public abstract class DOM implements DOMable {
         
         final Element elem = node.getNodeType() == Node.ELEMENT_NODE ? (Element)node : null;
         for (int i = 0; elem != null && i < node.getAttributes().getLength(); i++) {
+            //TODO evtl. nochmal ueberarbeiten, hier sind die namen nicht eindeutig!
             final Node attr = node.getAttributes().item(i);
             final String name = attr.getNodeName();
             map.put(name, elem.getAttribute(name));

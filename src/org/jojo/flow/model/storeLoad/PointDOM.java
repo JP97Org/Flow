@@ -22,8 +22,16 @@ public class PointDOM extends DOM {
         final Element parent = doc.createElement(NAME);
         parent.setAttribute(NAME_NAME, Objects.requireNonNull(name));
         final PointDOM ret = new PointDOM(doc, parent);
+        ret.appendString(NAME_NAME, name);
         ret.appendInt(NAME_X, point.x);
         ret.appendInt(NAME_Y, point.y);
         return ret;
+    }
+
+    public static Point pointOf(final DOM pointDomArg) {
+        final DOM pointDom = (DOM)pointDomArg.getDOMMap().get(NAME);
+        final int x = Integer.parseInt(((DOM)pointDom.getDOMMap().get(NAME_X)).elemGet());
+        final int y = Integer.parseInt(((DOM)pointDom.getDOMMap().get(NAME_Y)).elemGet());
+        return new Point(x, y);
     }
 }
