@@ -3,6 +3,7 @@ package org.jojo.flow.model.storeLoad;
 import java.util.function.Function;
 
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.flowChart.FlowChartElement;
 
 public final class OK {
     public static final String ERR_MSG_WRONG_CAST = "a class cast exc would occur";
@@ -19,6 +20,13 @@ public final class OK {
             return isOk;
         }
         throw new ParsingException(new Warning(null, errMsg, true));
+    }
+    
+    public static boolean ok(final boolean isOk, final String errMsg, final FlowChartElement affectedElem) throws ParsingException {
+        if (isOk) {
+            return isOk;
+        }
+        throw new ParsingException(new Warning(affectedElem, errMsg, true));
     }
     
     public static <A,B> B ok(final Function<A,B> fct, final A input) throws ParsingException {
