@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 
 public abstract class ConnectionGR extends FlowChartElementGR {
-    private final ModulePinGR fromPin;
+    private ModulePinGR fromPin;
     private final List<OneConnectionGR> connections;
     
     public ConnectionGR(final ModulePinGR fromPin, final ModulePinGR toPin) { 
@@ -24,6 +24,13 @@ public abstract class ConnectionGR extends FlowChartElementGR {
     
     public abstract void addToPin(final Point diversionPoint, final ModulePinGR toPin);
     
+    protected boolean isAddable(final OneConnectionGR connection) {
+        if (connection == null || !connection.getFromPin().equals(this.fromPin)) {
+            return false;
+        }
+        return true;
+    }
+    
     protected void addConnection(final OneConnectionGR connection) {
         Objects.requireNonNull(connection);
         if (!connection.getFromPin().equals(this.fromPin)) {
@@ -31,6 +38,14 @@ public abstract class ConnectionGR extends FlowChartElementGR {
         }
         this.connections.add(connection);
         notifyObservers(connection);
+    }
+    
+    protected void setFromPin(final ModulePinGR fromPin) {
+        this.fromPin = fromPin;
+    }
+    
+    protected void deleteAllConnections() {
+        this.connections.clear();
     }
     
     public boolean removeToPin(final ModulePinGR toPin) {

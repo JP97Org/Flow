@@ -54,6 +54,10 @@ public class DynamicClassLoader {
     }
     
     public static GraphicalRepresentation loadGR(final String className) {
+        return loadGR(className, true);
+    }
+    
+    public static GraphicalRepresentation loadGR(final String className, final boolean hasStdPin) {
         final String mmc = MockModuleGR.class.getName();
         if (className.equals(mmc)) {
             return new MockModuleGR(new Point(0,0), 10, 10, "Mock"); //TODO mock noch durch echte ModGR erstellung korrigieren
@@ -64,7 +68,11 @@ public class DynamicClassLoader {
         } else if (className.equals(ConnectionLineGR.class.getName())) {
             return new ConnectionLineGR(new Point(0,0), new Point(0,1));
         } else if (className.equals(OneConnectionGR.class.getName())) {
-            return new OneConnectionGR(new RigidPinGR(new Point(0,0), "", 1, 1), new RigidPinGR(new Point(0,1), "", 1, 1));
+            if (hasStdPin) {
+                return new OneConnectionGR(new StdOutputPinGR(new Point(0,0), "", 1, 1), new StdInputPinGR(new Point(0,1), "", 1, 1));
+            } else {
+                return new OneConnectionGR(new RigidPinGR(new Point(0,0), "", 1, 1), new RigidPinGR(new Point(0,1), "", 1, 1));
+            }
         } else if (className.equals(RigidConnectionGR.class.getName())) {
             return new RigidConnectionGR(new RigidPinGR(new Point(0,0), "", 1, 1), new RigidPinGR(new Point(0,1), "", 1, 1));
         } else if (className.equals(StdArrowGR.class.getName())) {

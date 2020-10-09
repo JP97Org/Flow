@@ -29,7 +29,8 @@ public class PointDOM extends DOM {
     }
 
     public static Point pointOf(final DOM pointDomArg) {
-        final DOM pointDom = (DOM)pointDomArg.getDOMMap().get(NAME);
+        DOM pointDom = (DOM)pointDomArg.getDOMMap().get(NAME);
+        pointDom = pointDom == null ? pointDomArg : pointDom;
         final int x = Integer.parseInt(((DOM)pointDom.getDOMMap().get(NAME_X)).elemGet());
         final int y = Integer.parseInt(((DOM)pointDom.getDOMMap().get(NAME_Y)).elemGet());
         return new Point(x, y);
