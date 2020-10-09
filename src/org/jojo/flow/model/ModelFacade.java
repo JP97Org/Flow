@@ -14,4 +14,9 @@ public class ModelFacade {
         //TODO
         return flowChart; //TODO
     }
+
+    public FlowChart getFlowChart() {
+        //TODO
+        return flowChart; //TODO
+    }
 }
