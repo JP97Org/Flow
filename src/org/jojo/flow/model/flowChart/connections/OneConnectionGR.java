@@ -5,20 +5,26 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.DynamicClassLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
+import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
 import static org.jojo.flow.model.flowChart.connections.ConnectionLineGR.isLine;
+import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class OneConnectionGR extends GraphicalRepresentation {
-    private final ModulePinGR fromPin; // output pin
+    private ModulePinGR fromPin; // output pin
     private ModulePinGR toPin; // input pin
     
     private final List<ConnectionLineGR> lines;
@@ -133,14 +139,97 @@ public class OneConnectionGR extends GraphicalRepresentation {
     }
 
     @Override
-    public void restoreFromDOM(DOM dom) {
-        // TODO Auto-generated method stub
-        
+    public void restoreFromDOM(final DOM dom) {
+        if (isDOMValid(dom)) {
+            super.restoreFromDOM(dom);
+            this.lines.clear();
+            this.diversionPoints.clear();
+            final Map<String, Object> domMap = dom.getDOMMap();
+            final DOM fromPinDom = (DOM)domMap.get("fromPin");
+            final DOM cnDomFrom = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+            final String cnFrom = cnDomFrom.elemGet();
+            this.fromPin = (ModulePinGR) DynamicClassLoader.loadGR(cnFrom);
+            this.fromPin.restoreFromDOM(fromPinDom);
+            final DOM toPinDom = (DOM)domMap.get("toPin");
+            final DOM cnDomTo = (DOM) toPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+            final String cnTo = cnDomTo.elemGet();
+            this.toPin = (ModulePinGR) DynamicClassLoader.loadGR(cnTo);
+            this.toPin.restoreFromDOM(toPinDom);
+            final DOM connectionsDom = (DOM)domMap.get("lines");
+            final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
+            for (final var lineObj : connectionsMap.values()) {
+                final DOM lineDom = (DOM) lineObj;
+                final DOM cnDom = (DOM) (lineDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME));
+                final String lineToLoad = cnDom.elemGet();
+                final ConnectionLineGR line = (ConnectionLineGR) DynamicClassLoader.loadGR(lineToLoad);
+                line.restoreFromDOM(lineDom);
+                this.lines.add(line);
+            }
+            final DOM pointsDom = (DOM)domMap.get("diversionPoints");
+            final Map<String, Object> pointsMap = pointsDom.getDOMMap();
+            for (final var pointObj : pointsMap.values()) {
+                final DOM pointDom = (DOM) pointObj;
+                this.diversionPoints.add(PointDOM.pointOf(pointDom));
+            }
+            final DOM colorDom = (DOM)domMap.get("color");
+            final String rgbStr = colorDom.elemGet();
+            this.color = Color.getColor(rgbStr, Color.BLACK);
+            notifyObservers();
+        }
     }
     
     @Override
-    public boolean isDOMValid(DOM dom) {
-        // TODO Auto-generated method stub
-        return true;
+    public boolean isDOMValid(final DOM dom) {
+        Objects.requireNonNull(dom);
+        try {
+            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getFlowChart());
+            final Map<String, Object> domMap = dom.getDOMMap();
+            ok(domMap.get("fromPin") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM fromPinDom = (DOM)domMap.get("fromPin");
+            ok(fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM cnDomFrom = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+            final String cnFrom = cnDomFrom.elemGet();
+            ok(cnFrom != null, OK.ERR_MSG_NULL);
+            final ModulePinGR fromPin = ok(c -> (ModulePinGR) DynamicClassLoader.loadGR(c), cnFrom);
+            ok(fromPin.isDOMValid(fromPinDom), "FromPin " + OK.ERR_MSG_DOM_NOT_VALID);
+            ok(domMap.get("toPin") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM toPinDom = (DOM)domMap.get("toPin");
+            ok(toPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM cnDomTo = (DOM) toPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+            final String cnTo = cnDomTo.elemGet();
+            ok(cnTo != null, OK.ERR_MSG_NULL);
+            final ModulePinGR toPin = ok(c -> (ModulePinGR) DynamicClassLoader.loadGR(c), cnTo);
+            ok(toPin.isDOMValid(toPinDom), "ToPin " + OK.ERR_MSG_DOM_NOT_VALID);
+            ok(domMap.get("lines") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM connectionsDom = (DOM)domMap.get("lines");
+            final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
+            for (final var lineObj : connectionsMap.values()) {
+                ok(lineObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                final DOM lineDom = (DOM) lineObj;
+                ok(lineDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                final DOM cnDom = (DOM) (lineDom.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME));
+                final String lineToLoad = cnDom.elemGet();
+                ok(lineToLoad != null, OK.ERR_MSG_NULL);
+                final ConnectionLineGR line = ok(l -> (ConnectionLineGR) DynamicClassLoader.loadGR(l), lineToLoad);
+                ok(line.isDOMValid(lineDom), "Line " + OK.ERR_MSG_DOM_NOT_VALID);
+            }
+            ok(domMap.get("diversionPoints") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM pointsDom = (DOM)domMap.get("diversionPoints");
+            final Map<String, Object> pointsMap = pointsDom.getDOMMap();
+            for (final var pointObj : pointsMap.values()) {
+                ok(pointObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                final DOM pointDom = (DOM) pointObj;
+                ok(d -> PointDOM.pointOf(d), pointDom);
+            }
+            ok(domMap.get("color") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM colorDom = (DOM)domMap.get("color");
+            final String rgbStr = colorDom.elemGet();
+            ok(rgbStr != null, OK.ERR_MSG_NULL);
+            ok(s -> Color.getColor(rgbStr, Color.BLACK), rgbStr);
+            return true;
+        } catch (ParsingException e) {
+            e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning();
+            return false;
+        }
     }
 }

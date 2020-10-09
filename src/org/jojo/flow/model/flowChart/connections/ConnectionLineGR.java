@@ -80,6 +80,7 @@ public class ConnectionLineGR extends GraphicalRepresentation {
             final Map<String, Object> domMap = dom.getDOMMap();
             final DOM posBDom = (DOM)domMap.get("positionB");
             this.positionB = PointDOM.pointOf(posBDom);
+            notifyObservers();
         }
     }
 
