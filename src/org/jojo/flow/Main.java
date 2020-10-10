@@ -17,8 +17,11 @@ public class Main {
         System.out.println(flowChart.isDOMValid(dom));
         flowChart.restoreFromDOM(dom);
         System.out.println(flowChart.getWarnings());
+        System.out.println(ModelFacade.mock.getWarnings());
+        /*
         flowChart.restoreFromDOM(new DOM(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements()) {});
         System.out.println(flowChart.isDOMValid(new DOM(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements()) {}));
         System.out.println(flowChart.getWarnings());
+        */
     }
 }

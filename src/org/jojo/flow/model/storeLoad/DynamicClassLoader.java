@@ -1,9 +1,13 @@
 package org.jojo.flow.model.storeLoad;
 
+import static org.jojo.flow.model.storeLoad.OK.ok;
+
 import java.awt.Point;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.data.Data;
@@ -11,6 +15,7 @@ import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
 import org.jojo.flow.model.data.Unit;
 import org.jojo.flow.model.data.UnitSignature;
+import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.LabelGR;
@@ -37,6 +42,19 @@ import org.jojo.flow.model.flowChart.modules.StdPin;
 public class DynamicClassLoader {
     private DynamicClassLoader() {
         
+    }
+    
+    public static FlowChart loadEmptyFlowChart(final int id) {
+        return new FlowChart(id, new FlowChartGR());
+    }
+    
+    public static FlowChart loadFlowChartFromDOM(final DOM flowChartDOM) {
+        return restoreFlowChartFromDOM(loadEmptyFlowChart(0), flowChartDOM);
+    }
+    
+    public static FlowChart restoreFlowChartFromDOM(final FlowChart flowChart, final DOM flowChartDOM) {
+        Objects.requireNonNull(flowChart).restoreFromDOM(flowChartDOM);
+        return flowChart;
     }
     
     public static Connection loadConnection(final String className) {
@@ -157,15 +175,47 @@ public class DynamicClassLoader {
         }
 
         @Override
-        protected void setAllModulePins(DOM pinsDom) {
-            // TODO Auto-generated method stub
-            
+        protected void setAllModulePins(final DOM pinsDom) {
+            if (isPinsDOMValid(pinsDom)) {
+                final Map<String, Object> domMap = pinsDom.getDOMMap();
+                int i = 0;
+                for(var pinObj : domMap.values()) {
+                    final DOM pinDom = (DOM) pinObj;
+                    final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
+                    final String pinCn = pinCnDom.elemGet();
+                    final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
+                    final String pinCnImp = pinCnDomImp.elemGet();
+                    this.pin = loadPin(pinCn, pinCnImp);
+                    this.pin.restoreFromDOM(pinDom);
+                    i++;
+                }
+                assert (i == 1);
+            }
         }
 
         @Override
-        protected boolean isPinsDOMValid(DOM pinsDom) {
-            // TODO Auto-generated method stub
-            return true;
+        protected boolean isPinsDOMValid(final DOM pinsDom) {
+            Objects.requireNonNull(pinsDom);
+            final Map<String, Object> domMap = pinsDom.getDOMMap();
+            try {
+                int i = 0;
+                for(var pinObj : domMap.values()) {
+                    ok(pinObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                    final DOM pinDom = (DOM) pinObj;
+                    final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
+                    final String pinCn = pinCnDom.elemGet();
+                    final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
+                    final String pinCnImp = pinCnDomImp.elemGet();
+                    this.pin = loadPin(pinCn, pinCnImp);
+                    this.pin.restoreFromDOM(pinDom);
+                    i++;
+                }
+                ok(i == 1, "to many or not enough pins should= 1, is = " + i);
+                return true;
+            } catch (ParsingException e) {
+                e.getWarning().setAffectedElement(this).reportWarning();
+                return false;
+            }
         }
 
         @Override

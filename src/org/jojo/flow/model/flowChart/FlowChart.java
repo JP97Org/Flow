@@ -1,6 +1,7 @@
 package org.jojo.flow.model.flowChart;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,11 +15,15 @@ import java.util.stream.Collectors;
 
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.flowChart.connections.Connection;
+import org.jojo.flow.model.flowChart.connections.ConnectionException;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
+import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
+import org.jojo.flow.model.flowChart.modules.ModulePin;
+import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicClassLoader;
@@ -271,6 +276,52 @@ public class FlowChart extends FlowChartElement{
         return ret;
     }
 
+    private void removeDuplicatePins() {
+        final Map<ModulePin, FlowModule> modulePins = new HashMap<>();
+        this.modules.stream()
+            .map(m -> m.getAllModulePins())
+            .flatMap(l -> l.stream())
+            .collect(Collectors.toList())
+            .forEach(p -> modulePins.put(p, p.getModule()));
+        final Map<ModulePin, List<Connection>> connectionPins = new HashMap<>();
+        final List<ModulePin> list = new ArrayList<>(Arrays.asList(this.connections.stream()
+                                        .map(c -> c.getToPins())
+                                        .flatMap(l -> l.stream())
+                                        .toArray(ModulePin[]::new)));
+        list.addAll(this.connections.stream()
+                    .map(c -> c.getFromPin())
+                    .collect(Collectors.toList()));
+        list.forEach(p -> connectionPins.put(p, p.getConnections()));
+        
+        for (final ModulePin pin : modulePins.keySet()) {
+            final FlowModule module = modulePins.get(pin);
+            assert module != null;
+            if (connectionPins.containsKey(pin)) {
+                final List<Connection> connections = connectionPins.get(pin);
+                for (final Connection connection : connections) {
+                    if (pin instanceof InputPin) {
+                        final InputPin inPin = (InputPin)pin;
+                        connection.removeToPin(inPin);
+                        try {
+                            connection.addToPin(inPin);
+                        } catch (ConnectionException e) {
+                            // should not happen
+                            e.printStackTrace();
+                        }
+                    } else { // pin is OutputPin
+                        final OutputPin outPin = (OutputPin)pin;
+                        try {
+                            connection.setFromPin(outPin);
+                        } catch (ConnectionException e) {
+                            // should not happen
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void restoreFromDOM(final DOM dom) {
         if (isDOMValid(dom)) {
@@ -303,6 +354,7 @@ public class FlowChart extends FlowChartElement{
             }
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
             this.gr.restoreFromDOM(grDom);
+            removeDuplicatePins();
             notifyObservers();
         }
     }

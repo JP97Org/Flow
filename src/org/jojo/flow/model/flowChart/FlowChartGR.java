@@ -176,16 +176,6 @@ public class FlowChartGR extends FlowChartElementGR {
             final DOM reDom = (DOM)domMap.get("isRasterEnabled");
             final String reDomStr = reDom.elemGet();
             this.isRasterEnabled = Boolean.parseBoolean(reDomStr);
-            final DOM modulesDom = (DOM)domMap.get(FlowChartDOM.NAME_MODULES);
-            final Map<String, Object> modulesMap = modulesDom.getDOMMap();
-            for (final var modObj : modulesMap.values()) {
-                final DOM modDom = (DOM) modObj;
-                final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
-                final String moduleToLoad = cnDom.elemGet();
-                final GraphicalRepresentation module = DynamicClassLoader.loadGR(moduleToLoad);
-                module.restoreFromDOM(modDom);
-                this.modules.add((ModuleGR) module);
-            }
             final DOM connectionsDom = (DOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS);
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
@@ -195,6 +185,16 @@ public class FlowChartGR extends FlowChartElementGR {
                 final GraphicalRepresentation connection = DynamicClassLoader.loadGR(conToLoad);
                 connection.restoreFromDOM(conDom);
                 this.connections.add((ConnectionGR) connection);
+            }
+            final DOM modulesDom = (DOM)domMap.get(FlowChartDOM.NAME_MODULES);
+            final Map<String, Object> modulesMap = modulesDom.getDOMMap();
+            for (final var modObj : modulesMap.values()) {
+                final DOM modDom = (DOM) modObj;
+                final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
+                final String moduleToLoad = cnDom.elemGet();
+                final GraphicalRepresentation module = DynamicClassLoader.loadGR(moduleToLoad);
+                module.restoreFromDOM(modDom);
+                this.modules.add((ModuleGR) module);
             }
             notifyObservers();
         }
@@ -214,6 +214,18 @@ public class FlowChartGR extends FlowChartElementGR {
             final String reDomStr = reDom.elemGet();
             ok(reDomStr != null, OK.ERR_MSG_NULL);
             ok(s -> Boolean.parseBoolean(s), reDomStr);
+            final DOM connectionsDom = (DOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS);
+            final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
+            for (final var conObj : connectionsMap.values()) {
+                ok(conObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                final DOM conDom = (DOM) conObj;
+                ok(conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                final String conToLoad = cnDom.elemGet();
+                ok(conToLoad != null, OK.ERR_MSG_NULL);
+                final ConnectionGR connection = ok(c -> (ConnectionGR)DynamicClassLoader.loadGR(c), conToLoad);
+                ok(connection.isDOMValid(conDom), "ConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
+            }
             ok(domMap.get(FlowChartDOM.NAME_MODULES) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM modulesDom = (DOM)domMap.get(FlowChartDOM.NAME_MODULES);
             final Map<String, Object> modulesMap = modulesDom.getDOMMap();
@@ -227,19 +239,6 @@ public class FlowChartGR extends FlowChartElementGR {
                 final ModuleGR module = ok(m -> (ModuleGR)DynamicClassLoader.loadGR(m), moduleToLoad);
                 ok(module.isDOMValid(modDom), "ModuleGR " + OK.ERR_MSG_DOM_NOT_VALID);
             }
-            final DOM connectionsDom = (DOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS);
-            final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
-            for (final var conObj : connectionsMap.values()) {
-                ok(conObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM conDom = (DOM) conObj;
-                ok(conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
-                final String conToLoad = cnDom.elemGet();
-                ok(conToLoad != null, OK.ERR_MSG_NULL);
-                final ConnectionGR connection = ok(c -> (ConnectionGR)DynamicClassLoader.loadGR(c), conToLoad);
-                ok(connection.isDOMValid(conDom), "ConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
-            }
-            
             return true;
         } catch (ParsingException e) {
             e.getWarning().setAffectedElement(getFlowChart()).reportWarning();
