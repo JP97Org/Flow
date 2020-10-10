@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
+import org.jojo.flow.model.flowChart.modules.ModulePinImp;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -53,6 +55,15 @@ public abstract class Connection extends FlowChartElement {
     
     public synchronized List<InputPin> getToPins() {
         return new ArrayList<>(this.toPins);
+    }
+    
+    public boolean isPinImpInConnection(final ModulePinImp modulePinImp) {
+        final List<ModulePin> allPins = getToPins()
+                .stream()
+                .map(x -> (ModulePin)x)
+                .collect(Collectors.toList());
+        allPins.add(getFromPin());
+        return allPins.stream().anyMatch(p -> p.getModulePinImp().equals(modulePinImp));
     }
     
     public synchronized boolean addToPin(final InputPin toPin) throws ConnectionException {

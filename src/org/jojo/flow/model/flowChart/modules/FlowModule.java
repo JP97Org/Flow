@@ -1,7 +1,11 @@
 package org.jojo.flow.model.flowChart.modules;
 
+import static org.jojo.flow.model.storeLoad.OK.ok;
+
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,8 +20,12 @@ import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
+import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
+import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.storeLoad.ParsingException;
 
 public abstract class FlowModule extends FlowChartElement implements Comparable<FlowModule>, IObserver {
     private final ExternalConfig externalConfig;
@@ -39,6 +47,9 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     }
     
     public abstract List<ModulePin> getAllModulePins();
+    protected abstract void setAllModulePins(DOM pinsDom);
+    protected abstract boolean isPinsDOMValid(DOM pinsDom);
+    
     public abstract Unit<Fraction> getFrequency();
     public abstract void run() throws Exception;
     
@@ -104,7 +115,8 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         }
     }
 
-    public abstract void setInternalConfig(final InternalConfig internalConfig);
+    public abstract void setInternalConfig(final DOM internalConfigDOM);
+    public abstract boolean isInternalConfigDOMValid(final DOM internalConfigDOM);
     public abstract InternalConfig getInternalConfig();
     
     public final boolean hasInternalConfig() {
@@ -209,12 +221,50 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     
     @Override
     public void restoreFromDOM(final DOM dom) {
-        //TODO
+        if (isDOMValid(dom)) {
+            final Map<String, Object> domMap = dom.getDOMMap();
+            final DOM idDom = (DOM)domMap.get(ModuleDOM.NAME_ID);
+            setId(Integer.parseInt(idDom.elemGet()));
+            if (domMap.containsKey(ConfigDOM.NAME_INT_CONFIG)) {
+                final DOM intDom = (DOM)domMap.get(ConfigDOM.NAME_INT_CONFIG);
+                setInternalConfig(intDom);
+            }
+            final DOM extDom = (DOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG);
+            this.externalConfig.restoreFromDOM(extDom);
+            final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            getGraphicalRepresentation().restoreFromDOM(grDom);
+            final DOM pinsDom = (DOM)domMap.get(ModuleDOM.NAME_PINS);
+            setAllModulePins(pinsDom);
+            notifyObservers();
+        }
     }
     
     @Override
     public boolean isDOMValid(DOM dom) {
-        // TODO Auto-generated method stub
-        return true;
+        Objects.requireNonNull(dom);
+        final Map<String, Object> domMap = dom.getDOMMap();
+        try {
+            ok(domMap.get(ModuleDOM.NAME_ID) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM idDom = (DOM)domMap.get(ModuleDOM.NAME_ID);
+            ok(x -> Integer.parseInt(idDom.elemGet()), "");
+            if (domMap.containsKey(ConfigDOM.NAME_INT_CONFIG)) {
+                ok(domMap.get(ConfigDOM.NAME_INT_CONFIG) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                final DOM intDom = (DOM)domMap.get(ConfigDOM.NAME_INT_CONFIG);
+                ok(isInternalConfigDOMValid(intDom), "Int.Config " + OK.ERR_MSG_DOM_NOT_VALID);
+            }
+            ok((DOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM extDom = (DOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG);
+            this.externalConfig.isDOMValid(extDom);
+            ok((DOM)domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            getGraphicalRepresentation().isDOMValid(grDom);
+            ok((DOM)domMap.get(ModuleDOM.NAME_PINS) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM pinsDom = (DOM)domMap.get(ModuleDOM.NAME_PINS);
+            ok(isPinsDOMValid(pinsDom), "Pins " + OK.ERR_MSG_DOM_NOT_VALID);
+            return true;
+        } catch (ParsingException e) {
+            e.getWarning().setAffectedElement(this).reportWarning();
+            return false;
+        }
     }
 }

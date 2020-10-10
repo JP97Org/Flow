@@ -33,4 +33,8 @@ public class StdPin extends ModulePinImp {
             throw new FlowException(new DataTypeIncompatException("data signature to be set and the already set one do not match"), getModule());
         }
     }
+    
+    protected void forceSetCheckDataSignature(final DataSignature newCheckDataSignature) {
+        this.checkDataSignature = newCheckDataSignature;
+    }
 }

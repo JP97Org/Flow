@@ -132,14 +132,18 @@ public class DynamicClassLoader {
     }
     
     public static class MockModule extends FlowModule {
+        private ModulePin pin;
+        
         public MockModule(int id, ExternalConfig externalConfig) {
             super(id, externalConfig);
-            // TODO Auto-generated constructor stub
         }
         
         @Override
         public List<ModulePin> getAllModulePins() {
-            return new ArrayList<>();
+            final List<ModulePin> ret = new ArrayList<>();
+            this.pin = this.pin == null ? loadPin(OutputPin.class.getName(), StdPin.class.getName()) : this.pin;
+            ret.add(this.pin);
+            return ret;
         }
 
         @Override
@@ -153,14 +157,33 @@ public class DynamicClassLoader {
         }
 
         @Override
-        public void setInternalConfig(InternalConfig internalConfig) {
+        protected void setAllModulePins(DOM pinsDom) {
+            // TODO Auto-generated method stub
+            
+        }
 
+        @Override
+        protected boolean isPinsDOMValid(DOM pinsDom) {
+            // TODO Auto-generated method stub
+            return true;
         }
 
         @Override
         public InternalConfig getInternalConfig() {
             return null;
         }
+        
+        @Override
+        public void setInternalConfig(DOM internalConfigDOM) {
+            // TODO Auto-generated method stub
+            
+        }
+        
+        @Override
+        public boolean isInternalConfigDOMValid(DOM internalConfigDOM) {
+            // TODO Auto-generated method stub
+            return true;
+        } 
 
         @Override
         public GraphicalRepresentation getGraphicalRepresentation() {
@@ -187,7 +210,7 @@ public class DynamicClassLoader {
         @Override
         public void restoreSerializedSimulationState(String simulationState) {
             
-        } 
+        }
     }
     
     public static class MockModuleGR extends ModuleGR {

@@ -1,13 +1,21 @@
 package org.jojo.flow.model.flowChart.modules;
 
+import static org.jojo.flow.model.storeLoad.OK.ok;
+
+import java.util.Map;
+import java.util.Objects;
+
+import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DOMable;
+import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.storeLoad.ParsingException;
 
 public class ExternalConfig extends Subject implements Comparable<ExternalConfig>, DOMable {
-    private final String name;
+    private String name;
     private int priority;
     
     public ExternalConfig(final String name, final int priority) {
@@ -62,14 +70,29 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
     }
 
     @Override
-    public void restoreFromDOM(DOM dom) {
-        // TODO Auto-generated method stub
-        
+    public void restoreFromDOM(final DOM dom) {
+        final Map<String, Object> domMap = dom.getDOMMap();
+        final DOM nameDom = (DOM)domMap.get(ConfigDOM.NAME_NAME);
+        this.name = nameDom.elemGet();
+        final DOM priorityDom = (DOM)domMap.get(ConfigDOM.NAME_PRIORITY);
+        this.priority = Integer.parseInt(priorityDom.elemGet());
+        notifyObservers();
     }
     
     @Override
-    public boolean isDOMValid(DOM dom) {
-        // TODO Auto-generated method stub
-        return true;
+    public boolean isDOMValid(final DOM dom) {
+        Objects.requireNonNull(dom);
+        final Map<String, Object> domMap = dom.getDOMMap();
+        try {
+            ok(domMap.get(ConfigDOM.NAME_NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM nameDom = (DOM)domMap.get(ConfigDOM.NAME_NAME);
+            ok(nameDom.elemGet() != null, OK.ERR_MSG_NULL);
+            final DOM priorityDom = (DOM)domMap.get(ConfigDOM.NAME_PRIORITY);
+            ok(x -> Integer.parseInt(priorityDom.elemGet()), "");
+            return true;
+        } catch (ParsingException e) {
+            e.getWarning().setAffectedElement(new ModelFacade().getFlowChart()).reportWarning(); //TODO affect module
+            return false;
+        }
     }
 }

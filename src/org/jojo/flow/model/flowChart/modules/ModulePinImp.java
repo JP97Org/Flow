@@ -8,7 +8,7 @@ import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.connections.Connection;
 
 public abstract class ModulePinImp {
-    private final FlowModule module;
+    private FlowModule module;
     private final List<Connection> connections;
     private Data defaultData;
     
@@ -22,12 +22,20 @@ public abstract class ModulePinImp {
         return this.module;
     }
     
+    protected void setModule(FlowModule module) {
+        this.module = module;
+    }
+    
     public synchronized List<Connection> getConnections() {
         return new ArrayList<>(this.connections);
     }
     
-    public synchronized void addConnection(final Connection toAdd)  {
-        this.connections.add(toAdd); //TODO check whether pin is in connection
+    public synchronized boolean addConnection(final Connection toAdd)  {
+        final boolean ret = toAdd.isPinImpInConnection(this);
+        if (ret) {
+            this.connections.add(toAdd); //TODO check whether pin is in connection
+        }
+        return ret;
     }
     
     public synchronized boolean removeConnection(final Connection toRemove) {
@@ -51,4 +59,22 @@ public abstract class ModulePinImp {
         this.defaultData = defaultData;
     }
     
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.module);
+    }
+    
+    @Override
+    public boolean equals(final Object other) {
+        if (other instanceof ModulePinImp) {
+            final ModulePinImp otherM = (ModulePinImp)other;
+            if (this.module == null && otherM.module == null) {
+                return true;
+            } else if (this.module == null || otherM.module == null) {
+                return false;
+            }
+            return this.module.equals(otherM.module);
+        }
+        return false;
+    }
 }
