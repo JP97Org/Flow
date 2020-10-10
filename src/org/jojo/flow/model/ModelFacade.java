@@ -2,7 +2,7 @@ package org.jojo.flow.model;
 
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartElement;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader.MockModule;
+import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
 
 public class ModelFacade {
     public static FlowChart flowChart; //TODO

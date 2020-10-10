@@ -14,7 +14,7 @@ import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
+import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
@@ -149,13 +149,13 @@ public class OneConnectionGR extends GraphicalRepresentation {
             final DOM fromPinDomGr = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
             final DOM cnDomFrom = (DOM) fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnFrom = cnDomFrom.elemGet();
-            this.fromPin = (ModulePinGR) DynamicClassLoader.loadGR(cnFrom);
+            this.fromPin = (ModulePinGR) DynamicObjectLoader.loadGR(cnFrom);
             this.fromPin.restoreFromDOM(fromPinDom);
             final DOM toPinDom = (DOM)domMap.get("toPin");
             final DOM toPinDomGr = (DOM) toPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
             final DOM cnDomTo = (DOM) toPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnTo = cnDomTo.elemGet();
-            this.toPin = (ModulePinGR) DynamicClassLoader.loadGR(cnTo);
+            this.toPin = (ModulePinGR) DynamicObjectLoader.loadGR(cnTo);
             this.toPin.restoreFromDOM(toPinDom);
             final DOM connectionsDom = (DOM)domMap.get("lines");
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
@@ -163,7 +163,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
                 final DOM lineDomGr = (DOM) lineObj;
                 final DOM cnDom = (DOM) lineDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
                 final String lineToLoad = cnDom.elemGet();
-                final ConnectionLineGR line = (ConnectionLineGR) DynamicClassLoader.loadGR(lineToLoad);
+                final ConnectionLineGR line = (ConnectionLineGR) DynamicObjectLoader.loadGR(lineToLoad);
                 line.restoreFromDOM(lineDomGr);
                 this.lines.add(line);
             }
@@ -194,7 +194,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
             final DOM cnDomFrom = (DOM) fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnFrom = cnDomFrom.elemGet();
             ok(cnFrom != null, OK.ERR_MSG_NULL);
-            final ModulePinGR fromPin = ok(c -> (ModulePinGR) DynamicClassLoader.loadGR(c), cnFrom);
+            final ModulePinGR fromPin = ok(c -> (ModulePinGR) DynamicObjectLoader.loadGR(c), cnFrom);
             ok(fromPin.isDOMValid(fromPinDom), "FromPin " + OK.ERR_MSG_DOM_NOT_VALID);
             ok(domMap.get("toPin") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM toPinDom = (DOM)domMap.get("toPin");
@@ -204,7 +204,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
             final DOM cnDomTo = (DOM) toPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnTo = cnDomTo.elemGet();
             ok(cnTo != null, OK.ERR_MSG_NULL);
-            final ModulePinGR toPin = ok(c -> (ModulePinGR) DynamicClassLoader.loadGR(c), cnTo);
+            final ModulePinGR toPin = ok(c -> (ModulePinGR) DynamicObjectLoader.loadGR(c), cnTo);
             ok(toPin.isDOMValid(toPinDom), "ToPin " + OK.ERR_MSG_DOM_NOT_VALID);
             ok(domMap.get("lines") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM connectionsDom = (DOM)domMap.get("lines");
@@ -216,7 +216,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
                 final DOM cnDom = (DOM) lineDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
                 final String lineToLoad = cnDom.elemGet();
                 ok(lineToLoad != null, OK.ERR_MSG_NULL);
-                final ConnectionLineGR line = ok(l -> (ConnectionLineGR) DynamicClassLoader.loadGR(l), lineToLoad);
+                final ConnectionLineGR line = ok(l -> (ConnectionLineGR) DynamicObjectLoader.loadGR(l), lineToLoad);
                 ok(line.isDOMValid(lineDomGr), "Line " + OK.ERR_MSG_DOM_NOT_VALID);
             }
             ok(domMap.get("diversionPoints") instanceof DOM, OK.ERR_MSG_WRONG_CAST);

@@ -4,12 +4,14 @@ import static org.jojo.flow.model.storeLoad.OK.ok;
 
 import java.awt.Point;
 import java.awt.Window;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
@@ -39,8 +41,8 @@ import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
 import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
 import org.jojo.flow.model.flowChart.modules.StdPin;
 
-public class DynamicClassLoader {
-    private DynamicClassLoader() {
+public class DynamicObjectLoader {
+    private DynamicObjectLoader() {
         
     }
     
@@ -62,9 +64,9 @@ public class DynamicClassLoader {
         try {
             Data data = new StringDataSet(className);
             return new StdArrow(1000, //TODO remove this mock arrow
-                    new OutputPin(new StdPin(loadModule(""), data ), 
+                    new OutputPin(new StdPin(loadModule(MockModule.class.getName()), data ), 
                             new StdOutputPinGR(new Point(0,0), className, 10, 10)), 
-                    new InputPin(new StdPin(loadModule(""), data), 
+                    new InputPin(new StdPin(loadModule(MockModule.class.getName()), data), 
                             new StdInputPinGR(new Point(0,10), className, 10, 10)), className);
         } catch (ConnectionException e) {
             // TODO Auto-generated catch block
@@ -134,19 +136,24 @@ public class DynamicClassLoader {
     }
     
     public static FlowModule loadModule(final String className) {
-        /*try {
+        try {
             final Class<?> moduleToLoadClass = Class.forName(className);
-            //TODO implement
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }*/
-        
-        // TODO create correct module instance
-        if (ModelFacade.mock == null) {
-            ModelFacade.mock = new MockModule(100, new ExternalConfig(className, 0));
+            final var constr = moduleToLoadClass.getConstructor(int.class, ExternalConfig.class);
+            final Object modObj = constr.newInstance(0, new ExternalConfig("NAME", 0));
+            final FlowModule ret = (FlowModule)modObj;
+            
+            // TODO remove this if clause, it is only for debugging
+            if (ModelFacade.mock == null) {
+                ModelFacade.mock = (MockModule) ret;
+            }
+            
+            return ret;
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | 
+                InstantiationException | IllegalAccessException | IllegalArgumentException | 
+                InvocationTargetException e) {
+            new Warning(null, e.toString(), true).reportWarning();
         }
-        return ModelFacade.mock;
+        return null;
     }
     
     public static class MockModule extends FlowModule {
@@ -260,6 +267,10 @@ public class DynamicClassLoader {
         @Override
         public void restoreSerializedSimulationState(String simulationState) {
             
+        }
+        
+        public void setId(final int id) {
+            super.setId(id);
         }
     }
     

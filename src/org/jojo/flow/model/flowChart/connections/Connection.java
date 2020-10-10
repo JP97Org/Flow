@@ -15,7 +15,7 @@ import org.jojo.flow.model.flowChart.modules.ModulePinImp;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
+import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
@@ -150,7 +150,7 @@ public abstract class Connection extends FlowChartElement {
             final String pinToLoadFrom = cnFromDom.elemGet();
             final DOM cnDomImpFrom = (DOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
-            final ModulePin pinFrom = DynamicClassLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
+            final ModulePin pinFrom = DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
             try {
                 setFromPin((OutputPin)pinFrom);
             } catch (ConnectionException e1) {
@@ -165,7 +165,7 @@ public abstract class Connection extends FlowChartElement {
                 final String pinToLoad = cnDom.elemGet();
                 final DOM cnDomImp = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
                 final String pinToLoadImp = cnDomImp.elemGet();
-                final ModulePin pin = DynamicClassLoader.loadPin(pinToLoad, pinToLoadImp);
+                final ModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
                 try {
                     addToPin((InputPin)pin);
                 } catch (ConnectionException e) {
@@ -203,7 +203,7 @@ public abstract class Connection extends FlowChartElement {
             final DOM cnDomImpFrom = (DOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
             ok(pinToLoadImpFrom != null, OK.ERR_MSG_NULL);
-            final ModulePin pinFrom = ok(x -> DynamicClassLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom), "");
+            final ModulePin pinFrom = ok(x -> DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom), "");
             final var before = getFromPin();
             ok(ok(x -> {try {
                 setFromPin((OutputPin)pinFrom);
@@ -232,7 +232,7 @@ public abstract class Connection extends FlowChartElement {
                 final DOM cnDomImp = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
                 final String pinToLoadImp = cnDomImp.elemGet();
                 ok(pinToLoadImp != null, OK.ERR_MSG_NULL);
-                final ModulePin pin = ok(x -> DynamicClassLoader.loadPin(pinToLoad, pinToLoadImp), "");
+                final ModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
                 ok(ok(x -> {try {
                     addToPin((InputPin)pin);
                     removeToPin((InputPin)pin);

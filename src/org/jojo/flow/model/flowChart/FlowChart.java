@@ -26,7 +26,7 @@ import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
+import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
@@ -338,7 +338,7 @@ public class FlowChart extends FlowChartElement{
                 final DOM conDom = (DOM) conObj;
                 final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
                 final String conToLoad = cnDom.elemGet();
-                final Connection connection = DynamicClassLoader.loadConnection(conToLoad);
+                final Connection connection = DynamicObjectLoader.loadConnection(conToLoad);
                 connection.restoreFromDOM(conDom);
                 this.connections.add(connection);
             }
@@ -348,7 +348,7 @@ public class FlowChart extends FlowChartElement{
                 final DOM modDom = (DOM) modObj;
                 final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
                 final String moduleToLoad = cnDom.elemGet();
-                final FlowModule module = DynamicClassLoader.loadModule(moduleToLoad);
+                final FlowModule module = DynamicObjectLoader.loadModule(moduleToLoad);
                 module.restoreFromDOM(modDom);
                 this.modules.add(module);
             }
@@ -378,7 +378,7 @@ public class FlowChart extends FlowChartElement{
                 final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
                 final String conToLoad = cnDom.elemGet();
                 ok(conToLoad != null, OK.ERR_MSG_NULL);
-                final Connection connection = ok(c -> DynamicClassLoader.loadConnection(c), conToLoad);
+                final Connection connection = ok(c -> DynamicObjectLoader.loadConnection(c), conToLoad);
                 ok(connection.isDOMValid(conDom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
             }
             ok(domMap.get(FlowChartDOM.NAME_MODULES) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
@@ -391,7 +391,7 @@ public class FlowChart extends FlowChartElement{
                 final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
                 final String moduleToLoad = cnDom.elemGet();
                 ok(moduleToLoad != null, OK.ERR_MSG_NULL);
-                final FlowModule module = ok(m -> DynamicClassLoader.loadModule(m), moduleToLoad);
+                final FlowModule module = ok(m -> DynamicObjectLoader.loadModule(m), moduleToLoad);
                 ok(module.isDOMValid(modDom), "Module " + OK.ERR_MSG_DOM_NOT_VALID);
             }
             ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);

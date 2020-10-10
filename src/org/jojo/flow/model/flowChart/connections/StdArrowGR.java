@@ -12,7 +12,7 @@ import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
 import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
+import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
@@ -74,14 +74,14 @@ public class StdArrowGR extends ConnectionGR {
             final DOM fromPinDomGr = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
             final DOM cnDom = (DOM) fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cn = cnDom.elemGet();
-            final StdOutputPinGR fromPin = (StdOutputPinGR)DynamicClassLoader.loadGR(cn);
+            final StdOutputPinGR fromPin = (StdOutputPinGR)DynamicObjectLoader.loadGR(cn);
             fromPin.restoreFromDOM(fromPinDom);
             setFromPin(fromPin);
             final DOM connectionsDom = (DOM)domMap.get("connections");
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
                 final DOM conDom = (DOM)conObj;
-                final OneConnectionGR con = (OneConnectionGR) DynamicClassLoader.loadGR(OneConnectionGR.class.getName());
+                final OneConnectionGR con = (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName());
                 con.restoreFromDOM(conDom);
                 addConnection(con);
             }
@@ -104,7 +104,7 @@ public class StdArrowGR extends ConnectionGR {
             final DOM cnDomFrom = (DOM) fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnFrom = cnDomFrom.elemGet();
             ok(cnFrom != null, OK.ERR_MSG_NULL);
-            final StdOutputPinGR fromPin = ok(c -> (StdOutputPinGR) DynamicClassLoader.loadGR(c), cnFrom);
+            final StdOutputPinGR fromPin = ok(c -> (StdOutputPinGR) DynamicObjectLoader.loadGR(c), cnFrom);
             ok(fromPin.isDOMValid(fromPinDom), "FromPin " + OK.ERR_MSG_DOM_NOT_VALID);
             ok(domMap.get("connections") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM connectionsDom = (DOM)domMap.get("connections");
@@ -112,7 +112,7 @@ public class StdArrowGR extends ConnectionGR {
             for (final var conObj : connectionsMap.values()) {
                 ok(conObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
                 final DOM conDom = (DOM)conObj;
-                final OneConnectionGR con = ok(d -> (OneConnectionGR) DynamicClassLoader.loadGR(OneConnectionGR.class.getName()), "");
+                final OneConnectionGR con = ok(d -> (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName()), "");
                 ok(con.isDOMValid(conDom), "OneConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
                 ok(con.getToPin() instanceof StdInputPinGR, OK.ERR_MSG_WRONG_CAST);
                 ok(isAddable(con), "OneConnectionGR " + con + "not addable");

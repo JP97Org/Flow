@@ -42,7 +42,7 @@ public class DocumentString {
             dBuilder.parse(Objects.requireNonNull(xmlFile));
             return true;
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            new Warning(null, e.getMessage(), false).reportWarning();
+            new Warning(null, e.toString(), false).reportWarning();
             return false;
         }
     }
@@ -56,7 +56,7 @@ public class DocumentString {
             transform();
             return true;
         } catch (TransformerFactoryConfigurationError | TransformerException e) {
-            new Warning(null, e.getMessage(), false).reportWarning();
+            new Warning(null, e.toString(), false).reportWarning();
             return false;
         }
     }
@@ -78,8 +78,8 @@ public class DocumentString {
             return transform();
         } catch (TransformerFactoryConfigurationError | TransformerException e) {
             e.printStackTrace();
-            new Warning(null, e.getMessage(), true).reportWarning();
-            return e.getMessage();
+            new Warning(null, e.toString(), true).reportWarning();
+            return e.toString();
         }
     }
 }

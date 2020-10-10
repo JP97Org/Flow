@@ -14,7 +14,7 @@ import javax.swing.Icon;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.flowChart.FlowChartElementGR;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader.MockModule;
+import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;

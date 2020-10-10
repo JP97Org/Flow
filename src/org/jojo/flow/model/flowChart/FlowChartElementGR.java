@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
+import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
@@ -48,7 +48,7 @@ public abstract class FlowChartElementGR extends GraphicalRepresentation {
             final Map<String, Object> domMap = dom.getDOMMap();
             if (domMap.containsKey("label")) {
                 final DOM labelDom = (DOM)domMap.get("label");
-                this.label = (LabelGR) DynamicClassLoader.loadGR(LabelGR.class.getName());
+                this.label = (LabelGR) DynamicObjectLoader.loadGR(LabelGR.class.getName());
                 final DOM grDom = (DOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
                 this.label.restoreFromDOM(grDom);
             }
@@ -64,7 +64,7 @@ public abstract class FlowChartElementGR extends GraphicalRepresentation {
             if (domMap.containsKey("label")) {
                 ok(domMap.get("label") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
                 final DOM labelDom = (DOM)domMap.get("label");
-                ok(g -> (LabelGR) DynamicClassLoader.loadGR(g), LabelGR.class.getName());
+                ok(g -> (LabelGR) DynamicObjectLoader.loadGR(g), LabelGR.class.getName());
                 ok(labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
                 final DOM grDom = (DOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
                 ok(this.label.isDOMValid(grDom), "Label " + OK.ERR_MSG_DOM_NOT_VALID);
