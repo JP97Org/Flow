@@ -15,8 +15,7 @@ import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
-import org.jojo.flow.model.data.Unit;
-import org.jojo.flow.model.data.UnitSignature;
+import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
@@ -172,8 +171,8 @@ public class DynamicObjectLoader {
         }
 
         @Override
-        public Unit<Fraction> getFrequency() {
-            return Unit.getFractionConstant(new Fraction(1)).multiply(UnitSignature.HERTZ);
+        public Frequency<Fraction> getFrequency() {
+            return Frequency.getFractionConstant(new Fraction(1));
         }
 
         @Override

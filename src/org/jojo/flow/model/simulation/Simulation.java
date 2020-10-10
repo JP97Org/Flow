@@ -6,6 +6,8 @@ import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.Unit;
+import org.jojo.flow.model.data.units.Frequency;
+import org.jojo.flow.model.data.units.Time;
 import org.jojo.flow.model.flowChart.FlowChart;
 
 public class Simulation {
@@ -25,9 +27,9 @@ public class Simulation {
     }
     
     private void initStepper() throws FlowException {
-        final Unit<Fraction> frequency = this.config.getStepperFrequency();
-        final Unit<Fraction> timeStep = frequency == null 
-                ? null : Unit.getFractionConstant(new Fraction(1)).divide(frequency);
+        final Frequency<Fraction> frequency = this.config.getStepperFrequency();
+        final Time<Fraction> timeStep = frequency == null 
+                ? null : Time.of(Unit.getFractionConstant(new Fraction(1)).divide(frequency));
         this.stepper = new SchedulingStepper(this.flowChart, new PriorityScheduler(), timeStep);
     }
     

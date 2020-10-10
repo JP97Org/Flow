@@ -15,7 +15,7 @@ import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.Fraction;
-import org.jojo.flow.model.data.Unit;
+import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
@@ -50,7 +50,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     protected abstract void setAllModulePins(DOM pinsDom);
     protected abstract boolean isPinsDOMValid(DOM pinsDom);
     
-    public abstract Unit<Fraction> getFrequency();
+    public abstract Frequency<Fraction> getFrequency();
     public abstract void run() throws Exception;
     
     public StdArrow validate() throws ValidationException {
