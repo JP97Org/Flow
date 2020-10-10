@@ -19,6 +19,11 @@ public class BasicSignature extends DataSignature {
                 .map(x -> x == null ? null : x.getCopy())
                 .toArray(BasicSignatureComponentSignature[]::new);
     }
+    
+    private BasicSignature(final int dataId, final BasicSignatureComponentSignature[] components) {
+        super(dataId);
+        this.components = components;
+    }
 
     @Override
     public boolean equals(final Object other) {
@@ -50,4 +55,25 @@ public class BasicSignature extends DataSignature {
     public String toString() {
         return toStringDs() + Arrays.toString(this.components);
     }
+    
+    @Override
+    public DataSignature ofString(final String info) {
+        final String prepared = info.substring(1, info.length() - 1);
+        final String[] elems = prepared.split(",\\s");
+        if (elems.length != BasicSignatureComponents.values().length) {
+            return null;
+        }
+        final BasicSignatureComponentSignature[] componentsLocal = new BasicSignatureComponentSignature[elems.length];
+        componentsLocal[BasicSignatureComponents.BASIC_TYPE.index] = 
+                (BasicSignatureComponentSignature) new BasicTypeDataSignature(BasicType.INT)
+                    .ofString(elems[BasicSignatureComponents.BASIC_TYPE.index]);
+        componentsLocal[BasicSignatureComponents.SIZES.index] = 
+                (BasicSignatureComponentSignature) new SizesDataSignature(new int[] {NO_SIZES})
+                    .ofString(elems[BasicSignatureComponents.SIZES.index]);
+        componentsLocal[BasicSignatureComponents.UNIT.index] = 
+                (BasicSignatureComponentSignature) new UnitDataSignature(UnitSignature.NO_UNIT)
+                    .ofString(elems[BasicSignatureComponents.UNIT.index]); 
+        return new BasicSignature(getDataId(), componentsLocal);
+    }
+   
 }

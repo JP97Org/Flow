@@ -30,4 +30,10 @@ public class UnitDataSignature extends BasicSignatureComponentSignature {
     public String toString() {
         return toStringDs() + this.unit;
     }
+    
+    @Override
+    public DataSignature ofString(final String info) {
+        final UnitSignature unitLocal = UnitSignature.ofString(info);
+        return unitLocal != null ? new UnitDataSignature(unitLocal) : null;
+    }
 }

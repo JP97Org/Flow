@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 public abstract class DataSignature implements Iterable<DataSignature> {
+    protected static final int UNKNOWN = -100;
     protected static final int NO_SIZES = -2;
     protected static final int DONT_CARE = -1;
     protected static final int SCALAR = 0;
@@ -67,7 +68,7 @@ public abstract class DataSignature implements Iterable<DataSignature> {
             }
 
             @Override
-            public DataSignature getComponent(int index) {
+            public DataSignature getComponent(final int index) {
                 return copy.getComponent(index);
             }
 
@@ -79,6 +80,11 @@ public abstract class DataSignature implements Iterable<DataSignature> {
             @Override
             public String toString() {
                 return copy.toString();
+            }
+
+            @Override
+            public DataSignature ofString(final String info) {
+                return copy.ofString(info); // loses hash efficiency
             }
             
             @Override
@@ -190,19 +196,152 @@ public abstract class DataSignature implements Iterable<DataSignature> {
         
         switch(getDataId()) {
             case BASIC_COMPONENT_SIZES: return "sizes";
+            case BASIC_COMPONENT_TYPE: return "type";
+            case BASIC_COMPONENT_UNIT: return "unit";
             default:
                 if (getDataId() >= BASIC_COMPONENT_SIZE_0) {
-                    return "one size int";
+                    return "one size int, index= " + (getDataId() - BASIC_COMPONENT_SIZE_0);
                 }
                 final Class<?> dataClass = getDataClass();
                 return dataClass == null ? "unknown" : dataClass.getName();
+        }
+    }
+    
+    private static int getDataIdOfName(final String name) {
+        if (name.equals("not checking")) {
+            return DONT_CARE;
+        } else if (name.equals("no_sizes")) {
+            return NO_SIZES;
+        }
+        
+        switch(name) {
+            case "sizes": return BASIC_COMPONENT_SIZES;
+            case "type": return BASIC_COMPONENT_TYPE;
+            case "unit": return BASIC_COMPONENT_UNIT;
+            default:
+                if (name.equals(ScalarDataSet.class.getName())) {
+                    return SCALAR;
+                } else if (name.equals(Matrix.class.getName())) {
+                    return MATRIX;
+                } else if (name.equals(StringDataSet.class.getName())) {
+                    return STRING;
+                } else if (name.equals(DataBundle.class.getName())) {
+                    return BUNDLE;
+                } else if (name.equals(DataVector.class.getName())) {
+                    return VECTOR;
+                } else if (name.equals(DataArray.class.getName())) {
+                    return ARRAY;
+                } else if (name.equals(MathMatrix.class.getName())) {
+                    return MATH_MATRIX;
+                } else if (name.equals(Tensor.class.getName())) {
+                    return TENSOR;
+                } else if (name.equals(MultiMatrix.class.getName())) {
+                    return MULTI_MATRIX;
+                } else if (name.equals(RawDataSet.class.getName())) {
+                    return RAW;
+                }
+                
+                final String[] split = name.split("= ");
+                try {
+                    final int id = split.length == 2 ? Integer.parseInt(split[1]) + BASIC_COMPONENT_SIZE_0 : UNKNOWN;
+                    return id;
+                } catch (NumberFormatException nfe) {
+                    throw new IllegalArgumentException(nfe.toString());
+                }
+        }
+    }
+    
+    private static DataSignature createDataSignatureByIdAndInfo(final int id, final String info) {
+        final Integer[][] matrix = {{1}};
+        final Unit<Integer> unit = Unit.getIntegerConstant(0);
+        final UnitSignature unitSign = UnitSignature.NO_UNIT;
+        final Data[] data = new Data[0];
+        final DataSignature sign = new StringDataSet("").getDataSignature();
+        final byte[] b = new byte[]{0};
+        final int[] in = new int[] {NO_SIZES};
+        final BasicType bt = BasicType.INT;
+        if (id >= 0 && id != BASIC_COMPONENT_UNIT && (info == null || info.equals(""))) {
+            return null;
+        }
+        try {
+            switch (id) {
+                case NO_SIZES: return new SizesDataSignature.OneSizeDataSignature(NO_SIZES, 0);
+                case DONT_CARE: return new DontCareDataSignature().ofString(info);
+                case SCALAR: return new BasicSignature(new ScalarDataSet<Integer>(unit)).ofString(info);
+                case MATRIX: return new BasicSignature(new Matrix<Integer>(matrix, unitSign)).ofString(info);
+                case STRING: return new BasicSignature(new StringDataSet("")).ofString(info);
+                case BUNDLE: return new RecursiveSignature(new DataBundle(data)).ofString(info);
+                case VECTOR: return new RecursiveSignature(new DataVector(Arrays.asList(data), sign)).ofString(info);
+                case ARRAY: return new RecursiveSignature(new DataArray(data, sign)).ofString(info);
+                case MATH_MATRIX: return new BasicSignature(new MathMatrix<Integer>(matrix, unitSign)).ofString(info);
+                case RAW: return new BasicSignature(new RawDataSet(b)).ofString(info);
+                case BASIC_COMPONENT_SIZES: return new SizesDataSignature(in).ofString(info);
+                case BASIC_COMPONENT_TYPE: return new BasicTypeDataSignature(bt).ofString(info);
+                case BASIC_COMPONENT_UNIT: return new UnitDataSignature(unitSign).ofString(info);
+                default: 
+                    if (id >= BASIC_COMPONENT_SIZE_0) {
+                        final int index = id - BASIC_COMPONENT_SIZE_0;
+                        return new SizesDataSignature.OneSizeDataSignature(NO_SIZES, index).ofString(info);
+                    }
+                    return null;
+            }
+        } catch (DataTypeIncompatException e) {
+            //should not happen
+            e.printStackTrace();
+            return null;
         }
     }
 
     @Override
     public abstract String toString();
     
+    public abstract DataSignature ofString(final String info);
+    
+    public static DataSignature of(final String string) {
+        final String name = string.replaceFirst("\\s\\|.*", "");
+        final String info = string.replaceFirst(".*\\|\\s", "");
+        final int id = getDataIdOfName(name);
+        return createDataSignatureByIdAndInfo(id, info);
+    }
+
     public Iterator<DataSignature> iterator() {
         return Arrays.asList(getComponents()).iterator();
+    }
+    
+    private static class DontCareDataSignature extends DataSignature {
+        private String info;
+        
+        public DontCareDataSignature() {
+            super(DONT_CARE);
+            this.info = "";
+        }
+        
+        @Override
+        public DataSignature getCopy() {
+            final DontCareDataSignature ret = new DontCareDataSignature();
+            ret.info = info;
+            return ret;
+        }
+
+        @Override
+        public DataSignature getComponent(int index) {
+            return null;
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public String toString() {
+            return toStringDs() + this.info;
+        }
+
+        @Override
+        public DataSignature ofString(final String info) {
+            this.info = info;
+            return getCopy();
+        }
     }
 }

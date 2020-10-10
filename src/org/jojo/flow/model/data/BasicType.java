@@ -57,4 +57,8 @@ public enum BasicType {
         
         return o instanceof Number ? of(of((Number)o)) : UNKNOWN;
     }
+    
+    public static BasicType of(final String toStrRes) {
+        return Arrays.stream(values()).filter(b -> b.toString().equals(toStrRes)).findFirst().orElse(null);
+    }
 }

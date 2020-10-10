@@ -30,4 +30,10 @@ public class BasicTypeDataSignature extends BasicSignatureComponentSignature {
     public String toString() {
         return toStringDs() + this.basicType;
     }
+    
+    @Override
+    public DataSignature ofString(final String info) {
+        final BasicType type = BasicType.of(info);
+        return type != null ? new BasicTypeDataSignature(type) : null;
+    }
 }

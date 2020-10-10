@@ -497,14 +497,28 @@ public class Unit<T extends Number> {
         return new Unit<Fraction>(FRACTION, new Fraction(this.value.doubleValue()), this.unit);
     }
     
-    public double inCelsius() {
-        return toDoubleUnit().operateSafely(SUBTRACT, new Unit<>(this.type, 273.15, this.unit)).value;
+    public double toCelsius() throws UnsupportedOperationException {
+        if (!this.unit.equals(UnitSignature.KELVIN)) {
+            throw new UnsupportedOperationException("only temperatures can be converted to another temperature unit");
+        }
+        return toDoubleUnit().operateSafely(SUBTRACT, new Unit<>(Unit.Type.DOUBLE, 273.15, this.unit)).value;
     }
     
-    public double inFahrenheit() {
+    public double toFahrenheit() {
+        if (!this.unit.equals(UnitSignature.KELVIN)) {
+            throw new UnsupportedOperationException("only temperatures can be converted to another temperature unit");
+        }
         return toDoubleUnit()
-                .operateSafely(MULTIPLY, new Unit<>(this.type, 1.8, UnitSignature.NO_UNIT))
-                .operateSafely(SUBTRACT, new Unit<>(this.type, 459.67, this.unit)).value;
+                .operateSafely(MULTIPLY, new Unit<>(Unit.Type.DOUBLE, 1.8, UnitSignature.NO_UNIT))
+                .operateSafely(SUBTRACT, new Unit<>(Unit.Type.DOUBLE, 459.67, this.unit)).value;
+    }
+    
+    public static double fromCelsiusToFahrenheit(final double celsiusValue) {
+        return getDoubleConstant(celsiusValue + 273.15).multiply(UnitSignature.KELVIN).toFahrenheit();
+    }
+    
+    public static double fromFahrenheitToCelsius(final double fahrenheitValue) {
+        return getDoubleConstant((fahrenheitValue + 459.67) * (5./9.)).multiply(UnitSignature.KELVIN).toCelsius();
     }
     
     @Override
@@ -526,5 +540,71 @@ public class Unit<T extends Number> {
     @Override
     public String toString() {
         return this.value + " " + this.unit;
+    }
+    
+    public String toPrettyString() {
+        return toPrettyString(ONE, true, false);
+    }
+    
+    public String toPrettyString(final Unit<?> prefix) {
+        return toPrettyString(prefix, true, false);
+    }
+    
+    public String toPrettyString(final Unit<?> prefix, final boolean isEnergy, final boolean isRadian) {
+        String ret = toString();
+        if (prefix == null || ONE.equals(prefix)) {
+            ret = this.value + " " + this.unit.toPrettyString(isEnergy, isRadian);
+        } else {
+            if (prefix.equals(ATTO)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, EXA);
+                ret = unit.value + " " + "a(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(FEMTO)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, PETA);
+                ret = unit.value + " " + "f(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(PICO)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, TERA);
+                ret = unit.value + " " + "p(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(NANO)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, GIGA);
+                ret = unit.value + " " + "n(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(MICRO)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, MEGA);
+                ret = unit.value + " " + '\u00B5' + "(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(MILLI)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, KILO);
+                ret = unit.value + " " + "m(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(CENTI)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, HECTO);
+                ret = unit.value + " " + "c(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(DECI)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, DECA);
+                ret = unit.value + " " + "d(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(DECA)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, DECI);
+                ret = unit.value + " " + "da(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(HECTO)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, CENTI);
+                ret = unit.value + " " + "h(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(KILO)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, MILLI);
+                ret = unit.value + " " + "k(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(MEGA)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, MICRO);
+                ret = unit.value + " " + "M(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(GIGA)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, NANO);
+                ret = unit.value + " " + "G(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(TERA)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, PICO);
+                ret = unit.value + " " + "T(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(PETA)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, FEMTO);
+                ret = unit.value + " " + "P(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            } else if (prefix.equals(EXA)) {
+                final Unit<BigDecimal> unit = this.toBigDecimalUnit().operateSafely(Operation.MULTIPLY, ATTO);
+                ret = unit.value + " " + "E(" + this.unit.toPrettyString(isEnergy, isRadian) + ")";
+            }
+        }
+        return ret;
     }
 }

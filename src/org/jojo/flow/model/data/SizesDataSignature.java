@@ -44,15 +44,27 @@ public class SizesDataSignature extends BasicSignatureComponentSignature {
     
     @Override
     public String toString() {
-        return toStringDs() + Arrays.toString(this.sizes);
+        return toStringDs() + Arrays.toString(this.sizes).replaceAll(",", ";;");
     }
     
-    protected class OneSizeDataSignature extends BasicSignatureComponentSignature {
+    @Override
+    public DataSignature ofString(final String info) {
+        final String prepared = info.substring(1, info.length() - 1);
+        try {
+            final int[] split = Arrays.stream(prepared.split(";;\\s")).mapToInt(s -> Integer.parseInt(s)).toArray();
+            return new SizesDataSignature(split);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    protected static class OneSizeDataSignature extends BasicSignatureComponentSignature {
         private final int dataIDOffset;
         private final int size;
         
-        private OneSizeDataSignature(final int size, final int dataIDOffset) {
-            super(DataSignature.BASIC_COMPONENT_SIZE_0 + dataIDOffset);
+        OneSizeDataSignature(final int size, final int dataIDOffset) {
+            super(BASIC_COMPONENT_SIZE_0 + dataIDOffset);
             this.dataIDOffset = dataIDOffset;
             this.size = size;
         }
@@ -78,6 +90,16 @@ public class SizesDataSignature extends BasicSignatureComponentSignature {
         @Override
         public String toString() {
             return toStringDs() + this.size;
+        }
+        
+        @Override
+        public DataSignature ofString(final String info) {
+            try {
+                return new OneSizeDataSignature(Integer.parseInt(info), getDataId() - BASIC_COMPONENT_SIZE_0);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package org.jojo.flow.model.data;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 public final class UnitSignature {
     public static final int NUM_BASE_UNITS = 7;
@@ -170,6 +171,91 @@ public final class UnitSignature {
             }
         }
         return ret.endsWith(" * ") ? ret.substring(0, ret.length() - 3) : ret;
+    }
+    
+
+    public static UnitSignature ofString(final String unitAsString) {
+        if (unitAsString.equals("")) {
+            return NO_UNIT;
+        }
+        final int arr[] = NO_UNIT.getUnitSignatureArray();
+        final String[] split = unitAsString.split(" * ");
+        boolean isErr = false;
+        for (int i = 0; !isErr && i < split.length; i++) {
+            final String baseUnitStr = split[i];
+            final String toPowOf = Pattern.quote("^");
+            try {
+                if (baseUnitStr.matches(".*" + toPowOf + ".*")) {
+                    final String[] buSplit = baseUnitStr.split(toPowOf);
+                    final String buName = buSplit[0];
+                    final int exp = Integer.parseInt(buSplit[1]);
+                    switch (buName) {
+                        case "m": arr[0] = exp; break;
+                        case "kg": arr[1] = exp; break;
+                        case "s": arr[2] = exp; break;
+                        case "A": arr[3] = exp; break;
+                        case "K": arr[4] = exp; break;
+                        case "mol": arr[5] = exp; break;
+                        case "cd": arr[6] = exp; break;
+                        default: 
+                            //TODO maybe warn
+                            isErr = true;
+                    }
+                } else {
+                    //TODO maybe warn
+                    isErr = false;
+                }
+            }
+            catch (NumberFormatException e) {
+                e.printStackTrace();
+                isErr = true;
+            }
+        }
+        return isErr ? null : new UnitSignature(arr);
+    }
+    
+    public String toPrettyString() {
+        return toPrettyString(true, false);
+    }
+    
+    public String toPrettyString(final boolean isEnergy, final boolean isRadian) {
+        String ret = toString();
+        if (ret.equals(NEWTON.toString())) {
+            ret = "N";
+        } else if (ret.equals(NEWTON_METER.toString())) {
+            ret = isEnergy ? "J" : "Nm";
+        } else if (ret.equals(PASCAL.toString())) {
+            ret = "Pa";
+        } else if (ret.equals(WATT.toString())) {
+            ret = "W";
+        } else if (ret.equals(VOLT.toString())) {
+            ret = "V";
+        } else if (ret.equals(OHM.toString())) {
+            ret = "" + '\u2126'; // big omega
+        } else if (ret.equals(SIEMENS.toString())) {
+            ret = "A * V^-1";
+        } else if (ret.equals(HENRY.toString())) {
+            ret = "H";
+        } else if (ret.equals(TESLA.toString())) {
+            ret = "T";
+        } else if (ret.equals(COULOMB.toString())) {
+            ret = "C";
+        } else if (ret.equals(FARAD.toString())) {
+            ret = "F";
+        } else if (ret.equals(HERTZ.toString())) {
+            ret = isRadian ? "rad * s^-1" : "Hz";
+        } else if (ret.equals(WEBER.toString())) {
+            ret = "Wb";
+        } else if (ret.equals(SIEVERT.toString())) {
+            ret = "Sv";
+        } else if (ret.equals(LUX.toString())) {
+            ret = "lx";
+        } else if (ret.equals(KATAL.toString())) {
+            ret = "kat";
+        } else if (ret.equals(NO_UNIT.toString())) {
+            ret = isRadian ? "rad" : ret;
+        }
+        return ret;
     }
 }
 
