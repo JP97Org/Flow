@@ -1,8 +1,11 @@
 package org.jojo.flow.model.flowChart.connections;
 
+import java.util.Map;
 import java.util.Objects;
 import java.awt.Shape;
+import java.io.IOException;
 
+import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
@@ -119,7 +122,12 @@ public class StdArrow extends Connection {
     public DOM getDOM() {
         final DOM dom = super.getDOM();
         dom.appendString("dataType", this.dataType.toString());
-        dom.appendString("data", this.data == null ? "null" : this.data.toString());
+        try {
+            dom.appendString("data", this.data == null ? "null" : this.data.toSerializedString());
+        } catch (ClassNotFoundException | IOException e) {
+            // should not happen
+            e.printStackTrace(); //TODO maybe warn
+        }
         return dom;
     }
 
@@ -127,7 +135,19 @@ public class StdArrow extends Connection {
     public void restoreFromDOM(final DOM dom) {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
-            //TODO data type and data if possible
+            final Map<String, Object> domMap = dom.getDOMMap();
+            final DOM dataTypeDom = (DOM)domMap.get("dataType");
+            final String dataTypeStr = dataTypeDom.elemGet();
+            this.dataType = DataSignature.of(dataTypeStr);
+            final DOM dataDom = (DOM)domMap.get("data");
+            final String dataStr = dataDom.elemGet();
+            try {
+                this.data = dataStr.equals("null") ? null : Data.ofSerializedString(dataStr);
+            } catch (ClassNotFoundException | IOException e) {
+                // should not happen
+                e.printStackTrace();
+            }
+            notifyObservers();
         }
     }
     
@@ -136,7 +156,28 @@ public class StdArrow extends Connection {
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
-            //TODO data type and data if possible
+            final Map<String, Object> domMap = dom.getDOMMap();
+            ok(domMap.get("dataType") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM dataTypeDom = (DOM)domMap.get("dataType");
+            final String dataTypeStr = dataTypeDom.elemGet();
+            ok(dataTypeStr != null, OK.ERR_MSG_NULL);
+            ok(s -> DataSignature.of(s), dataTypeStr);
+            ok(domMap.get("data") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM dataDom = (DOM)domMap.get("data");
+            final String dataStr = dataDom.elemGet();
+            ok(dataStr != null, OK.ERR_MSG_NULL);
+            final Exception exc = ok(s -> {
+                    try {
+                        @SuppressWarnings("unused") // only possible object creation is checked
+                        final Data data = s.equals("null") ? null : Data.ofSerializedString(s);
+                        return null;
+                    } catch (ClassNotFoundException | IOException e) {
+                        return e;
+                    }
+                }, dataStr);
+            if (exc != null) {
+                throw new ParsingException(new Warning(null, exc.toString(), true));
+            }
             return true;
         } catch (ParsingException e) {
             e.getWarning().setAffectedElement(this).reportWarning();

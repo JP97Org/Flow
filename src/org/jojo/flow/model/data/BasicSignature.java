@@ -64,6 +64,7 @@ public class BasicSignature extends DataSignature {
     public DataSignature ofString(final String info) {
         final String prepared = info.substring(1, info.length() - 1);
         final String[] elems = prepared.split(",\\s");
+        prepareElems(elems);
         if (elems.length != BasicSignatureComponents.values().length) {
             return null;
         }
@@ -80,4 +81,9 @@ public class BasicSignature extends DataSignature {
         return new BasicSignature(getDataId(), componentsLocal);
     }
    
+    private static void prepareElems(final String[] elems) {
+        for(int i = 0; i < elems.length; i++) {
+            elems[i] = elems[i].equals("null") ? "null" : elems[i].replaceFirst("[^|]*\\|\\s", "");
+        }
+    }
 }

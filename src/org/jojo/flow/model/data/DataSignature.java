@@ -309,7 +309,7 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
     
     public static DataSignature of(final String string) {
         final String name = string.replaceFirst("\\s\\|.*", "");
-        final String info = string.replaceFirst(".*\\|\\s", "");
+        final String info = string.replaceFirst("[^|]*\\|\\s", "");
         final int id = getDataIdOfName(name);
         return createDataSignatureByIdAndInfo(id, info);
     }
