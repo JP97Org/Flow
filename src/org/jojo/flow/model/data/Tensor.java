@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class Tensor<T> extends BasicCheckable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5201610391007567526L;
     private final T[][][] tensor;
     private final UnitSignature unit;
     private final DataSignature dataSignature;

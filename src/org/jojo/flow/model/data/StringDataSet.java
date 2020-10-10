@@ -3,6 +3,10 @@ package org.jojo.flow.model.data;
 import java.util.Objects;
 
 public final class StringDataSet extends BasicCheckable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6185260321487339088L;
     private final String str;
     private final DataSignature dataSignature;
     

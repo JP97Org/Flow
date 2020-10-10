@@ -5,6 +5,10 @@ import java.util.Base64;
 import java.util.Objects;
 
 public final class RawDataSet extends BasicCheckable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -2317113448843956394L;
     private final byte[] data;
     private final DataSignature dataSignature;
     

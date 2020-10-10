@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class DataVector extends RecursiveCheckable implements Iterable<Data> {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4082764662720440203L;
     private int lastKnownSize;
     private final List<Data> data;
     private final DataSignature componentSignature;

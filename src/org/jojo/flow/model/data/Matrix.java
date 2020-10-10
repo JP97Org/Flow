@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class Matrix<T> extends BasicCheckable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7329803310105934770L;
     private final T[][] matrix;
     private final UnitSignature unit;
     private final DataSignature dataSignature;

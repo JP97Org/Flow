@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Objects;
 
 public final class MathMatrix<T extends Number> extends BasicCheckable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1293085528815395762L;
     private final Number[][] matrix;
     private final UnitSignature unit;
     private final DataSignature dataSignature;

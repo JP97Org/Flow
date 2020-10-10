@@ -3,6 +3,10 @@ package org.jojo.flow.model.data;
 import java.util.Objects;
 
 public class BasicTypeDataSignature extends BasicSignatureComponentSignature {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3366317648465388657L;
     private final BasicType basicType;
     
     protected BasicTypeDataSignature(final BasicType basicType) {

@@ -1,10 +1,15 @@
 package org.jojo.flow.model.data;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 
-public abstract class DataSignature implements Iterable<DataSignature> {
+public abstract class DataSignature implements Iterable<DataSignature>, Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5112402497719036749L;
     protected static final int UNKNOWN = -100;
     protected static final int NO_SIZES = -2;
     protected static final int DONT_CARE = -1;
@@ -62,6 +67,11 @@ public abstract class DataSignature implements Iterable<DataSignature> {
     public DataSignature tryGetHashEfficientCopy() {
         final DataSignature copy = getCopy();
         final DataSignature ret = new DataSignature(this.dataId, copy.isCheckingRecursive()) {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = -5593591045946032816L;
+
             @Override
             public DataSignature getCopy() {
                 return copy.getCopy(); // loses hash efficiency
@@ -309,6 +319,10 @@ public abstract class DataSignature implements Iterable<DataSignature> {
     }
     
     private static class DontCareDataSignature extends DataSignature {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -1401990759544006890L;
         private String info;
         
         public DontCareDataSignature() {

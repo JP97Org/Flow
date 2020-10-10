@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Objects;
 
 public final class MultiMatrix<T> extends BasicCheckable implements Iterable<T> {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8288349719294892611L;
     private final int[] sizes;
     private final T[] multiMatrix;
     private final UnitSignature unit;

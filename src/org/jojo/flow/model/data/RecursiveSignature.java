@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecursiveSignature extends DataSignature {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1286793948272706994L;
     private final List<DataSignature> components;
     
     public RecursiveSignature(final RecursiveCheckable data) {

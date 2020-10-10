@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class DataArray extends RecursiveCheckable implements Iterable<Data> {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8746884178319083769L;
     private final Data[] data;
     private final DataSignature dataSignature;
     

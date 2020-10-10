@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class SizesDataSignature extends BasicSignatureComponentSignature {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6554802350914594510L;
     private final int[] sizes;
     private final OneSizeDataSignature[] sizesSignatures;
     
@@ -60,6 +64,10 @@ public class SizesDataSignature extends BasicSignatureComponentSignature {
     }
     
     protected static class OneSizeDataSignature extends BasicSignatureComponentSignature {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 296930622432811086L;
         private final int dataIDOffset;
         private final int size;
         

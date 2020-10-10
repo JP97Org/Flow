@@ -3,6 +3,10 @@ package org.jojo.flow.model.data;
 import java.util.Objects;
 
 public class UnitDataSignature extends BasicSignatureComponentSignature {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7235258735846170579L;
     private final UnitSignature unit;
     
     protected UnitDataSignature(final UnitSignature unit) {

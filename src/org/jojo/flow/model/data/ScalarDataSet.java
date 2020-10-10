@@ -3,6 +3,10 @@ package org.jojo.flow.model.data;
 import java.util.Objects;
 
 public final class ScalarDataSet<T extends Number> extends BasicCheckable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4809978069421225901L;
     private final Unit<T> scalar;
     private final DataSignature dataSignature;
     
