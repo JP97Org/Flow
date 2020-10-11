@@ -14,8 +14,16 @@ public class ModelFacade {
     
     public FlowChartElement getElementById(final int id) {
         //TODO
-        if (id == 100) {
-            return mock;
+        if (getFlowChart().getConnections().stream().anyMatch(x -> x.getId() == id)) {
+            return getFlowChart().getConnections()
+                    .stream()
+                    .filter(x -> x.getId() == id)
+                    .findFirst().orElse(null);
+        } else if (getFlowChart().getModules().stream().anyMatch(x -> x.getId() == id)) {
+            return getFlowChart().getModules()
+                    .stream()
+                    .filter(x -> x.getId() == id)
+                    .findFirst().orElse(null);
         }
         return flowChart; //TODO
     }

@@ -4,11 +4,17 @@ import static org.jojo.flow.model.data.UnitSignature.*;
 import static org.jojo.flow.model.data.Unit.Type.*;
 import static org.jojo.flow.model.data.Unit.Operation.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class Unit<T extends Number> {
+public class Unit<T extends Number> implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2402866882045663314L;
+
     public enum Type {
         BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL, FRACTION;
 

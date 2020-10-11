@@ -180,11 +180,11 @@ public class FlowChartGR extends FlowChartElementGR {
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
                 if (conObj instanceof DOM) {
-                    final DOM conDom = (DOM) conObj;
-                    final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                    final DOM connnectionDom = (DOM) conObj;
+                    final DOM cnDom = (DOM) (connnectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
                     final String conToLoad = cnDom.elemGet();
                     final GraphicalRepresentation connection = DynamicObjectLoader.loadGR(conToLoad);
-                    connection.restoreFromDOM(conDom);
+                    connection.restoreFromDOM(connnectionDom);
                     this.connections.add((ConnectionGR) connection);
                 }
             }
@@ -222,13 +222,13 @@ public class FlowChartGR extends FlowChartElementGR {
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
                 if (conObj instanceof DOM) {
-                    final DOM conDom = (DOM) conObj;
-                    ok(conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                    final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                    final DOM connectionDom = (DOM) conObj;
+                    ok(connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                    final DOM cnDom = (DOM) (connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
                     final String conToLoad = cnDom.elemGet();
                     ok(conToLoad != null, OK.ERR_MSG_NULL);
                     final ConnectionGR connection = ok(c -> (ConnectionGR)DynamicObjectLoader.loadGR(c), conToLoad);
-                    ok(connection.isDOMValid(conDom), "ConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
+                    ok(connection.isDOMValid(connectionDom), "ConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
                 }
             }
             ok(domMap.get(FlowChartDOM.NAME_MODULES) instanceof DOM, OK.ERR_MSG_WRONG_CAST);

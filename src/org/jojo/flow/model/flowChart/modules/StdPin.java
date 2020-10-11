@@ -26,7 +26,7 @@ public class StdPin extends ModulePinImp {
      * @param newCheckDataSignature - the data signature to be set
      * @throws FlowException if the data signature to be set and the already set one do not match
      */
-    protected void setCheckDataSignature(final DataSignature newCheckDataSignature) throws FlowException {
+    public void setCheckDataSignature(final DataSignature newCheckDataSignature) throws FlowException {
         if (this.checkDataSignature.equals(newCheckDataSignature)) {
             this.checkDataSignature = newCheckDataSignature;
         } else {

@@ -1,8 +1,13 @@
 package org.jojo.flow.model.data;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Pair<T1, T2> {
+public class Pair<T1, T2> implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6469925928903861976L;
     public final T1 first;
     public final T2 second;
 

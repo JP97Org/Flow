@@ -1,5 +1,6 @@
 package org.jojo.flow.model.flowChart;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,9 @@ public abstract class FlowChartElement extends Subject implements DOMable {
     }
 
     public Warning getLastWarning() {
+        if (this.warnings.isEmpty()) {
+            return null;
+        }
         return this.warnings.get(this.warnings.size() - 1);
     }
     
@@ -63,4 +67,7 @@ public abstract class FlowChartElement extends Subject implements DOMable {
         }
         return false;
     }
+    
+    @Override
+    public abstract String toString();
 }

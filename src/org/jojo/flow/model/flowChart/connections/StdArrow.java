@@ -2,6 +2,7 @@ package org.jojo.flow.model.flowChart.connections;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.awt.Shape;
 import java.io.IOException;
 
@@ -185,4 +186,11 @@ public class StdArrow extends Connection {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ID= " + getId() + " | " + "StdArrow from \"" + (getFromPin().getModule() != null ? getFromPin().getModule().getId() : "null") 
+                + "\" to \"" + getToPins().stream()
+                            .map(p -> p.getModule() != null ? p.getModule().getId() : "null")
+                            .collect(Collectors.toList()) + "\"";
+    }
 }

@@ -41,6 +41,9 @@ import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
 import org.jojo.flow.model.flowChart.modules.StdPin;
 
 public class DynamicObjectLoader {
+    //TODO Mock-In-Pin-Pos
+    public static final Point INPOS = new Point(50, 50);
+
     private DynamicObjectLoader() {
         
     }
@@ -72,7 +75,7 @@ public class DynamicObjectLoader {
                     new OutputPin(new StdPin(loadModule(MockModule.class.getName()), data ), 
                             new StdOutputPinGR(new Point(0,0), className, 10, 10)), 
                     new InputPin(new StdPin(loadModule(MockModule.class.getName()), data), 
-                            new StdInputPinGR(new Point(0,10), className, 10, 10)), className);
+                            new StdInputPinGR(INPOS, className, 10, 10)), className);
         } catch (ConnectionException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -120,19 +123,23 @@ public class DynamicObjectLoader {
     public static ModulePin loadPin(final String className, final String classNameImp) {
         //TODO evtl. auch noch anders machen anstatt das MockModule zur erzeugung
         final FlowModule mock = ModelFacade.mock;
+        return loadPin(className, classNameImp, mock);
+    }
+    
+    public static ModulePin loadPin(final String className, final String classNameImp, final FlowModule module) {
         if (className.equals(InputPin.class.getName())) {
             if (classNameImp.equals(StdPin.class.getName())) {
-                return new InputPin(new StdPin(mock, new StringDataSet("")), (StdInputPinGR)loadGR(StdInputPinGR.class.getName()));
+                return new InputPin(new StdPin(module, new StringDataSet("")), (StdInputPinGR)loadGR(StdInputPinGR.class.getName()));
             } else if (classNameImp.equals(RigidPin.class.getName())) {
                 final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
-                return new InputPin(new RigidPin(mock, gr), gr);
+                return new InputPin(new RigidPin(module, gr), gr);
             }
         } else if (className.equals(OutputPin.class.getName())) {
             if (classNameImp.equals(StdPin.class.getName())) {
-                return new OutputPin(new StdPin(mock, new StringDataSet("")), (StdOutputPinGR)loadGR(StdOutputPinGR.class.getName()));
+                return new OutputPin(new StdPin(module, new StringDataSet("")), (StdOutputPinGR)loadGR(StdOutputPinGR.class.getName()));
             } else if (classNameImp.equals(RigidPin.class.getName())) {
                 final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
-                return new OutputPin(new RigidPin(mock, gr), gr);
+                return new OutputPin(new RigidPin(module, gr), gr);
             }
         }
         
@@ -162,7 +169,8 @@ public class DynamicObjectLoader {
     }
     
     public static class MockModule extends FlowModule {
-        private ModulePin pin;
+        private ModulePin pinOut;
+        private ModulePin pinIn;
         
         public MockModule(int id, ExternalConfig externalConfig) {
             super(id, externalConfig);
@@ -171,8 +179,11 @@ public class DynamicObjectLoader {
         @Override
         public List<ModulePin> getAllModulePins() {
             final List<ModulePin> ret = new ArrayList<>();
-            this.pin = this.pin == null ? loadPin(OutputPin.class.getName(), StdPin.class.getName()) : this.pin;
-            ret.add(this.pin);
+            this.pinOut = this.pinOut == null ? loadPin(OutputPin.class.getName(), StdPin.class.getName(), this) : this.pinOut;
+            this.pinIn = this.pinIn == null ? loadPin(InputPin.class.getName(), StdPin.class.getName(), this) : this.pinIn;
+            this.pinIn.getGraphicalRepresentation().setPosition(INPOS);
+            ret.add(this.pinOut);
+            ret.add(this.pinIn);
             return ret;
         }
 
@@ -198,12 +209,17 @@ public class DynamicObjectLoader {
                         final String pinCn = pinCnDom.elemGet();
                         final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
                         final String pinCnImp = pinCnDomImp.elemGet();
-                        this.pin = loadPin(pinCn, pinCnImp);
-                        this.pin.restoreFromDOM(pinDom);
+                        if (pinCn.equals(OutputPin.class.getName())) {
+                            this.pinOut = loadPin(pinCn, pinCnImp);
+                            this.pinOut.restoreFromDOM(pinDom);
+                        } else {
+                            this.pinIn = loadPin(pinCn, pinCnImp);
+                            this.pinIn.restoreFromDOM(pinDom);
+                        }
                         i++;
                     }
                 }
-                assert (i == 1);
+                assert (i == 2);
             }
         }
 
@@ -215,17 +231,22 @@ public class DynamicObjectLoader {
                 int i = 0;
                 for(var pinObj : domMap.values()) {
                     if (pinObj instanceof DOM) {
+                        ok(pinObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
                         final DOM pinDom = (DOM) pinObj;
+                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
                         final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
                         final String pinCn = pinCnDom.elemGet();
+                        ok(pinCn != null, OK.ERR_MSG_NULL);
+                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
                         final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
                         final String pinCnImp = pinCnDomImp.elemGet();
-                        this.pin = loadPin(pinCn, pinCnImp);
-                        this.pin.restoreFromDOM(pinDom);
+                        ok(pinCnImp != null, OK.ERR_MSG_NULL);
+                        final ModulePin pin = ok(x -> loadPin(pinCn, pinCnImp), "");
+                        ok(pin.isDOMValid(pinDom), "PIN " + OK.ERR_MSG_DOM_NOT_VALID);
                         i++;
                     }
                 }
-                ok(i == 1, "to many or not enough pins should= 1, is = " + i);
+                ok(i == 2, "to many or not enough pins should= 2, is = " + i);
                 return true;
             } catch (ParsingException e) {
                 e.getWarning().setAffectedElement(this).reportWarning();

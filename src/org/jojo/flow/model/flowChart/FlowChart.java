@@ -13,9 +13,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.model.FlowException;
+import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.connections.ConnectionException;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.connections.StdArrow;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
@@ -24,6 +26,7 @@ import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
+import org.jojo.flow.model.flowChart.modules.StdPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
@@ -55,10 +58,32 @@ public class FlowChart extends FlowChartElement{
         notifyObservers(module);
     }
     
-    public void addConnection(final Connection connection) {
-        this.connections.add(connection);
-        this.gr.addConnection((ConnectionGR) connection.getGraphicalRepresentation());
-        notifyObservers(connection);
+    public boolean addConnection(final Connection connection) {
+        final boolean ok = connection.connect();
+        if (ok) {
+            this.connections.add(connection);
+            this.gr.addConnection((ConnectionGR) connection.getGraphicalRepresentation());
+            notifyObservers(connection);
+        } else {
+            final Warning lastWarning = connection.getLastWarning();
+            if (lastWarning != null) {
+                new Warning(lastWarning).setAffectedElement(this).reportWarning();
+            }
+        }
+        return ok;
+    }
+    
+    public boolean connectAll() { //TODO wird spaeter evtl. private
+        boolean ret = true;
+        for (final var c : this.connections) {
+            c.connect();
+        }
+        removeDuplicatePins();
+        ret = true;
+        for (final var c : this.connections) {
+            ret &= c.connect();
+        }
+        return ret;
     }
     
     public boolean removeModule(final FlowModule module) {
@@ -303,16 +328,40 @@ public class FlowChart extends FlowChartElement{
                         final InputPin inPin = (InputPin)pin;
                         connection.removeToPin(inPin);
                         try {
-                            connection.addToPin(inPin);
-                        } catch (ConnectionException e) {
+                            DataSignature beforeSign = null;
+                            DataSignature copy = null;
+                            if (inPin.getModulePinImp() instanceof StdPin) {
+                                final StdPin stdPin = ((StdPin)inPin.getModulePinImp());
+                                beforeSign = stdPin.getCheckDataSignature();
+                                copy = beforeSign.getCopy();
+                                copy.deactivateChecking();
+                                stdPin.setCheckDataSignature(copy);
+                                connection.addToPin(inPin);
+                                stdPin.setCheckDataSignature(beforeSign);
+                            } else {
+                                connection.addToPin(inPin);
+                            }
+                        } catch (FlowException e) {
                             // should not happen
                             e.printStackTrace();
                         }
                     } else { // pin is OutputPin
                         final OutputPin outPin = (OutputPin)pin;
                         try {
-                            connection.setFromPin(outPin);
-                        } catch (ConnectionException e) {
+                            DataSignature beforeSign = null;
+                            DataSignature copy = null;
+                            if (outPin.getModulePinImp() instanceof StdPin) {
+                                final StdPin stdPin = ((StdPin)outPin.getModulePinImp());
+                                beforeSign = stdPin.getCheckDataSignature();
+                                copy = beforeSign.getCopy();
+                                copy.deactivateChecking();
+                                stdPin.setCheckDataSignature(copy);
+                                connection.setFromPin(outPin);
+                                stdPin.setCheckDataSignature(beforeSign);
+                            } else {
+                                connection.setFromPin(outPin);
+                            }
+                        } catch (FlowException e) {
                             // should not happen
                             e.printStackTrace();
                         }
@@ -336,12 +385,14 @@ public class FlowChart extends FlowChartElement{
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
                 if (conObj instanceof DOM) {
-                    final DOM conDom = (DOM) conObj;
-                    final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                    final DOM connnectionDom = (DOM) conObj;
+                    final DOM cnDom = (DOM) (connnectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
                     final String conToLoad = cnDom.elemGet();
                     final Connection connection = DynamicObjectLoader.loadConnection(conToLoad);
-                    connection.restoreFromDOM(conDom);
                     this.connections.add(connection);
+                    final DOM connectionIdDom = (DOM)connnectionDom.getDOMMap().get(ConnectionDOM.NAME_ID);
+                    connection.setId(Integer.parseInt(connectionIdDom.elemGet()));
+                    connection.restoreFromDOM(connnectionDom);
                 }
             }
             final DOM modulesDom = (DOM)domMap.get(FlowChartDOM.NAME_MODULES);
@@ -352,13 +403,15 @@ public class FlowChart extends FlowChartElement{
                     final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
                     final String moduleToLoad = cnDom.elemGet();
                     final FlowModule module = DynamicObjectLoader.loadModule(moduleToLoad);
-                    module.restoreFromDOM(modDom);
                     this.modules.add(module);
+                    final DOM moduleIdDom = (DOM)modDom.getDOMMap().get(ConnectionDOM.NAME_ID);
+                    module.setId(Integer.parseInt(moduleIdDom.elemGet()));
+                    module.restoreFromDOM(modDom);
                 }
             }
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
             this.gr.restoreFromDOM(grDom);
-            removeDuplicatePins();
+            connectAll(); //TODO das muss auch noch irgendwie in isValid gecheckt werden
             notifyObservers();
         }
     }
@@ -377,13 +430,13 @@ public class FlowChart extends FlowChartElement{
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
                 if (conObj instanceof DOM) {
-                    final DOM conDom = (DOM) conObj;
-                    ok(conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                    final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                    final DOM connectionDom = (DOM) conObj;
+                    ok(connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                    final DOM cnDom = (DOM) (connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
                     final String conToLoad = cnDom.elemGet();
                     ok(conToLoad != null, OK.ERR_MSG_NULL);
                     final Connection connection = ok(c -> DynamicObjectLoader.loadConnection(c), conToLoad);
-                    ok(connection.isDOMValid(conDom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
+                    ok(connection.isDOMValid(connectionDom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
                 }
             }
             ok(domMap.get(FlowChartDOM.NAME_MODULES) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
@@ -408,5 +461,10 @@ public class FlowChart extends FlowChartElement{
             e.getWarning().setAffectedElement(this).reportWarning();
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ID= " + this.getId() + " | modules= " + this.modules + " | connections= " + this.connections;
     }
 }

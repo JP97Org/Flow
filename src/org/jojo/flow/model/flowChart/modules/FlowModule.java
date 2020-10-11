@@ -254,10 +254,10 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
             }
             ok((DOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM extDom = (DOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG);
-            this.externalConfig.isDOMValid(extDom);
+            ok(this.externalConfig.isDOMValid(extDom), "EXT_CONFIG " + OK.ERR_MSG_DOM_NOT_VALID);
             ok((DOM)domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
-            getGraphicalRepresentation().isDOMValid(grDom);
+            ok(getGraphicalRepresentation().isDOMValid(grDom), "ModuleGR " + OK.ERR_MSG_DOM_NOT_VALID);
             ok((DOM)domMap.get(ModuleDOM.NAME_PINS) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM pinsDom = (DOM)domMap.get(ModuleDOM.NAME_PINS);
             ok(isPinsDOMValid(pinsDom), "Pins " + OK.ERR_MSG_DOM_NOT_VALID);
@@ -266,5 +266,12 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
             e.getWarning().setAffectedElement(this).reportWarning();
             return false;
         }
+    }
+    
+    @Override
+    public String toString() {
+        return "ID= " + this.getId() + " | " + this.externalConfig.toString() + " | allConnectionsOfAllPins= " 
+                                              + getAllModulePins().stream()
+                                                  .map(p -> p.getConnections()).collect(Collectors.toList());
     }
 }

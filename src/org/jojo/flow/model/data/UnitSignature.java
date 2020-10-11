@@ -1,9 +1,15 @@
 package org.jojo.flow.model.data;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-public final class UnitSignature {
+public final class UnitSignature implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -929295978318467353L;
+
     public static final int NUM_BASE_UNITS = 7;
     
     public static final UnitSignature NO_UNIT = new UnitSignature();

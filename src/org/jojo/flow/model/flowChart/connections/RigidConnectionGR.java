@@ -55,9 +55,9 @@ public class RigidConnectionGR extends ConnectionGR {
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
                 if (conObj instanceof DOM) {
-                    final DOM conDom = (DOM)conObj;
+                    final DOM connnectionDom = (DOM)conObj;
                     final OneConnectionGR con = (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName(), false);
-                    con.restoreFromDOM(conDom);
+                    con.restoreFromDOM(connnectionDom);
                     addConnection(con);
                 }
             }
@@ -85,9 +85,9 @@ public class RigidConnectionGR extends ConnectionGR {
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
                 if (conObj instanceof DOM) {
-                    final DOM conDom = (DOM)conObj;
+                    final DOM connectionDom = (DOM)conObj;
                     final OneConnectionGR con = ok(d -> (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName(), false), "");
-                    ok(con.isDOMValid(conDom), "OneConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
+                    ok(con.isDOMValid(connectionDom), "OneConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
                     ok(con.getToPin() instanceof RigidPinGR, OK.ERR_MSG_WRONG_CAST);
                     ok(isAddable(con), "OneConnectionGR " + con + "not addable");
                 }

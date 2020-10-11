@@ -23,6 +23,10 @@ public class Warning {
         this.isError = isError;
     }
     
+    public Warning(final Warning toCopy) {
+        this(toCopy.affectedElement, toCopy.description);
+    }
+    
     public Warning setToError() {
         this.isError = true;
         return this;

@@ -8,11 +8,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.model.FlowException;
+import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.modules.InputPin;
+import org.jojo.flow.model.flowChart.modules.ListSizeException;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.ModulePinImp;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
+import org.jojo.flow.model.flowChart.modules.StdPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
@@ -37,6 +42,34 @@ public abstract class Connection extends FlowChartElement {
         if (!connectionMatchesPins) {
             throw new ConnectionException("fromPin to be set does not match connection type", this);
         }
+    }
+    
+    public boolean connect() {
+        if (!this.toPins.isEmpty()) {
+            try {
+                this.fromPin.addConnection(this);
+            } catch (ListSizeException e) {
+                // should not happen
+                e.printStackTrace();
+            }
+            for (final var p : this.toPins) {
+                try {
+                    p.addConnection(this);
+                } catch (ListSizeException e) {
+                    disconnect();
+                    e.getWarning().reportWarning();
+                    new Warning(e.getWarning()).setAffectedElement(this).reportWarning();
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    public void disconnect() {
+        this.fromPin.removeConnection(this);
+        this.toPins.forEach(p -> p.removeConnection(this));
     }
     
     public String getName() {
@@ -208,9 +241,22 @@ public abstract class Connection extends FlowChartElement {
             final ModulePin pinFrom = ok(x -> DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom), "");
             final var before = getFromPin();
             ok(ok(x -> {try {
-                setFromPin((OutputPin)pinFrom);
+                final DataSignature checkSignBefore = pinFrom.getModulePinImp() instanceof StdPin 
+                        ? ((StdPin)pinFrom.getModulePinImp()).getCheckDataSignature() : null;
+                if (checkSignBefore != null) {
+                    final var copy = checkSignBefore.getCopy();
+                    copy.deactivateChecking();
+                    try {
+                        ((StdPin)pinFrom.getModulePinImp()).setCheckDataSignature(copy);
+                    } catch (FlowException e) {
+                        // should not happen
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+                final boolean ok = setFromPin((OutputPin)pinFrom);
                 setFromPin(before);
-                return true;
+                return ok;
             } catch (ConnectionException e1) {
                 try {
                     setFromPin(before);
@@ -236,9 +282,22 @@ public abstract class Connection extends FlowChartElement {
                     ok(pinToLoadImp != null, OK.ERR_MSG_NULL);
                     final ModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
                     ok(ok(x -> {try {
-                        addToPin((InputPin)pin);
+                        final DataSignature checkSignBefore = pin.getModulePinImp() instanceof StdPin 
+                                ? ((StdPin)pin.getModulePinImp()).getCheckDataSignature() : null;
+                        if (checkSignBefore != null) {
+                            final var copy = checkSignBefore.getCopy();
+                            copy.deactivateChecking();
+                            try {
+                                ((StdPin)pin.getModulePinImp()).setCheckDataSignature(copy);
+                            } catch (FlowException e) {
+                                // should not happen
+                                e.printStackTrace();
+                                return false;
+                            }
+                        }
+                        boolean ok = addToPin((InputPin)pin);
                         removeToPin((InputPin)pin);
-                        return true;
+                        return ok;
                     } catch (ConnectionException e1) {
                         removeToPin((InputPin)pin);
                         return false;

@@ -1,5 +1,7 @@
 package org.jojo.flow.model.flowChart.connections;
 
+import java.util.stream.Collectors;
+
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
@@ -57,4 +59,11 @@ public class RigidConnection extends Connection {
         // TODO implement
     }
 
+    @Override
+    public String toString() {
+        return "ID= " + getId() + " | " + "RigidConnection from \"" + (getFromPin().getModule() != null ? getFromPin().getModule().getId() : "null") 
+                + "\" to \"" + getToPins().stream()
+                            .map(p -> p.getModule() != null ? p.getModule().getId() : "null")
+                            .collect(Collectors.toList()) + "\"";
+    }
 }

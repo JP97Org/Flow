@@ -53,6 +53,11 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
         }
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return "ModuleName= " + this.name + ", priority= " + this.priority;
+    }
 
     @Override
     public final int compareTo(final ExternalConfig o) { 
