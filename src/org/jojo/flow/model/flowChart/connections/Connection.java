@@ -160,17 +160,19 @@ public abstract class Connection extends FlowChartElement {
             final DOM toDoms = (DOM)domMap.get(ConnectionDOM.NAME_TO_PINS);
             final Map<String, Object> toMap = toDoms.getDOMMap();
             for (final var toObj : toMap.values()) {
-                final DOM toDom = (DOM)toObj;
-                final DOM cnDom = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME));
-                final String pinToLoad = cnDom.elemGet();
-                final DOM cnDomImp = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
-                final String pinToLoadImp = cnDomImp.elemGet();
-                final ModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
-                try {
-                    addToPin((InputPin)pin);
-                } catch (ConnectionException e) {
-                    // should not happen
-                    e.printStackTrace();
+                if (toObj instanceof DOM) {
+                    final DOM toDom = (DOM)toObj;
+                    final DOM cnDom = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME));
+                    final String pinToLoad = cnDom.elemGet();
+                    final DOM cnDomImp = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
+                    final String pinToLoadImp = cnDomImp.elemGet();
+                    final ModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
+                    try {
+                        addToPin((InputPin)pin);
+                    } catch (ConnectionException e) {
+                        // should not happen
+                        e.printStackTrace();
+                    }
                 }
             }
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
@@ -222,25 +224,26 @@ public abstract class Connection extends FlowChartElement {
             final DOM toDoms = (DOM)domMap.get(ConnectionDOM.NAME_TO_PINS);
             final Map<String, Object> toMap = toDoms.getDOMMap();
             for (final var toObj : toMap.values()) {
-                ok(toObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM toDom = (DOM)toObj;
-                ok(toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM cnDom = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME));
-                final String pinToLoad = cnDom.elemGet();
-                ok(pinToLoad != null, OK.ERR_MSG_NULL);
-                ok(toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM cnDomImp = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
-                final String pinToLoadImp = cnDomImp.elemGet();
-                ok(pinToLoadImp != null, OK.ERR_MSG_NULL);
-                final ModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
-                ok(ok(x -> {try {
-                    addToPin((InputPin)pin);
-                    removeToPin((InputPin)pin);
-                    return true;
-                } catch (ConnectionException e1) {
-                    removeToPin((InputPin)pin);
-                    return false;
-                }}, "").booleanValue(), "to pin adding failed");
+                if (toObj instanceof DOM) {
+                    final DOM toDom = (DOM)toObj;
+                    ok(toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                    final DOM cnDom = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME));
+                    final String pinToLoad = cnDom.elemGet();
+                    ok(pinToLoad != null, OK.ERR_MSG_NULL);
+                    ok(toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                    final DOM cnDomImp = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
+                    final String pinToLoadImp = cnDomImp.elemGet();
+                    ok(pinToLoadImp != null, OK.ERR_MSG_NULL);
+                    final ModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
+                    ok(ok(x -> {try {
+                        addToPin((InputPin)pin);
+                        removeToPin((InputPin)pin);
+                        return true;
+                    } catch (ConnectionException e1) {
+                        removeToPin((InputPin)pin);
+                        return false;
+                    }}, "").booleanValue(), "to pin adding failed");
+                }
             }
             ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);

@@ -335,22 +335,26 @@ public class FlowChart extends FlowChartElement{
             final DOM connectionsDom = (DOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS);
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
-                final DOM conDom = (DOM) conObj;
-                final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
-                final String conToLoad = cnDom.elemGet();
-                final Connection connection = DynamicObjectLoader.loadConnection(conToLoad);
-                connection.restoreFromDOM(conDom);
-                this.connections.add(connection);
+                if (conObj instanceof DOM) {
+                    final DOM conDom = (DOM) conObj;
+                    final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                    final String conToLoad = cnDom.elemGet();
+                    final Connection connection = DynamicObjectLoader.loadConnection(conToLoad);
+                    connection.restoreFromDOM(conDom);
+                    this.connections.add(connection);
+                }
             }
             final DOM modulesDom = (DOM)domMap.get(FlowChartDOM.NAME_MODULES);
             final Map<String, Object> modulesMap = modulesDom.getDOMMap();
             for (final var modObj : modulesMap.values()) {
-                final DOM modDom = (DOM) modObj;
-                final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
-                final String moduleToLoad = cnDom.elemGet();
-                final FlowModule module = DynamicObjectLoader.loadModule(moduleToLoad);
-                module.restoreFromDOM(modDom);
-                this.modules.add(module);
+                if (modObj instanceof DOM) {
+                    final DOM modDom = (DOM) modObj;
+                    final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
+                    final String moduleToLoad = cnDom.elemGet();
+                    final FlowModule module = DynamicObjectLoader.loadModule(moduleToLoad);
+                    module.restoreFromDOM(modDom);
+                    this.modules.add(module);
+                }
             }
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
             this.gr.restoreFromDOM(grDom);
@@ -372,27 +376,29 @@ public class FlowChart extends FlowChartElement{
             final DOM connectionsDom = (DOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS);
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
-                ok(conObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM conDom = (DOM) conObj;
-                ok(conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
-                final String conToLoad = cnDom.elemGet();
-                ok(conToLoad != null, OK.ERR_MSG_NULL);
-                final Connection connection = ok(c -> DynamicObjectLoader.loadConnection(c), conToLoad);
-                ok(connection.isDOMValid(conDom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
+                if (conObj instanceof DOM) {
+                    final DOM conDom = (DOM) conObj;
+                    ok(conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                    final DOM cnDom = (DOM) (conDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                    final String conToLoad = cnDom.elemGet();
+                    ok(conToLoad != null, OK.ERR_MSG_NULL);
+                    final Connection connection = ok(c -> DynamicObjectLoader.loadConnection(c), conToLoad);
+                    ok(connection.isDOMValid(conDom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
+                }
             }
             ok(domMap.get(FlowChartDOM.NAME_MODULES) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM modulesDom = (DOM)domMap.get(FlowChartDOM.NAME_MODULES);
             final Map<String, Object> modulesMap = modulesDom.getDOMMap();
             for (final var modObj : modulesMap.values()) {
-                ok(modObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM modDom = (DOM) modObj;
-                ok(modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
-                final String moduleToLoad = cnDom.elemGet();
-                ok(moduleToLoad != null, OK.ERR_MSG_NULL);
-                final FlowModule module = ok(m -> DynamicObjectLoader.loadModule(m), moduleToLoad);
-                ok(module.isDOMValid(modDom), "Module " + OK.ERR_MSG_DOM_NOT_VALID);
+                if (modObj instanceof DOM) {
+                    final DOM modDom = (DOM) modObj;
+                    ok(modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                    final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
+                    final String moduleToLoad = cnDom.elemGet();
+                    ok(moduleToLoad != null, OK.ERR_MSG_NULL);
+                    final FlowModule module = ok(m -> DynamicObjectLoader.loadModule(m), moduleToLoad);
+                    ok(module.isDOMValid(modDom), "Module " + OK.ERR_MSG_DOM_NOT_VALID);
+                }
             }
             ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);

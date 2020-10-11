@@ -1,6 +1,8 @@
 package org.jojo.flow.model.storeLoad;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class FlowDOM extends DOM {
     protected static final String NAME = "Flow";
@@ -8,14 +10,40 @@ public class FlowDOM extends DOM {
     private final DOM flowChartDOM;
     
     public FlowDOM(final DOM flowChartDOM) {
-        super(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements().createElement(NAME));
+        super(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements().hasChildNodes() 
+                ? DOM.getDocumentForCreatingElements().getElementsByTagName(NAME).item(0)
+                        : DOM.getDocumentForCreatingElements().createElement(NAME));
         this.flowChartDOM = flowChartDOM;
-        appendCustomDOM(this.flowChartDOM);
-        getDocument().appendChild(getParentNode());
+        if (!getDocument().hasChildNodes()) {
+            appendCustomDOM(this.flowChartDOM);
+            getDocument().appendChild(getParentNode());
+        }
     }
 
     public static FlowDOM of(final Document xmlDocument) {
-        return new FlowDOM(new DOM(xmlDocument, xmlDocument.getFirstChild()) {});
+        final NodeList docNodeList = xmlDocument.getChildNodes();
+        Node flowNode = null;
+        for (int i = 0; i < docNodeList.getLength(); i++) {
+            final Node node = docNodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(NAME)) {
+                flowNode = node;
+                break;
+            }
+        }
+        if (flowNode == null) {
+            //TODO warn
+            return null; 
+        }
+        final NodeList flowNodeList = flowNode.getChildNodes();
+        Node flowChartNode = null;
+        for (int i = 0; i < flowNodeList.getLength(); i++) {
+            final Node node = flowNodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(FlowChartDOM.NAME)) {
+                flowChartNode = node;
+                break;
+            }
+        }
+        return new FlowDOM(new DOM(xmlDocument, flowChartNode) {});
     }
 
     public DOM getFlowChartDOM() {

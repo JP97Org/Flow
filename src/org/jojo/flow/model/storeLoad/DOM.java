@@ -51,6 +51,10 @@ public abstract class DOM implements DOMable {
         documentStatic = null;
     }
     
+    protected static void resetDocument(final Document document) {
+        documentStatic = document;
+    }
+    
     protected void addElement(final Element element) {
         this.parent.appendChild(element);
     }
@@ -134,6 +138,11 @@ public abstract class DOM implements DOMable {
             map.put(name, elem.getAttribute(name));
         }
         
+        if (!elem.hasChildNodes()) {
+            map.put(elem.getTagName(), "");
+            return map;
+        }
+        
         for (int i = 0; elem != null && i < node.getChildNodes().getLength(); i++) {
             final Node childNode = node.getChildNodes().item(i);
             final Element childElem = childNode.getNodeType() == Node.ELEMENT_NODE ? (Element)childNode : null;
@@ -163,5 +172,39 @@ public abstract class DOM implements DOMable {
     @Override
     public boolean isDOMValid(final DOM dom) {
         return true;
+    }
+    
+    @Override
+    public int hashCode() {
+        return 1; // returns 1 because equals comparison is complicated
+    }
+    
+    @Override
+    public boolean equals(final Object other) {
+        //TODO nochmal schauen ob das so geht, oder evtl. equals und hashCode nicht anbieten
+        if (other instanceof DOM) {
+            final DOM od = (DOM)other;
+            final boolean ret = true;
+            final var thisMap = getDOMMap();
+            final var otherMap = od.getDOMMap();
+            for (final String key : thisMap.keySet()) {
+                final Object val = thisMap.get(key);
+                if (val instanceof String && val.toString().matches("\\s*")) {
+                    continue;
+                }
+                if (otherMap.containsKey(key)) {
+                    return val.equals(otherMap.get(key));
+                }
+                return false;
+            }
+            return ret;
+            //return getDOMMap().equals(od.getDOMMap());
+        }
+        return false;
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getName() + " | parent= " + this.parent.toString();
     }
 }

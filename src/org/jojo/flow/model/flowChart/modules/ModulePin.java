@@ -115,14 +115,16 @@ public abstract class ModulePin extends Subject implements DOMable {
             final DOM conIdsDom = (DOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
             final Map<String, Object> conIdsMap = conIdsDom.getDOMMap();
             for (Object conIdObj : conIdsMap.values()) {
-                final DOM conIdDom = (DOM)conIdObj;
-                final int conId = Integer.parseInt(conIdDom.elemGet());
-                final Connection con = (Connection)new ModelFacade().getElementById(conId);
-                try {
-                    addConnection(con);
-                } catch (ListSizeException e) {
-                    // should not happen
-                    e.printStackTrace();
+                if (conIdObj instanceof DOM) {
+                    final DOM conIdDom = (DOM)conIdObj;
+                    final int conId = Integer.parseInt(conIdDom.elemGet());
+                    final Connection con = (Connection)new ModelFacade().getElementById(conId);
+                    try {
+                        addConnection(con);
+                    } catch (ListSizeException e) {
+                        // should not happen
+                        e.printStackTrace();
+                    }
                 }
             }
             final DOM defaultDataDom = (DOM)domMap.get("defaultData");
@@ -167,17 +169,18 @@ public abstract class ModulePin extends Subject implements DOMable {
             final DOM conIdsDom = (DOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
             final Map<String, Object> conIdsMap = conIdsDom.getDOMMap();
             for (Object conIdObj : conIdsMap.values()) {
-                ok(conIdObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM conIdDom = (DOM)conIdObj;
-                final int conId = ok(x -> Integer.parseInt(conIdDom.elemGet()), "");
-                final Connection con = ok(x -> (Connection)new ModelFacade().getElementById(conId), "");
-                ok(ok(x -> {try {
-                    addConnection(con);
-                    removeConnection(con);
-                    return true;
-                } catch (ListSizeException e) {
-                    return false;
-                }}, "").booleanValue(), "connection could not be added to due ListSizeException");
+                if (conIdObj instanceof DOM) {
+                    final DOM conIdDom = (DOM)conIdObj;
+                    final int conId = ok(x -> Integer.parseInt(conIdDom.elemGet()), "");
+                    final Connection con = ok(x -> (Connection)new ModelFacade().getElementById(conId), "");
+                    ok(ok(x -> {try {
+                        addConnection(con);
+                        removeConnection(con);
+                        return true;
+                    } catch (ListSizeException e) {
+                        return false;
+                    }}, "").booleanValue(), "connection could not be added to due ListSizeException");
+                }
             }
             ok(domMap.get("defaultData") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM defaultDataDom = (DOM)domMap.get("defaultData");

@@ -160,18 +160,22 @@ public class OneConnectionGR extends GraphicalRepresentation {
             final DOM connectionsDom = (DOM)domMap.get("lines");
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var lineObj : connectionsMap.values()) {
-                final DOM lineDomGr = (DOM) lineObj;
-                final DOM cnDom = (DOM) lineDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
-                final String lineToLoad = cnDom.elemGet();
-                final ConnectionLineGR line = (ConnectionLineGR) DynamicObjectLoader.loadGR(lineToLoad);
-                line.restoreFromDOM(lineDomGr);
-                this.lines.add(line);
+                if (lineObj instanceof DOM) {
+                    final DOM lineDomGr = (DOM) lineObj;
+                    final DOM cnDom = (DOM) lineDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+                    final String lineToLoad = cnDom.elemGet();
+                    final ConnectionLineGR line = (ConnectionLineGR) DynamicObjectLoader.loadGR(lineToLoad);
+                    line.restoreFromDOM(lineDomGr);
+                    this.lines.add(line);
+                }
             }
             final DOM pointsDom = (DOM)domMap.get("diversionPoints");
             final Map<String, Object> pointsMap = pointsDom.getDOMMap();
             for (final var pointObj : pointsMap.values()) {
-                final DOM pointDom = (DOM) pointObj;
-                this.diversionPoints.add(PointDOM.pointOf(pointDom));
+                if (pointObj instanceof DOM) {
+                    final DOM pointDom = (DOM) pointObj;
+                    this.diversionPoints.add(PointDOM.pointOf(pointDom));
+                }
             }
             final DOM colorDom = (DOM)domMap.get("color");
             final String rgbStr = colorDom.elemGet();
@@ -210,22 +214,24 @@ public class OneConnectionGR extends GraphicalRepresentation {
             final DOM connectionsDom = (DOM)domMap.get("lines");
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var lineObj : connectionsMap.values()) {
-                ok(lineObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM lineDomGr = (DOM) lineObj;
-                ok(lineDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM cnDom = (DOM) lineDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
-                final String lineToLoad = cnDom.elemGet();
-                ok(lineToLoad != null, OK.ERR_MSG_NULL);
-                final ConnectionLineGR line = ok(l -> (ConnectionLineGR) DynamicObjectLoader.loadGR(l), lineToLoad);
-                ok(line.isDOMValid(lineDomGr), "Line " + OK.ERR_MSG_DOM_NOT_VALID);
+                if (lineObj instanceof DOM) {
+                    final DOM lineDomGr = (DOM) lineObj;
+                    ok(lineDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                    final DOM cnDom = (DOM) lineDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+                    final String lineToLoad = cnDom.elemGet();
+                    ok(lineToLoad != null, OK.ERR_MSG_NULL);
+                    final ConnectionLineGR line = ok(l -> (ConnectionLineGR) DynamicObjectLoader.loadGR(l), lineToLoad);
+                    ok(line.isDOMValid(lineDomGr), "Line " + OK.ERR_MSG_DOM_NOT_VALID);
+                }
             }
             ok(domMap.get("diversionPoints") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM pointsDom = (DOM)domMap.get("diversionPoints");
             final Map<String, Object> pointsMap = pointsDom.getDOMMap();
             for (final var pointObj : pointsMap.values()) {
-                ok(pointObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM pointDom = (DOM) pointObj;
-                ok(d -> PointDOM.pointOf(d), pointDom);
+                if (pointObj instanceof DOM) {
+                    final DOM pointDom = (DOM) pointObj;
+                    ok(d -> PointDOM.pointOf(d), pointDom);
+                }
             }
             ok(domMap.get("color") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM colorDom = (DOM)domMap.get("color");

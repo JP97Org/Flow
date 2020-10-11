@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.FlowChart;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class StoreLoadFacade {
@@ -27,7 +28,9 @@ public class StoreLoadFacade {
                 e.printStackTrace();
                 return null;
             }
-            final FlowDOM flowDom = FlowDOM.of(docStr.getDocument());
+            final Document document = docStr.getDocument();
+            DOM.resetDocument(document);
+            final FlowDOM flowDom = FlowDOM.of(document);
             final DOM fcDom = flowDom.getFlowChartDOM();
             return DynamicObjectLoader.loadFlowChartFromDOM(fcDom);
         }
@@ -47,6 +50,7 @@ public class StoreLoadFacade {
                 new Warning(null, e.toString(), true).reportWarning();
                 return false;
             }
+            DOM.resetDocument();
             return true;
         }
         return false;

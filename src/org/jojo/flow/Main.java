@@ -34,6 +34,15 @@ public class Main {
         final DOM flowDom = new FlowDOM(dom);
         new StoreLoadFacade().storeFlowChart(new File("/home/jojo/Schreibtisch/flow.xml"), flowDom);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
+        
+        ModelFacade.flowChart = new StoreLoadFacade().loadFlowChart(new File("/home/jojo/Schreibtisch/flow.xml"));
+        flowChart = ModelFacade.flowChart;
+        System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
+        final DOM newFcDom = flowChart.getDOM();
+        System.out.println(flowChart.isDOMValid(dom));
+        final DOM newDom = new FlowDOM(newFcDom);
+        System.out.println(newDom.getDOMMap());
+        System.out.print(flowDom.equals(newDom));
         /*
         flowChart.restoreFromDOM(new DOM(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements()) {});
         System.out.println(flowChart.isDOMValid(new DOM(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements()) {}));

@@ -80,10 +80,12 @@ public class StdArrowGR extends ConnectionGR {
             final DOM connectionsDom = (DOM)domMap.get("connections");
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
-                final DOM conDom = (DOM)conObj;
-                final OneConnectionGR con = (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName());
-                con.restoreFromDOM(conDom);
-                addConnection(con);
+                if (conObj instanceof DOM) {
+                    final DOM conDom = (DOM)conObj;
+                    final OneConnectionGR con = (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName());
+                    con.restoreFromDOM(conDom);
+                    addConnection(con);
+                }
             }
             //TODO Arrow Shapes
             notifyObservers();
@@ -110,12 +112,13 @@ public class StdArrowGR extends ConnectionGR {
             final DOM connectionsDom = (DOM)domMap.get("connections");
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
-                ok(conObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM conDom = (DOM)conObj;
-                final OneConnectionGR con = ok(d -> (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName()), "");
-                ok(con.isDOMValid(conDom), "OneConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
-                ok(con.getToPin() instanceof StdInputPinGR, OK.ERR_MSG_WRONG_CAST);
-                ok(isAddable(con), "OneConnectionGR " + con + "not addable");
+                if (conObj instanceof DOM) {
+                    final DOM conDom = (DOM)conObj;
+                    final OneConnectionGR con = ok(d -> (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName()), "");
+                    ok(con.isDOMValid(conDom), "OneConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
+                    ok(con.getToPin() instanceof StdInputPinGR, OK.ERR_MSG_WRONG_CAST);
+                    ok(isAddable(con), "OneConnectionGR " + con + "not addable");
+                }
             }
             //TODO Arrow Shapes
             return true;

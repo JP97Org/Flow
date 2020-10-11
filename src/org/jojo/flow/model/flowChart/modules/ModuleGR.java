@@ -180,7 +180,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
             this.isIconTextAllowed = Boolean.parseBoolean(isIconTextAllowedStr);
             if (this.isIconTextAllowed) {
                 final DOM iconTextDom = (DOM) domMap.get("iconText");
-                this.iconText = iconTextDom.elemGet();
+                this.iconText = iconTextDom.elemGet() == null ? "" : iconTextDom.elemGet();
             }
             final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
             final String hStr = hDom.elemGet();
@@ -192,10 +192,13 @@ public abstract class ModuleGR extends FlowChartElementGR {
             final Map<String, Object> cornersMap = cornersDom.getDOMMap();
             int i = 0;
             for (final var cornerObj : cornersMap.values()) {
-                final DOM cornerDom = (DOM) cornerObj;
-                this.corners[i] = PointDOM.pointOf(cornerDom);
-                i++;
+                if (cornerObj instanceof DOM) {
+                    final DOM cornerDom = (DOM) cornerObj;
+                    this.corners[i] = PointDOM.pointOf(cornerDom);
+                    i++;
+                }
             }
+            assert i == 4;
             notifyObservers();
         }
     }
@@ -223,8 +226,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
             ok(isIconTextAllowedStr != null, OK.ERR_MSG_NULL);
             final boolean isIconTextAllowed = ok(s -> Boolean.parseBoolean(s), isIconTextAllowedStr);
             if (isIconTextAllowed) {
-                final DOM iconTextDom = (DOM) domMap.get("iconText");
-                ok(iconTextDom.elemGet() != null, OK.ERR_MSG_NULL);
+                ok(domMap.get("iconText") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             }
             ok(domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
@@ -241,10 +243,11 @@ public abstract class ModuleGR extends FlowChartElementGR {
             final Map<String, Object> cornersMap = cornersDom.getDOMMap();
             int i = 0;
             for (final var cornerObj : cornersMap.values()) {
-                ok(cornerObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM cornerDom = (DOM) cornerObj;
-                ok(d -> PointDOM.pointOf(d), cornerDom);
-                i++;
+                if (cornerObj instanceof DOM) {
+                    final DOM cornerDom = (DOM) cornerObj;
+                    ok(d -> PointDOM.pointOf(d), cornerDom);
+                    i++;
+                }
             }
             ok(i == 4, "Not 4 corners, corners count: " + i);
             return true;

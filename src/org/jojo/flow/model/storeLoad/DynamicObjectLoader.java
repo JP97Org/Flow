@@ -54,8 +54,14 @@ public class DynamicObjectLoader {
     }
     
     public static FlowChart restoreFlowChartFromDOM(final FlowChart flowChart, final DOM flowChartDOM) {
-        Objects.requireNonNull(flowChart).restoreFromDOM(flowChartDOM);
-        return flowChart;
+        Objects.requireNonNull(flowChart);
+        Objects.requireNonNull(flowChartDOM);
+        if (flowChart.isDOMValid(flowChartDOM)) {
+            Objects.requireNonNull(flowChart).restoreFromDOM(flowChartDOM);
+            DOM.resetDocument();
+            return flowChart;
+        }
+        return null;
     }
     
     public static Connection loadConnection(final String className) {
@@ -186,14 +192,16 @@ public class DynamicObjectLoader {
                 final Map<String, Object> domMap = pinsDom.getDOMMap();
                 int i = 0;
                 for(var pinObj : domMap.values()) {
-                    final DOM pinDom = (DOM) pinObj;
-                    final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
-                    final String pinCn = pinCnDom.elemGet();
-                    final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
-                    final String pinCnImp = pinCnDomImp.elemGet();
-                    this.pin = loadPin(pinCn, pinCnImp);
-                    this.pin.restoreFromDOM(pinDom);
-                    i++;
+                    if (pinObj instanceof DOM) {
+                        final DOM pinDom = (DOM) pinObj;
+                        final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
+                        final String pinCn = pinCnDom.elemGet();
+                        final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
+                        final String pinCnImp = pinCnDomImp.elemGet();
+                        this.pin = loadPin(pinCn, pinCnImp);
+                        this.pin.restoreFromDOM(pinDom);
+                        i++;
+                    }
                 }
                 assert (i == 1);
             }
@@ -206,15 +214,16 @@ public class DynamicObjectLoader {
             try {
                 int i = 0;
                 for(var pinObj : domMap.values()) {
-                    ok(pinObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                    final DOM pinDom = (DOM) pinObj;
-                    final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
-                    final String pinCn = pinCnDom.elemGet();
-                    final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
-                    final String pinCnImp = pinCnDomImp.elemGet();
-                    this.pin = loadPin(pinCn, pinCnImp);
-                    this.pin.restoreFromDOM(pinDom);
-                    i++;
+                    if (pinObj instanceof DOM) {
+                        final DOM pinDom = (DOM) pinObj;
+                        final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
+                        final String pinCn = pinCnDom.elemGet();
+                        final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
+                        final String pinCnImp = pinCnDomImp.elemGet();
+                        this.pin = loadPin(pinCn, pinCnImp);
+                        this.pin.restoreFromDOM(pinDom);
+                        i++;
+                    }
                 }
                 ok(i == 1, "to many or not enough pins should= 1, is = " + i);
                 return true;

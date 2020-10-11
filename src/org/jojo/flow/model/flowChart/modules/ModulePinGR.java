@@ -102,7 +102,7 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
             final String str = domIs.elemGet();
             this.isIconTextAllowed = Boolean.parseBoolean(str);
             final DOM domIct = (DOM) domMap.get("iconText");
-            this.iconText = domIct.elemGet();
+            this.iconText = domIct.elemGet() == null ? "" : domIct.elemGet();
             final DOM lp = (DOM) domMap.get("linePoint");
             this.linePoint = PointDOM.pointOf(lp);
             final DOM pOr = (DOM) domMap.get("pinOrientation");
@@ -128,9 +128,6 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
             ok(str != null, OK.ERR_MSG_NULL);
             ok(s -> Boolean.parseBoolean(s), str);
             ok(domMap.get("iconText") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM domIct = (DOM) domMap.get("iconText");
-            final String iconText = domIct.elemGet();
-            ok(iconText != null, OK.ERR_MSG_NULL);
             ok(domMap.get("linePoint") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM lp = (DOM) domMap.get("linePoint");
             ok(p -> PointDOM.pointOf(p), lp);
