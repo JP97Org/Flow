@@ -1,6 +1,9 @@
 package org.jojo.flow;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.data.BasicSignatureComponents;
@@ -19,8 +22,10 @@ import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.DynamicClassLoader;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.FlowDOM;
+import org.jojo.flow.model.storeLoad.ModuleClassesList;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
@@ -30,9 +35,8 @@ public class Main {
     public static void main(String[] args) {
         FlowChart flowChart = new FlowChart(0, new FlowChartGR());
         ModelFacade.flowChart = flowChart;
-        final MockModule mod = (MockModule)DynamicObjectLoader.loadModule(DynamicObjectLoader.MockModule.class.getName());
+        final MockModule mod = (MockModule)DynamicObjectLoader.loadModule(DynamicObjectLoader.MockModule.class.getName(), 100);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        mod.setId(100);
         flowChart.addModule(mod);
         final Connection con = DynamicObjectLoader.loadConnection(DefaultArrow.class.getName());
         final Connection rigidCon = DynamicObjectLoader.loadConnection(RigidConnection.class.getName());
@@ -102,6 +106,24 @@ public class Main {
         System.out.println(originalFcStr);
         System.out.println(flowChart.toString().equals(original0));
         System.out.println(original0.equals(originalFcStr));
-        System.out.print(dom.equals(newDomOfFc));
+        System.out.println(dom.equals(newDomOfFc));
+        
+        //Class Loader Test
+        final var classLoader = new DynamicClassLoader(new File("/home/jojo/tmp/flow"));
+        try {
+            final List<Class<? extends FlowModule>> moduleClasses = new ModuleClassesList(classLoader, 
+                    true, 
+                    new File("/home/jojo/qfpm.jar")).getModuleClassesList();
+            System.out.println(moduleClasses);
+            final FlowModule loaded = DynamicObjectLoader.loadModule(classLoader, moduleClasses.get(0).getName(), 400);
+            System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
+            flowChart = new FlowChart(0, new FlowChartGR());
+            ModelFacade.flowChart = flowChart;
+            flowChart.addModule(loaded);
+            System.out.println(flowChart);
+        } catch (ClassNotFoundException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
     }
 }

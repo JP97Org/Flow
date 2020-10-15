@@ -53,12 +53,14 @@ public class FlowChart extends FlowChartElement{
     }
     
     public void addModule(final FlowModule module) {
+        Objects.requireNonNull(module);
         this.modules.add(module);
         this.gr.addModule((ModuleGR) module.getGraphicalRepresentation());
         notifyObservers(module);
     }
     
     public boolean addConnection(final Connection connection) {
+        Objects.requireNonNull(connection);
         final boolean ok = connection.connect();
         if (ok) {
             this.connections.add(connection);
@@ -410,7 +412,7 @@ public class FlowChart extends FlowChartElement{
                     final DOM modDom = (DOM) modObj;
                     final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
                     final String moduleToLoad = cnDom.elemGet();
-                    final FlowModule module = DynamicObjectLoader.loadModule(moduleToLoad);
+                    final FlowModule module = DynamicObjectLoader.loadModule(moduleToLoad, 0);
                     this.modules.add(module);
                     final DOM moduleIdDom = (DOM)modDom.getDOMMap().get(ConnectionDOM.NAME_ID);
                     module.setId(Integer.parseInt(moduleIdDom.elemGet()));
@@ -462,7 +464,7 @@ public class FlowChart extends FlowChartElement{
                     final DOM cnDom = (DOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
                     final String moduleToLoad = cnDom.elemGet();
                     ok(moduleToLoad != null, OK.ERR_MSG_NULL);
-                    final FlowModule module = ok(m -> DynamicObjectLoader.loadModule(m), moduleToLoad);
+                    final FlowModule module = ok(m -> DynamicObjectLoader.loadModule(m, 0), moduleToLoad);
                     ok(module.isDOMValid(modDom), "Module " + OK.ERR_MSG_DOM_NOT_VALID);
                 }
             }

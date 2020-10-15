@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.Window;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,7 +42,7 @@ import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
 
-public class DynamicObjectLoader {
+public final class DynamicObjectLoader {
     private static final Point INPOS = new Point(50, 50);
     
     //TODO werden spaeter evtl. private
@@ -172,11 +171,19 @@ public class DynamicObjectLoader {
         return new RigidPin(module, gr);
     }
     
-    public static FlowModule loadModule(final String className) {
+    private static FlowModule loadModule(final String className) {
+        return loadModule(className, 0);
+    }
+    
+    public static FlowModule loadModule(final String className, final int id) {
+        return loadModule(DynamicObjectLoader.class.getClassLoader(), className, id);
+    }
+    
+    public static FlowModule loadModule(final ClassLoader classLoader, final String className, final int id) {
         try {
-            final Class<?> moduleToLoadClass = Class.forName(className);
+            final Class<?> moduleToLoadClass = Class.forName(className, true, classLoader);
             final var constr = moduleToLoadClass.getConstructor(int.class, ExternalConfig.class);
-            final Object modObj = constr.newInstance(0, new ExternalConfig("NAME", 0));
+            final Object modObj = constr.newInstance(id, new ExternalConfig("NAME", 0));
             final FlowModule ret = (FlowModule)modObj;
             
             // TODO remove this if clause, it is only for debugging
