@@ -73,7 +73,7 @@ public class FlowChart extends FlowChartElement{
         return ok;
     }
     
-    public boolean connectAll() { //TODO wird spaeter evtl. private
+    private boolean connectAll() { //TODO wird spaeter evtl. private
         boolean ret = reconnect();
         removeDuplicatePins();
         ret &= reconnect();

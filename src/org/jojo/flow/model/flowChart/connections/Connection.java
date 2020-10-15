@@ -185,9 +185,18 @@ public abstract class Connection extends FlowChartElement {
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
             final ModulePin pinFrom = DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
             pinFrom.restoreFromDOM(fromDom);
+            final DataSignature fromBeforeSign = pinFrom.getModulePinImp() instanceof DefaultPin 
+                    ? ((DefaultPin)pinFrom.getModulePinImp()).getCheckDataSignature().getCopy()
+                            : null;
+            if (fromBeforeSign != null) {
+                ((DefaultPin)pinFrom.getModulePinImp()).getCheckDataSignature().deactivateChecking();
+            }
             try {
                 setFromPin((OutputPin)pinFrom);
-            } catch (ConnectionException e1) {
+                if (fromBeforeSign != null) {
+                    ((DefaultPin)pinFrom.getModulePinImp()).setCheckDataSignature(fromBeforeSign);
+                }
+            } catch (FlowException e1) {
                 // should not happen
                 e1.printStackTrace();
             }
@@ -202,9 +211,18 @@ public abstract class Connection extends FlowChartElement {
                     final String pinToLoadImp = cnDomImp.elemGet();
                     final ModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
                     pin.restoreFromDOM(toDom);
+                    final DataSignature toBeforeSign = pin.getModulePinImp() instanceof DefaultPin 
+                            ? ((DefaultPin)pin.getModulePinImp()).getCheckDataSignature().getCopy()
+                                    : null;
+                    if (toBeforeSign != null) {
+                        ((DefaultPin)pin.getModulePinImp()).getCheckDataSignature().deactivateChecking();
+                    }
                     try {
                         addToPin((InputPin)pin);
-                    } catch (ConnectionException e) {
+                        if (toBeforeSign != null) {
+                            ((DefaultPin)pin.getModulePinImp()).setCheckDataSignature(toBeforeSign);
+                        }
+                    } catch (FlowException e) {
                         // should not happen
                         e.printStackTrace();
                     }

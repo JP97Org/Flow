@@ -33,7 +33,7 @@ public abstract class ModulePinImp {
     public synchronized boolean addConnection(final Connection toAdd)  {
         final boolean ret = toAdd.isPinImpInConnection(this);
         if (ret) {
-            this.connections.add(toAdd); //TODO check whether pin is in connection
+            this.connections.add(toAdd);
         }
         return ret;
     }

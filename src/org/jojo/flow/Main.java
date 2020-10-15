@@ -57,6 +57,7 @@ public class Main {
         }
         rigidCon.removeToPin(0);
         try {
+            con.setFromPin(mod.getAllOutputs().get(0));
             ((DefaultPin)(mod.getAllInputs().get(0).getModulePinImp()))
                 .getCheckDataSignature()
                 .getComponent(BasicSignatureComponents.SIZES.index)
@@ -72,7 +73,7 @@ public class Main {
         }
         System.out.println(flowChart.addConnection(con));
         System.out.println(flowChart.addConnection(rigidCon));
-        System.out.println(flowChart.connectAll());
+        //System.out.println(flowChart.connectAll());
         final String original0 = flowChart.toString();
         System.out.println(original0);
         final var dom = flowChart.getDOM();

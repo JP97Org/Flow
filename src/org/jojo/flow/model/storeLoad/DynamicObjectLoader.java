@@ -148,20 +148,28 @@ public class DynamicObjectLoader {
             if (classNameImp.equals(DefaultPin.class.getName())) {
                 return new InputPin(new DefaultPin(module, new StringDataSet("")), (DefaultInputPinGR)loadGR(DefaultInputPinGR.class.getName()));
             } else if (classNameImp.equals(RigidPin.class.getName())) {
-                final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
-                return new InputPin(new RigidPin(module, gr), gr);
+                final RigidPin rigidPin = loadRigidPin(module);
+                return rigidPin.getInputPin();
             }
         } else if (className.equals(OutputPin.class.getName())) {
             if (classNameImp.equals(DefaultPin.class.getName())) {
                 return new OutputPin(new DefaultPin(module, new StringDataSet("")), (DefaultOutputPinGR)loadGR(DefaultOutputPinGR.class.getName()));
             } else if (classNameImp.equals(RigidPin.class.getName())) {
-                final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
-                return new OutputPin(new RigidPin(module, gr), gr);
+                final RigidPin rigidPin = loadRigidPin(module);
+                return rigidPin.getOutputPin();
             }
         }
         
         System.err.println("class not found: " + className + "!"); //TODO EXC
         return null;
+    }
+    
+    public static RigidPin loadRigidPin(final FlowModule moduleArg) {
+        //TODO evtl. auch noch anders machen anstatt das MockModule zur erzeugung
+        final FlowModule mock = ModelFacade.mock;
+        final FlowModule module = moduleArg == null ? mock : moduleArg;
+        final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
+        return new RigidPin(module, gr);
     }
     
     public static FlowModule loadModule(final String className) {
@@ -204,13 +212,15 @@ public class DynamicObjectLoader {
             ret.add(this.pinIn);
             if (this.rigidPins == null) {
                 this.rigidPins = new ArrayList<>();
-                this.rigidPins.addAll(Arrays.asList(loadPin(OutputPin.class.getName(), RigidPin.class.getName(), this), 
-                        loadPin(InputPin.class.getName(), RigidPin.class.getName(), this)));
-                this.rigidPins.forEach(p -> ((ModulePinGR)p.getGraphicalRepresentation()).setLinePoint(RIGID_ONE_POS));
-                final List<ModulePin> rigidPins = Arrays.asList(loadPin(OutputPin.class.getName(), RigidPin.class.getName(), this), 
-                        loadPin(InputPin.class.getName(), RigidPin.class.getName(), this));
-                rigidPins.forEach(p -> ((ModulePinGR)p.getGraphicalRepresentation()).setLinePoint(RIGID_TWO_POS));
-                this.rigidPins.addAll(rigidPins);
+                final RigidPin rigidPinOne = loadRigidPin(this);
+                ((ModulePinGR) rigidPinOne.getOutputPin().getGraphicalRepresentation()).setLinePoint(RIGID_ONE_POS);
+                
+                final RigidPin rigidPinTwo = loadRigidPin(this);
+                ((ModulePinGR) rigidPinTwo.getOutputPin().getGraphicalRepresentation()).setLinePoint(RIGID_TWO_POS);
+                this.rigidPins.add(rigidPinOne.getOutputPin());
+                this.rigidPins.add(rigidPinOne.getInputPin());
+                this.rigidPins.add(rigidPinTwo.getOutputPin());
+                this.rigidPins.add(rigidPinTwo.getInputPin());
             }
             ret.addAll(this.rigidPins);
             return ret;
@@ -251,12 +261,46 @@ public class DynamicObjectLoader {
                                 this.pinIn.restoreFromDOM(pinDom);
                             }
                         } else {
-                            this.rigidPins.add(loadPin(pinCn, pinCnImp, this));
+                            if (this.rigidPins.isEmpty()) {
+                                this.rigidPins.add(loadPin(pinCn, pinCnImp, this));
+                            } else {
+                                Point lastLinePoint = null;
+                                final Point thisLinePoint = PointDOM.pointOf((DOM) ((DOM) pinDom.getDOMMap()
+                                        .get(GraphicalRepresentationDOM.NAME)).getDOMMap()
+                                        .get("linePoint"));
+                                int index = 0;
+                                inner:
+                                for (; index < this.rigidPins.size(); index++) {
+                                    lastLinePoint = ((ModulePinGR) this.rigidPins.get(index)
+                                            .getGraphicalRepresentation()).getLinePoint();
+                                    if (thisLinePoint.equals(lastLinePoint)) {
+                                        break inner;
+                                    }
+                                }
+                                index = index == this.rigidPins.size() ? 0 : index;
+                                
+                                if (pinCn.equals(OutputPin.class.getName())) {
+                                    if (thisLinePoint.equals(lastLinePoint)) {
+                                        this.rigidPins.add(((RigidPin) this.rigidPins.get(index)
+                                                .getModulePinImp()).getOutputPin());
+                                    } else {
+                                        this.rigidPins.add(loadPin(pinCn, pinCnImp, this));
+                                    }
+                                } else {
+                                    if (thisLinePoint.equals(lastLinePoint)) {
+                                        this.rigidPins.add(((RigidPin) this.rigidPins.get(index)
+                                                .getModulePinImp()).getInputPin());
+                                    } else {
+                                        this.rigidPins.add(loadPin(pinCn, pinCnImp, this));
+                                    }
+                                }
+                            }
                             this.rigidPins.get(this.rigidPins.size() - 1).restoreFromDOM(pinDom);
                         }
                         i++;
                     }
                 }
+                assert (this.rigidPins.size() == 4);
                 assert (i == 6);
             }
         }
