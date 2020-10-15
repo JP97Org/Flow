@@ -13,27 +13,27 @@ import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
-import org.jojo.flow.model.flowChart.modules.StdPin;
+import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
-import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
-import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
+import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
+import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
-public class StdArrow extends Connection {
+public class DefaultArrow extends Connection {
     private DataSignature dataType;
     private Data data;
     private GraphicalRepresentation gr;
     
-    public StdArrow(final int id, final OutputPin fromPin, final InputPin toPin, final String name) throws ConnectionException {
+    public DefaultArrow(final int id, final OutputPin fromPin, final InputPin toPin, final String name) throws ConnectionException {
         super(id, fromPin, name);
-        this.dataType = ((StdPin)fromPin.getModulePinImp()).getCheckDataSignature();
+        this.dataType = ((DefaultPin)fromPin.getModulePinImp()).getCheckDataSignature();
         this.data = null;
         addToPin(toPin);
-        this.gr = new StdArrowGR((StdOutputPinGR)(fromPin.getGraphicalRepresentation()), 
-                (StdInputPinGR)(toPin.getGraphicalRepresentation()), 
+        this.gr = new DefaultArrowGR((DefaultOutputPinGR)(fromPin.getGraphicalRepresentation()), 
+                (DefaultInputPinGR)(toPin.getGraphicalRepresentation()), 
                 (Shape)null); //TODO get arrow shape
     }
     
@@ -76,18 +76,18 @@ public class StdArrow extends Connection {
 
     @Override
     protected boolean connectionMatchesPins() {
-        return getFromPin().getModulePinImp() instanceof StdPin 
-                && getToPins().stream().allMatch(x -> x.getModulePinImp() instanceof StdPin);
+        return getFromPin().getModulePinImp() instanceof DefaultPin 
+                && getToPins().stream().allMatch(x -> x.getModulePinImp() instanceof DefaultPin);
     }
 
     @Override
     protected boolean checkDataTypes() {
         if (connectionMatchesPins()) {
-            final StdPin fromImp = (StdPin) getFromPin().getModulePinImp();
+            final DefaultPin fromImp = (DefaultPin) getFromPin().getModulePinImp();
             return getToPins()
                     .stream()
                     .allMatch(x -> fromImp.getCheckDataSignature()
-                            .equals(((StdPin)x.getModulePinImp()).getCheckDataSignature()));
+                            .equals(((DefaultPin)x.getModulePinImp()).getCheckDataSignature()));
         }
         return false;
     }
@@ -188,7 +188,7 @@ public class StdArrow extends Connection {
 
     @Override
     public String toString() {
-        return "ID= " + getId() + " | " + "StdArrow from \"" + (getFromPin().getModule() != null ? getFromPin().getModule().getId() : "null") 
+        return "ID= " + getId() + " | " + "DefaultArrow from \"" + (getFromPin().getModule() != null ? getFromPin().getModule().getId() : "null") 
                 + "\" to \"" + getToPins().stream()
                             .map(p -> p.getModule() != null ? p.getModule().getId() : "null")
                             .collect(Collectors.toList()) + "\"";

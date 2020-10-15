@@ -3,13 +3,21 @@ package org.jojo.flow;
 import java.io.File;
 
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.data.BasicSignatureComponents;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionException;
+import org.jojo.flow.model.flowChart.connections.DefaultArrow;
+import org.jojo.flow.model.flowChart.connections.RigidConnection;
+import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
+import org.jojo.flow.model.flowChart.modules.InputPin;
+import org.jojo.flow.model.flowChart.modules.ModulePinGR;
+import org.jojo.flow.model.flowChart.modules.OutputPin;
+import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.FlowDOM;
@@ -26,14 +34,44 @@ public class Main {
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
         mod.setId(100);
         flowChart.addModule(mod);
-        final Connection con = DynamicObjectLoader.loadConnection("");
+        final Connection con = DynamicObjectLoader.loadConnection(DefaultArrow.class.getName());
+        final Connection rigidCon = DynamicObjectLoader.loadConnection(RigidConnection.class.getName());
+        try {
+            final var field = FlowChartElement.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(con, 1000);
+            field.set(rigidCon, 2000);
+            field.setAccessible(false);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1) {
+            e1.printStackTrace();
+        }
         con.removeToPin(0);
         try {
+            rigidCon.setFromPin(mod.getAllOutputs().stream()
+                    .filter(p -> p instanceof OutputPin)
+                    .filter(p -> ((ModulePinGR)p.getGraphicalRepresentation())
+                            .getLinePoint().equals(DynamicObjectLoader.RIGID_ONE_POS))
+                    .findFirst().orElse(null));
+        } catch (ConnectionException e1) {
+            e1.printStackTrace();
+        }
+        rigidCon.removeToPin(0);
+        try {
+            ((DefaultPin)(mod.getAllInputs().get(0).getModulePinImp()))
+                .getCheckDataSignature()
+                .getComponent(BasicSignatureComponents.SIZES.index)
+                .deactivateChecking();
             con.addToPin(mod.getAllInputs().get(0));
+            rigidCon.addToPin(mod.getAllInputs().stream()
+                    .filter(p -> p instanceof InputPin)
+                    .filter(p -> ((ModulePinGR)p.getGraphicalRepresentation())
+                            .getLinePoint().equals(DynamicObjectLoader.RIGID_TWO_POS))
+                    .findFirst().orElse(null));
         } catch (ConnectionException e) {
             e.printStackTrace();
         }
         System.out.println(flowChart.addConnection(con));
+        System.out.println(flowChart.addConnection(rigidCon));
         System.out.println(flowChart.connectAll());
         final String original0 = flowChart.toString();
         System.out.println(original0);
@@ -59,6 +97,8 @@ public class Main {
         System.out.println(newDom.getDOMMap());
         final DOM newDomOfFc = flowChart.getDOM();
         System.out.println(flowChart);
+        System.out.println(original0);
+        System.out.println(originalFcStr);
         System.out.println(flowChart.toString().equals(original0));
         System.out.println(original0.equals(originalFcStr));
         System.out.print(dom.equals(newDomOfFc));

@@ -17,7 +17,7 @@ import org.jojo.flow.model.flowChart.modules.ListSizeException;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.ModulePinImp;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
-import org.jojo.flow.model.flowChart.modules.StdPin;
+import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
@@ -184,6 +184,7 @@ public abstract class Connection extends FlowChartElement {
             final DOM cnDomImpFrom = (DOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
             final ModulePin pinFrom = DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
+            pinFrom.restoreFromDOM(fromDom);
             try {
                 setFromPin((OutputPin)pinFrom);
             } catch (ConnectionException e1) {
@@ -200,6 +201,7 @@ public abstract class Connection extends FlowChartElement {
                     final DOM cnDomImp = (DOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
                     final String pinToLoadImp = cnDomImp.elemGet();
                     final ModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
+                    pin.restoreFromDOM(toDom);
                     try {
                         addToPin((InputPin)pin);
                     } catch (ConnectionException e) {
@@ -240,21 +242,26 @@ public abstract class Connection extends FlowChartElement {
             ok(pinToLoadImpFrom != null, OK.ERR_MSG_NULL);
             final ModulePin pinFrom = ok(x -> DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom), "");
             final var before = getFromPin();
+            final var fromDomFinal = fromDom;
             ok(ok(x -> {try {
-                final DataSignature checkSignBefore = pinFrom.getModulePinImp() instanceof StdPin 
-                        ? ((StdPin)pinFrom.getModulePinImp()).getCheckDataSignature() : null;
+                final DataSignature checkSignBefore = pinFrom.getModulePinImp() instanceof DefaultPin 
+                        ? ((DefaultPin)pinFrom.getModulePinImp()).getCheckDataSignature() : null;
                 if (checkSignBefore != null) {
                     final var copy = checkSignBefore.getCopy();
                     copy.deactivateChecking();
                     try {
-                        ((StdPin)pinFrom.getModulePinImp()).setCheckDataSignature(copy);
+                        ((DefaultPin)pinFrom.getModulePinImp()).setCheckDataSignature(copy);
                     } catch (FlowException e) {
                         // should not happen
                         e.printStackTrace();
                         return false;
                     }
                 }
-                final boolean ok = setFromPin((OutputPin)pinFrom);
+                final boolean debugOk = pinFrom.isDOMValid(fromDomFinal);
+                if (!debugOk) { //TODO remove this debugOK
+                    System.err.println("debug");
+                }
+                final boolean ok = pinFrom.isDOMValid(fromDomFinal) && setFromPin((OutputPin)pinFrom);
                 setFromPin(before);
                 return ok;
             } catch (ConnectionException e1) {
@@ -282,20 +289,20 @@ public abstract class Connection extends FlowChartElement {
                     ok(pinToLoadImp != null, OK.ERR_MSG_NULL);
                     final ModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
                     ok(ok(x -> {try {
-                        final DataSignature checkSignBefore = pin.getModulePinImp() instanceof StdPin 
-                                ? ((StdPin)pin.getModulePinImp()).getCheckDataSignature() : null;
+                        final DataSignature checkSignBefore = pin.getModulePinImp() instanceof DefaultPin 
+                                ? ((DefaultPin)pin.getModulePinImp()).getCheckDataSignature() : null;
                         if (checkSignBefore != null) {
                             final var copy = checkSignBefore.getCopy();
                             copy.deactivateChecking();
                             try {
-                                ((StdPin)pin.getModulePinImp()).setCheckDataSignature(copy);
+                                ((DefaultPin)pin.getModulePinImp()).setCheckDataSignature(copy);
                             } catch (FlowException e) {
                                 // should not happen
                                 e.printStackTrace();
                                 return false;
                             }
                         }
-                        boolean ok = addToPin((InputPin)pin);
+                        boolean ok = pin.isDOMValid(toDom) && addToPin((InputPin)pin);
                         removeToPin((InputPin)pin);
                         return ok;
                     } catch (ConnectionException e1) {

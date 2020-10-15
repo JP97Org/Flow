@@ -1,7 +1,7 @@
 package org.jojo.flow.model.flowChart;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.jojo.flow.model.Subject;
@@ -36,7 +36,7 @@ public abstract class FlowChartElement extends Subject implements DOMable {
         notifyObservers(warning);
     }
     
-    public int getId() {
+    public final int getId() {
         return id;
     }
     
@@ -53,6 +53,15 @@ public abstract class FlowChartElement extends Subject implements DOMable {
             return null;
         }
         return this.warnings.get(this.warnings.size() - 1);
+    }
+    
+    protected Comparator<FlowChartElement> getIdComparator() {
+        return new Comparator<FlowChartElement>() {
+            @Override
+            public int compare(FlowChartElement o1, FlowChartElement o2) {
+                return Integer.valueOf(o1.getId()).compareTo(o2.getId());
+            }
+        };
     }
     
     @Override

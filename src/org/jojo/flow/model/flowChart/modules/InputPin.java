@@ -3,7 +3,7 @@ package org.jojo.flow.model.flowChart.modules;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.connections.StdArrow;
+import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 
 public class InputPin extends ModulePin {  
     public InputPin(final ModulePinImp imp, final ModulePinGR gr) {
@@ -22,7 +22,7 @@ public class InputPin extends ModulePin {
     public Data getData() {
         return getConnections().isEmpty() 
                 ? getDefaultData() 
-                        : (getConnections().get(0) instanceof StdArrow 
-                                ? ((StdArrow) getConnections().get(0)).getData() : getDefaultData());
+                        : (getConnections().get(0) instanceof DefaultArrow 
+                                ? ((DefaultArrow) getConnections().get(0)).getData() : getDefaultData());
     }
 }

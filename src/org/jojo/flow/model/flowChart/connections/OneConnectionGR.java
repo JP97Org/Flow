@@ -82,6 +82,12 @@ public class OneConnectionGR extends GraphicalRepresentation {
         if (ok) {
             this.lines.clear();
             this.diversionPoints.clear();
+            if (diversionPoints.size() == 1 
+                        && diversionPoints.get(0).equals(this.fromPin.getLinePoint())) {
+                setPath(new ArrayList<>());
+                return;
+            }
+            
             Point divPointBefore = this.fromPin.getPosition();
             for (final Point diversionPoint : diversionPoints) {
                 this.lines.add(new ConnectionLineGR(divPointBefore, diversionPoint));

@@ -11,6 +11,7 @@ import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
+import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -91,14 +92,16 @@ public abstract class ModulePin extends Subject implements DOMable {
         dom.setModuleID(getModule().getId());
         dom.setConnectionIDs(getConnections().stream().mapToInt(c -> c.getId()).toArray());
         try {
-            dom.appendString("defaultData", getDefaultData().toSerializedString());
+            if (getDefaultData() != null) {
+                dom.appendString("defaultData", getDefaultData().toSerializedString());
+            }
         } catch (ClassNotFoundException | IOException e) {
             // should not happen
             e.printStackTrace();
         }
         dom.setGraphicalRepresentation(getGraphicalRepresentation());
-        if (getModulePinImp() instanceof StdPin) {
-            final StdPin imp = (StdPin)getModulePinImp();
+        if (getModulePinImp() instanceof DefaultPin) {
+            final DefaultPin imp = (DefaultPin)getModulePinImp();
             dom.appendString("checkDataSignature", imp.getCheckDataSignature().toString());
         }
         return dom;
@@ -111,7 +114,10 @@ public abstract class ModulePin extends Subject implements DOMable {
             final Map<String, Object> domMap = dom.getDOMMap();
             final DOM modIdDom = (DOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
             final int modId = Integer.parseInt(modIdDom.elemGet());
-            setModule((FlowModule)new ModelFacade().getElementById(modId));
+            final FlowChartElement fce = new ModelFacade().getElementById(modId);
+            if (fce instanceof FlowModule) {
+                setModule((FlowModule)fce);
+            }
             final DOM conIdsDom = (DOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
             final Map<String, Object> conIdsMap = conIdsDom.getDOMMap();
             for (Object conIdObj : conIdsMap.values()) {
@@ -128,12 +134,14 @@ public abstract class ModulePin extends Subject implements DOMable {
                 }
             }
             final DOM defaultDataDom = (DOM)domMap.get("defaultData");
-            final String dataStr = defaultDataDom.elemGet();
-            try {
-                setDefaultData(Data.ofSerializedString(dataStr));
-            } catch (ClassNotFoundException | IOException e) {
-                // should not happen
-                e.printStackTrace();
+            if (defaultDataDom != null) {
+                final String dataStr = defaultDataDom.elemGet();
+                try {
+                    setDefaultData(Data.ofSerializedString(dataStr));
+                } catch (ClassNotFoundException | IOException e) {
+                    // should not happen
+                    e.printStackTrace();
+                }
             }
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
             this.gr.restoreFromDOM(grDom);
@@ -141,7 +149,7 @@ public abstract class ModulePin extends Subject implements DOMable {
                 final DOM cdsDom = (DOM)domMap.get("checkDataSignature");
                 final String cdsString = cdsDom.elemGet();
                 final DataSignature cds = DataSignature.of(cdsString);
-                ((StdPin)this.imp).forceSetCheckDataSignature(cds);
+                ((DefaultPin)this.imp).forceSetCheckDataSignature(cds);
             }
             notifyObservers();
         }
@@ -163,8 +171,8 @@ public abstract class ModulePin extends Subject implements DOMable {
             
             ok(domMap.get(ModulePinDOM.NAME_MODULE_ID) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM modIdDom = (DOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
-            final int modId = ok(x -> Integer.parseInt(modIdDom.elemGet()), "");
-            ok(ok(x -> (FlowModule)new ModelFacade().getElementById(modId), "") != null, OK.ERR_MSG_NULL);
+            ok(x -> Integer.parseInt(modIdDom.elemGet()), "");
+
             ok(domMap.get(ModulePinDOM.NAME_CONNECTION_IDS) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM conIdsDom = (DOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
             final Map<String, Object> conIdsMap = conIdsDom.getDOMMap();
@@ -182,19 +190,22 @@ public abstract class ModulePin extends Subject implements DOMable {
                     }}, "").booleanValue(), "connection could not be added to due ListSizeException");
                 }
             }
-            ok(domMap.get("defaultData") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM defaultDataDom = (DOM)domMap.get("defaultData");
-            final String dataStr = defaultDataDom.elemGet();
-            ok(dataStr != null, OK.ERR_MSG_NULL);
-            final Data before = getDefaultData();
-            final String nullIsOk = ok(x -> {try {
-                setDefaultData(Data.ofSerializedString(dataStr));
-                return null;
-            } catch (ClassNotFoundException | IOException e) {
-                return e.toString();
-            }}, "");
-            setDefaultData(before);
-            ok(nullIsOk == null, "this exc would occur: " + nullIsOk);
+            if (domMap.containsKey("defaultData")) {
+                ok(domMap.get("defaultData") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                final DOM defaultDataDom = (DOM)domMap.get("defaultData");
+                final String dataStr = defaultDataDom.elemGet();
+                ok(dataStr != null, OK.ERR_MSG_NULL);
+                final Data before = getDefaultData();
+                final String nullIsOk = ok(x -> {try {
+                    setDefaultData(Data.ofSerializedString(dataStr));
+                    return null;
+                } catch (ClassNotFoundException | IOException e) {
+                    return e.toString();
+                }}, "");
+                setDefaultData(before);
+                ok(nullIsOk == null, "this exc would occur: " + nullIsOk);
+            }
+            
             ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
             ok(this.gr.isDOMValid(grDom), "ModulePinGR " + OK.ERR_MSG_DOM_NOT_VALID);
@@ -220,7 +231,7 @@ public abstract class ModulePin extends Subject implements DOMable {
     
     @Override
     public boolean equals(final Object other) {
-        if (other instanceof ModulePin) {
+        if (other != null && other.getClass().equals(this.getClass())) {
             return this.gr.equals(((ModulePin)other).gr);
         }
         return false;

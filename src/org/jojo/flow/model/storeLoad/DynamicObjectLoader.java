@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.awt.Window;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,26 +25,31 @@ import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionException;
 import org.jojo.flow.model.flowChart.connections.ConnectionLineGR;
 import org.jojo.flow.model.flowChart.connections.OneConnectionGR;
+import org.jojo.flow.model.flowChart.connections.RigidConnection;
 import org.jojo.flow.model.flowChart.connections.RigidConnectionGR;
-import org.jojo.flow.model.flowChart.connections.StdArrow;
-import org.jojo.flow.model.flowChart.connections.StdArrowGR;
+import org.jojo.flow.model.flowChart.connections.DefaultArrow;
+import org.jojo.flow.model.flowChart.connections.DefaultArrowGR;
 import org.jojo.flow.model.flowChart.modules.ExternalConfig;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
+import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
-import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
-import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
-import org.jojo.flow.model.flowChart.modules.StdPin;
+import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
+import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
+import org.jojo.flow.model.flowChart.modules.DefaultPin;
 
 public class DynamicObjectLoader {
-    //TODO Mock-In-Pin-Pos
-    public static final Point INPOS = new Point(50, 50);
-
+    private static final Point INPOS = new Point(50, 50);
+    
+    //TODO werden spaeter evtl. private
+    public static final Point RIGID_ONE_POS = new Point(10, 10);
+    public static final Point RIGID_TWO_POS = new Point(20, 10); 
+    
     private DynamicObjectLoader() {
         
     }
@@ -68,16 +74,27 @@ public class DynamicObjectLoader {
     }
     
     public static Connection loadConnection(final String className) {
-        //TODO implement
+        Objects.requireNonNull(className);
         try {
-            Data data = new StringDataSet(className);
-            return new StdArrow(1000, //TODO remove this mock arrow
-                    new OutputPin(new StdPin(loadModule(MockModule.class.getName()), data ), 
-                            new StdOutputPinGR(new Point(0,0), className, 10, 10)), 
-                    new InputPin(new StdPin(loadModule(MockModule.class.getName()), data), 
-                            new StdInputPinGR(INPOS, className, 10, 10)), className);
+            if (className.equals(DefaultArrow.class.getName())) {
+                Data data = new StringDataSet(className);
+                return new DefaultArrow(0,
+                        new OutputPin(new DefaultPin(loadModule(MockModule.class.getName()), data ), 
+                                new DefaultOutputPinGR(new Point(0,0), className, 10, 10)), 
+                        new InputPin(new DefaultPin(loadModule(MockModule.class.getName()), data), 
+                                new DefaultInputPinGR(INPOS, className, 10, 10)), className);
+            } else if (className.equals(RigidConnection.class.getName())) {
+                return new RigidConnection(0,
+                        new RigidPin(loadModule(MockModule.class.getName()), 
+                                new RigidPinGR(RIGID_ONE_POS, className, 10, 10)), 
+                        new RigidPin(loadModule(MockModule.class.getName()), 
+                                new RigidPinGR(RIGID_TWO_POS, className, 10, 10)), className);
+            } else {
+                //TODO exc
+                return null;
+            }
         } catch (ConnectionException e) {
-            // TODO Auto-generated catch block
+            // should not happen
             e.printStackTrace();
             return null;
         }
@@ -87,7 +104,7 @@ public class DynamicObjectLoader {
         return loadGR(className, true);
     }
     
-    public static GraphicalRepresentation loadGR(final String className, final boolean hasStdPin) {
+    public static GraphicalRepresentation loadGR(final String className, final boolean hasDefaultPin) {
         final String mmc = MockModuleGR.class.getName();
         if (className.equals(mmc)) {
             return new MockModuleGR(new Point(0,0), 10, 10, "Mock"); //TODO mock noch durch echte ModGR erstellung korrigieren
@@ -98,21 +115,21 @@ public class DynamicObjectLoader {
         } else if (className.equals(ConnectionLineGR.class.getName())) {
             return new ConnectionLineGR(new Point(0,0), new Point(0,1));
         } else if (className.equals(OneConnectionGR.class.getName())) {
-            if (hasStdPin) {
-                return new OneConnectionGR(new StdOutputPinGR(new Point(0,0), "", 1, 1), new StdInputPinGR(new Point(0,1), "", 1, 1));
+            if (hasDefaultPin) {
+                return new OneConnectionGR(new DefaultOutputPinGR(new Point(0,0), "", 1, 1), new DefaultInputPinGR(new Point(0,1), "", 1, 1));
             } else {
                 return new OneConnectionGR(new RigidPinGR(new Point(0,0), "", 1, 1), new RigidPinGR(new Point(0,1), "", 1, 1));
             }
         } else if (className.equals(RigidConnectionGR.class.getName())) {
             return new RigidConnectionGR(new RigidPinGR(new Point(0,0), "", 1, 1), new RigidPinGR(new Point(0,1), "", 1, 1));
-        } else if (className.equals(StdArrowGR.class.getName())) {
-            return new StdArrowGR(new StdOutputPinGR(new Point(0,0), "", 1, 1), new StdInputPinGR(new Point(0,1), "", 1, 1), null);
+        } else if (className.equals(DefaultArrowGR.class.getName())) {
+            return new DefaultArrowGR(new DefaultOutputPinGR(new Point(0,0), "", 1, 1), new DefaultInputPinGR(new Point(0,1), "", 1, 1), null);
         } else if (className.equals(RigidPinGR.class.getName())) {
             return new RigidPinGR(new Point(0,0), "", 1, 1);
-        } else if (className.equals(StdInputPinGR.class.getName())) {
-            return new StdInputPinGR(new Point(0,0), "", 1, 1);
-        } else if (className.equals(StdOutputPinGR.class.getName())) {
-            return new StdOutputPinGR(new Point(0,0), "", 1, 1);
+        } else if (className.equals(DefaultInputPinGR.class.getName())) {
+            return new DefaultInputPinGR(new Point(0,0), "", 1, 1);
+        } else if (className.equals(DefaultOutputPinGR.class.getName())) {
+            return new DefaultOutputPinGR(new Point(0,0), "", 1, 1);
         }
         else {
             System.err.println("class not found: " + className + "!"); //TODO EXC
@@ -128,15 +145,15 @@ public class DynamicObjectLoader {
     
     public static ModulePin loadPin(final String className, final String classNameImp, final FlowModule module) {
         if (className.equals(InputPin.class.getName())) {
-            if (classNameImp.equals(StdPin.class.getName())) {
-                return new InputPin(new StdPin(module, new StringDataSet("")), (StdInputPinGR)loadGR(StdInputPinGR.class.getName()));
+            if (classNameImp.equals(DefaultPin.class.getName())) {
+                return new InputPin(new DefaultPin(module, new StringDataSet("")), (DefaultInputPinGR)loadGR(DefaultInputPinGR.class.getName()));
             } else if (classNameImp.equals(RigidPin.class.getName())) {
                 final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
                 return new InputPin(new RigidPin(module, gr), gr);
             }
         } else if (className.equals(OutputPin.class.getName())) {
-            if (classNameImp.equals(StdPin.class.getName())) {
-                return new OutputPin(new StdPin(module, new StringDataSet("")), (StdOutputPinGR)loadGR(StdOutputPinGR.class.getName()));
+            if (classNameImp.equals(DefaultPin.class.getName())) {
+                return new OutputPin(new DefaultPin(module, new StringDataSet("")), (DefaultOutputPinGR)loadGR(DefaultOutputPinGR.class.getName()));
             } else if (classNameImp.equals(RigidPin.class.getName())) {
                 final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
                 return new OutputPin(new RigidPin(module, gr), gr);
@@ -171,6 +188,7 @@ public class DynamicObjectLoader {
     public static class MockModule extends FlowModule {
         private ModulePin pinOut;
         private ModulePin pinIn;
+        private List<ModulePin> rigidPins;
         
         public MockModule(int id, ExternalConfig externalConfig) {
             super(id, externalConfig);
@@ -179,11 +197,22 @@ public class DynamicObjectLoader {
         @Override
         public List<ModulePin> getAllModulePins() {
             final List<ModulePin> ret = new ArrayList<>();
-            this.pinOut = this.pinOut == null ? loadPin(OutputPin.class.getName(), StdPin.class.getName(), this) : this.pinOut;
-            this.pinIn = this.pinIn == null ? loadPin(InputPin.class.getName(), StdPin.class.getName(), this) : this.pinIn;
+            this.pinOut = this.pinOut == null ? loadPin(OutputPin.class.getName(), DefaultPin.class.getName(), this) : this.pinOut;
+            this.pinIn = this.pinIn == null ? loadPin(InputPin.class.getName(), DefaultPin.class.getName(), this) : this.pinIn;
             this.pinIn.getGraphicalRepresentation().setPosition(INPOS);
             ret.add(this.pinOut);
             ret.add(this.pinIn);
+            if (this.rigidPins == null) {
+                this.rigidPins = new ArrayList<>();
+                this.rigidPins.addAll(Arrays.asList(loadPin(OutputPin.class.getName(), RigidPin.class.getName(), this), 
+                        loadPin(InputPin.class.getName(), RigidPin.class.getName(), this)));
+                this.rigidPins.forEach(p -> ((ModulePinGR)p.getGraphicalRepresentation()).setLinePoint(RIGID_ONE_POS));
+                final List<ModulePin> rigidPins = Arrays.asList(loadPin(OutputPin.class.getName(), RigidPin.class.getName(), this), 
+                        loadPin(InputPin.class.getName(), RigidPin.class.getName(), this));
+                rigidPins.forEach(p -> ((ModulePinGR)p.getGraphicalRepresentation()).setLinePoint(RIGID_TWO_POS));
+                this.rigidPins.addAll(rigidPins);
+            }
+            ret.addAll(this.rigidPins);
             return ret;
         }
 
@@ -200,6 +229,10 @@ public class DynamicObjectLoader {
         @Override
         protected void setAllModulePins(final DOM pinsDom) {
             if (isPinsDOMValid(pinsDom)) {
+                if (this.rigidPins == null) {
+                    this.rigidPins = new ArrayList<>();
+                }
+                this.rigidPins.clear();
                 final Map<String, Object> domMap = pinsDom.getDOMMap();
                 int i = 0;
                 for(var pinObj : domMap.values()) {
@@ -209,17 +242,22 @@ public class DynamicObjectLoader {
                         final String pinCn = pinCnDom.elemGet();
                         final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
                         final String pinCnImp = pinCnDomImp.elemGet();
-                        if (pinCn.equals(OutputPin.class.getName())) {
-                            this.pinOut = loadPin(pinCn, pinCnImp);
-                            this.pinOut.restoreFromDOM(pinDom);
+                        if (pinCnImp.equals(DefaultPin.class.getName())) {
+                            if (pinCn.equals(OutputPin.class.getName())) {
+                                this.pinOut = loadPin(pinCn, pinCnImp, this);
+                                this.pinOut.restoreFromDOM(pinDom);
+                            } else {
+                                this.pinIn = loadPin(pinCn, pinCnImp, this);
+                                this.pinIn.restoreFromDOM(pinDom);
+                            }
                         } else {
-                            this.pinIn = loadPin(pinCn, pinCnImp);
-                            this.pinIn.restoreFromDOM(pinDom);
+                            this.rigidPins.add(loadPin(pinCn, pinCnImp, this));
+                            this.rigidPins.get(this.rigidPins.size() - 1).restoreFromDOM(pinDom);
                         }
                         i++;
                     }
                 }
-                assert (i == 2);
+                assert (i == 6);
             }
         }
 
@@ -241,12 +279,12 @@ public class DynamicObjectLoader {
                         final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
                         final String pinCnImp = pinCnDomImp.elemGet();
                         ok(pinCnImp != null, OK.ERR_MSG_NULL);
-                        final ModulePin pin = ok(x -> loadPin(pinCn, pinCnImp), "");
+                        final ModulePin pin = ok(x -> loadPin(pinCn, pinCnImp, this), "");
                         ok(pin.isDOMValid(pinDom), "PIN " + OK.ERR_MSG_DOM_NOT_VALID);
                         i++;
                     }
                 }
-                ok(i == 2, "to many or not enough pins should= 2, is = " + i);
+                ok(i == 6, "to many or not enough pins should= 6, is = " + i);
                 return true;
             } catch (ParsingException e) {
                 e.getWarning().setAffectedElement(this).reportWarning();

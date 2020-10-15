@@ -9,19 +9,19 @@ import java.util.Objects;
 
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
-import org.jojo.flow.model.flowChart.modules.StdInputPinGR;
-import org.jojo.flow.model.flowChart.modules.StdOutputPinGR;
+import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
+import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 
-public class StdArrowGR extends ConnectionGR {
+public class DefaultArrowGR extends ConnectionGR {
     private Shape defaultArrow; //TODO evtl. anderer Typ jenachdem ob das so geht
     private Shape selectedArrow; //TODO evtl. anderer Typ jenachdem ob das so geht
     
-    public StdArrowGR(final StdOutputPinGR fromPin, final StdInputPinGR toPin, final Shape defaultArrow) {
+    public DefaultArrowGR(final DefaultOutputPinGR fromPin, final DefaultInputPinGR toPin, final Shape defaultArrow) {
         super(fromPin, toPin);
         this.defaultArrow = defaultArrow;
     }
@@ -30,8 +30,8 @@ public class StdArrowGR extends ConnectionGR {
     public void addToPin(final Point diversionPoint, final ModulePinGR toPin) {
         Objects.requireNonNull(diversionPoint);
         Objects.requireNonNull(toPin);
-        if (!(toPin instanceof StdInputPinGR)) {
-            throw new IllegalArgumentException("to pin GR must be std input pin GR");
+        if (!(toPin instanceof DefaultInputPinGR)) {
+            throw new IllegalArgumentException("to pin GR must be default input pin GR");
         }
         addConnection(new OneConnectionGR(getFromPin(), toPin));
     }
@@ -74,7 +74,7 @@ public class StdArrowGR extends ConnectionGR {
             final DOM fromPinDomGr = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
             final DOM cnDom = (DOM) fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cn = cnDom.elemGet();
-            final StdOutputPinGR fromPin = (StdOutputPinGR)DynamicObjectLoader.loadGR(cn);
+            final DefaultOutputPinGR fromPin = (DefaultOutputPinGR)DynamicObjectLoader.loadGR(cn);
             fromPin.restoreFromDOM(fromPinDom);
             setFromPin(fromPin);
             final DOM connectionsDom = (DOM)domMap.get("connections");
@@ -106,7 +106,7 @@ public class StdArrowGR extends ConnectionGR {
             final DOM cnDomFrom = (DOM) fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnFrom = cnDomFrom.elemGet();
             ok(cnFrom != null, OK.ERR_MSG_NULL);
-            final StdOutputPinGR fromPin = ok(c -> (StdOutputPinGR) DynamicObjectLoader.loadGR(c), cnFrom);
+            final DefaultOutputPinGR fromPin = ok(c -> (DefaultOutputPinGR) DynamicObjectLoader.loadGR(c), cnFrom);
             ok(fromPin.isDOMValid(fromPinDom), "FromPin " + OK.ERR_MSG_DOM_NOT_VALID);
             ok(domMap.get("connections") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM connectionsDom = (DOM)domMap.get("connections");
@@ -116,8 +116,8 @@ public class StdArrowGR extends ConnectionGR {
                     final DOM connectionDom = (DOM)conObj;
                     final OneConnectionGR con = ok(d -> (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName()), "");
                     ok(con.isDOMValid(connectionDom), "OneConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
-                    ok(con.getToPin() instanceof StdInputPinGR, OK.ERR_MSG_WRONG_CAST);
-                    ok(isAddable(con), "OneConnectionGR " + con + "not addable");
+                    ok(con.getToPin() instanceof DefaultInputPinGR, OK.ERR_MSG_WRONG_CAST);
+                    ok(isAddable(con), "OneConnectionGR " + con + " not addable");
                 }
             }
             //TODO Arrow Shapes

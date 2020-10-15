@@ -3,6 +3,7 @@ package org.jojo.flow.model.flowChart.connections;
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
 import java.awt.Point;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -68,18 +69,23 @@ public class RigidConnectionGR extends ConnectionGR {
     @Override
     public boolean isDOMValid(final DOM dom) {
         Objects.requireNonNull(dom);
+        final List<OneConnectionGR> before = this.getSingleConnections();
+        final var beforePin = this.getFromPin();
         try {
             ok(super.isDOMValid(dom), "FCE_GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getFlowChart());
+            deleteAllConnections();
             final Map<String, Object> domMap = dom.getDOMMap();
             ok(domMap.get("fromPin") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM fromPinDom = (DOM)domMap.get("fromPin");
-            final DOM fromPinDomGr = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
+            final DOM fromPinDomGr = (DOM) fromPinDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);           
             ok(fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM cnDomFrom = (DOM) fromPinDomGr.getDOMMap().get(GraphicalRepresentationDOM.NAME_CLASSNAME);
             final String cnFrom = cnDomFrom.elemGet();
             ok(cnFrom != null, OK.ERR_MSG_NULL);
             final RigidPinGR fromPin = ok(c -> (RigidPinGR) DynamicObjectLoader.loadGR(c), cnFrom);
             ok(fromPin.isDOMValid(fromPinDom), "FromPin " + OK.ERR_MSG_DOM_NOT_VALID);
+            fromPin.restoreFromDOM(fromPinDom);
+            setFromPin(fromPin);
             ok(domMap.get("connections") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM connectionsDom = (DOM)domMap.get("connections");
             final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
@@ -88,12 +94,17 @@ public class RigidConnectionGR extends ConnectionGR {
                     final DOM connectionDom = (DOM)conObj;
                     final OneConnectionGR con = ok(d -> (OneConnectionGR) DynamicObjectLoader.loadGR(OneConnectionGR.class.getName(), false), "");
                     ok(con.isDOMValid(connectionDom), "OneConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
+                    con.restoreFromDOM(connectionDom);
                     ok(con.getToPin() instanceof RigidPinGR, OK.ERR_MSG_WRONG_CAST);
-                    ok(isAddable(con), "OneConnectionGR " + con + "not addable");
+                    ok(isAddable(con), "OneConnectionGR " + con + " not addable");
                 }
             }
+            setFromPin(beforePin);
+            before.forEach(c -> addConnection(c));
             return true;
         } catch (ParsingException e) {
+            setFromPin(beforePin);
+            before.forEach(c -> addConnection(c));
             e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning();
             return false;
         }

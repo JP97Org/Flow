@@ -19,7 +19,7 @@ import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.connections.StdArrow;
+import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
@@ -53,24 +53,24 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     public abstract Frequency<Fraction> getFrequency();
     public abstract void run() throws Exception;
     
-    public StdArrow validate() throws ValidationException {
-        final StdArrow ret = checkInputDataTypes();
+    public DefaultArrow validate() throws ValidationException {
+        final DefaultArrow ret = checkInputDataTypes();
         if (ret == null) { // everything ok
             putDefaultDataOnOutgoingConnections();
         }
         return ret;
     }
 
-    private StdArrow checkInputDataTypes() throws ValidationException {
-        if (getStdInputs().stream().anyMatch(x -> !(x.getModulePinImp() instanceof StdPin))) {
-            throw new ValidationException(new Warning(this, "an input module pin-imp is not std", true));
+    private DefaultArrow checkInputDataTypes() throws ValidationException {
+        if (getDefaultInputs().stream().anyMatch(x -> !(x.getModulePinImp() instanceof DefaultPin))) {
+            throw new ValidationException(new Warning(this, "an input module pin-imp is not default", true));
         }
         
-        final List<StdPin> allInputPins = getStdInputs()
+        final List<DefaultPin> allInputPins = getDefaultInputs()
                 .stream()
-                .map(x -> (StdPin)x.getModulePinImp())
+                .map(x -> (DefaultPin)x.getModulePinImp())
                 .collect(Collectors.toList());
-        for (final StdPin pin : allInputPins) {
+        for (final DefaultPin pin : allInputPins) {
             Data data = pin.getDefaultData();
             if (data == null) {
                 throw new ValidationException(new Warning(this, "an input pin of this module has not specified default data", true));
@@ -83,7 +83,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 throw new ValidationException(new Warning(this, "this module has not overriden validate, although it had to", true));
             }
             
-            final StdArrow arrow = pin.getConnections().isEmpty() ? null : (StdArrow) (pin.getConnections().get(0));
+            final DefaultArrow arrow = pin.getConnections().isEmpty() ? null : (DefaultArrow) (pin.getConnections().get(0));
             data = arrow == null ? null : arrow.getData();
             if (data == null) { // TODO schauen, dass data vor validation auf allen pfeilen null ist 
                 // we are a module in a cycle (selected as root). However, we still need to check other pins
@@ -98,14 +98,14 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     }
     
     private void putDefaultDataOnOutgoingConnections() throws ValidationException {
-        final List<OutputPin> allOutputPins = getStdOutputs();
-        if (allOutputPins.stream().anyMatch(x -> !(x.getModulePinImp() instanceof StdPin))) {
-            throw new ValidationException(new Warning(this, "an output module pin-imp is not std", true));
+        final List<OutputPin> allOutputPins = getDefaultOutputs();
+        if (allOutputPins.stream().anyMatch(x -> !(x.getModulePinImp() instanceof DefaultPin))) {
+            throw new ValidationException(new Warning(this, "an output module pin-imp is not default", true));
         }
         
         for (final OutputPin pin : allOutputPins) {
             for (final Connection connection : pin.getConnections()) {
-                final StdArrow arrow = (StdArrow)connection;
+                final DefaultArrow arrow = (DefaultArrow)connection;
                 final Data data = pin.getModulePinImp().getDefaultData();
                 if (data == null) {
                     throw new ValidationException(new Warning(this, "an output pin of this module has not specified default data", true));
@@ -127,17 +127,17 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         return this.externalConfig;
     }
     
-    public final List<InputPin> getStdInputs() {
+    public final List<InputPin> getDefaultInputs() {
         return getAllInputs()
                 .stream()
-                .filter(p -> p.getModulePinImp() instanceof StdPin)
+                .filter(p -> p.getModulePinImp() instanceof DefaultPin)
                 .collect(Collectors.toList());
     }
     
-    public final List<OutputPin> getStdOutputs() {
+    public final List<OutputPin> getDefaultOutputs() {
         return getAllOutputs()
                 .stream()
-                .filter(p -> p.getModulePinImp() instanceof StdPin)
+                .filter(p -> p.getModulePinImp() instanceof DefaultPin)
                 .collect(Collectors.toList());
     }
     
@@ -157,9 +157,9 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 .collect(Collectors.toList());
     }
     
-    public final List<FlowModule> getStdDependencyList() {
+    public final List<FlowModule> getDefaultDependencyList() {
         final Set<FlowModule> retSet = new HashSet<>();
-        retSet.addAll(getStdInputs()
+        retSet.addAll(getDefaultInputs()
                 .stream()
                 .map(x -> x.getConnections())
                 .flatMap(x -> x.stream())
@@ -169,9 +169,9 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         return retSet.stream().collect(Collectors.toList());
     }
     
-    public final List<FlowModule> getStdAdjacencyList() {
+    public final List<FlowModule> getDefaultAdjacencyList() {
         final Set<FlowModule> retSet = new HashSet<>();
-        retSet.addAll(getStdOutputs()
+        retSet.addAll(getDefaultOutputs()
                 .stream()
                 .map(x -> x.getConnections())
                 .flatMap(x -> x.stream())

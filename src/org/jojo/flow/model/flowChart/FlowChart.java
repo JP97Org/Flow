@@ -19,14 +19,14 @@ import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
-import org.jojo.flow.model.flowChart.connections.StdArrow;
+import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
-import org.jojo.flow.model.flowChart.modules.StdPin;
+import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
@@ -74,13 +74,16 @@ public class FlowChart extends FlowChartElement{
     }
     
     public boolean connectAll() { //TODO wird spaeter evtl. private
+        boolean ret = reconnect();
+        removeDuplicatePins();
+        ret &= reconnect();
+        return ret;
+    }
+    
+    private boolean reconnect() {
         boolean ret = true;
         for (final var c : this.connections) {
-            c.connect();
-        }
-        removeDuplicatePins();
-        ret = true;
-        for (final var c : this.connections) {
+            c.disconnect();
             ret &= c.connect();
         }
         return ret;
@@ -131,14 +134,18 @@ public class FlowChart extends FlowChartElement{
     }
     
     public List<FlowModule> getModules() {
-        return new ArrayList<>(this.modules);
+        final List<FlowModule> ret = new ArrayList<>(this.modules);
+        ret.sort(getIdComparator());
+        return ret;
     }
     
     public List<Connection> getConnections() {
-        return new ArrayList<>(this.connections);
+        final List<Connection> ret = new ArrayList<>(this.connections);
+        ret.sort(getIdComparator());
+        return ret;
     }
     
-    public StdArrow validate() throws ValidationException {
+    public DefaultArrow validate() throws ValidationException {
         final List<FlowModule> moduleList = getModules().stream().sorted().collect(Collectors.toList());
         if (moduleList.isEmpty()) {
             return null; // no modules --> valid
@@ -173,7 +180,7 @@ public class FlowChart extends FlowChartElement{
             for (final FlowModule module : roots) {
                 final List<FlowModule> list = modulesInCorrectOrder.get(module);
                 if (i < list.size()) {
-                    final StdArrow arrow = list.get(i).validate();
+                    final DefaultArrow arrow = list.get(i).validate();
                     if (arrow != null) {
                         return arrow;
                     }
@@ -216,7 +223,7 @@ public class FlowChart extends FlowChartElement{
                 // scan module
                 int adjFoundCount = 0;
                 final List<FlowModule> adjList = isDependencySearch 
-                        ? module.getStdDependencyList() : module.getStdAdjacencyList();
+                        ? module.getDefaultDependencyList() : module.getDefaultAdjacencyList();
                 for (final FlowModule adj : adjList) {
                     if (!parentMap.containsKey(adj)) { // unexplored
                         qLocal.add(adj);
@@ -330,14 +337,14 @@ public class FlowChart extends FlowChartElement{
                         try {
                             DataSignature beforeSign = null;
                             DataSignature copy = null;
-                            if (inPin.getModulePinImp() instanceof StdPin) {
-                                final StdPin stdPin = ((StdPin)inPin.getModulePinImp());
-                                beforeSign = stdPin.getCheckDataSignature();
+                            if (inPin.getModulePinImp() instanceof DefaultPin) {
+                                final DefaultPin defaultPin = ((DefaultPin)inPin.getModulePinImp());
+                                beforeSign = defaultPin.getCheckDataSignature();
                                 copy = beforeSign.getCopy();
                                 copy.deactivateChecking();
-                                stdPin.setCheckDataSignature(copy);
+                                defaultPin.setCheckDataSignature(copy);
                                 connection.addToPin(inPin);
-                                stdPin.setCheckDataSignature(beforeSign);
+                                defaultPin.setCheckDataSignature(beforeSign);
                             } else {
                                 connection.addToPin(inPin);
                             }
@@ -350,14 +357,14 @@ public class FlowChart extends FlowChartElement{
                         try {
                             DataSignature beforeSign = null;
                             DataSignature copy = null;
-                            if (outPin.getModulePinImp() instanceof StdPin) {
-                                final StdPin stdPin = ((StdPin)outPin.getModulePinImp());
-                                beforeSign = stdPin.getCheckDataSignature();
+                            if (outPin.getModulePinImp() instanceof DefaultPin) {
+                                final DefaultPin defaultPin = ((DefaultPin)outPin.getModulePinImp());
+                                beforeSign = defaultPin.getCheckDataSignature();
                                 copy = beforeSign.getCopy();
                                 copy.deactivateChecking();
-                                stdPin.setCheckDataSignature(copy);
+                                defaultPin.setCheckDataSignature(copy);
                                 connection.setFromPin(outPin);
-                                stdPin.setCheckDataSignature(beforeSign);
+                                defaultPin.setCheckDataSignature(beforeSign);
                             } else {
                                 connection.setFromPin(outPin);
                             }
@@ -373,6 +380,7 @@ public class FlowChart extends FlowChartElement{
 
     @Override
     public void restoreFromDOM(final DOM dom) {
+        final boolean isTest = getId() == Integer.MAX_VALUE;
         if (isDOMValid(dom)) {
             this.modules.clear();
             this.connections.clear();
@@ -411,13 +419,18 @@ public class FlowChart extends FlowChartElement{
             }
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
             this.gr.restoreFromDOM(grDom);
-            connectAll(); //TODO das muss auch noch irgendwie in isValid gecheckt werden
-            notifyObservers();
+            if (!isTest) {
+                connectAll();
+                notifyObservers();
+            }
         }
     }
 
     @Override
     public boolean isDOMValid(final DOM dom) {
+        if (getId() == Integer.MAX_VALUE) {
+            return true;
+        }
         Objects.requireNonNull(dom);
         final Map<String, Object> domMap = dom.getDOMMap();
         try {
@@ -456,6 +469,9 @@ public class FlowChart extends FlowChartElement{
             ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
             ok(this.gr.isDOMValid(grDom), OK.ERR_MSG_DOM_NOT_VALID);
+            final FlowChart test = new FlowChart(Integer.MAX_VALUE, new FlowChartGR());
+            test.restoreFromDOM(dom);
+            ok(test.connectAll(), "could not connect all connections");
             return true;
         } catch (ParsingException e) {
             e.getWarning().setAffectedElement(this).reportWarning();
@@ -465,6 +481,6 @@ public class FlowChart extends FlowChartElement{
 
     @Override
     public String toString() {
-        return "ID= " + this.getId() + " | modules= " + this.modules + " | connections= " + this.connections;
+        return "ID= " + getId() + " | modules= " + getModules() + " | connections= " + getConnections();
     }
 }

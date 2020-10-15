@@ -7,10 +7,10 @@ import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.DataTypeIncompatException;
 
-public class StdPin extends ModulePinImp {
+public class DefaultPin extends ModulePinImp {
     private DataSignature checkDataSignature;
     
-    public StdPin(final FlowModule module, final Data defaultData) {
+    public DefaultPin(final FlowModule module, final Data defaultData) {
         super(module, defaultData);
         Objects.requireNonNull(defaultData);
         this.checkDataSignature = defaultData.getDataSignature().getCopy();

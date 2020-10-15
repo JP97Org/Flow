@@ -5,6 +5,11 @@ import org.jojo.flow.model.data.Unit;
 import org.jojo.flow.model.data.UnitSignature;
 
 public class Time<T extends Number> extends Unit<T> {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4881491437821223647L;
+
     public Time(final Type type, final T value) {
         super(type, value, UnitSignature.SECOND);
     }

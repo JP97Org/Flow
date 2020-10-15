@@ -1,9 +1,13 @@
 package org.jojo.flow.model.flowChart.connections;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
+import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
+import org.jojo.flow.model.flowChart.modules.ListSizeException;
+import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
 
@@ -14,6 +18,51 @@ public class RigidConnection extends Connection {
         super(id, asFromPin.getOutputPin(), name);
         addToPin(asToPin.getInputPin());
         this.gr = new RigidConnectionGR((RigidPinGR) asFromPin.getOutputPin().getGraphicalRepresentation(), (RigidPinGR)asToPin.getInputPin().getGraphicalRepresentation());
+    }
+    
+    @Override
+    public boolean connect() {
+        boolean ret = super.connect();
+        if (ret) {
+            // adding reverse connection
+            try {
+                final InputPin fromInPin = ((RigidPin)getFromPin().getModulePinImp()).getInputPin();
+                final List<OutputPin> toOutPins = getToPins()
+                        .stream()
+                        .map(p -> ((RigidPin)p.getModulePinImp()).getOutputPin())
+                        .collect(Collectors.toList());
+                for (final var out : toOutPins) {
+                    if (!out.getConnections().contains(this)) {
+                        ret &= out.addConnection(this);
+                    }
+                }
+                if (!fromInPin.getConnections().isEmpty()) {
+                    return ret && fromInPin.getConnections().get(0).equals(this);
+                }
+                
+                ret &= fromInPin.addConnection(this);
+            } catch (ListSizeException e) {
+                // should not happen
+                disconnect();
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return ret;
+    }
+    
+    public void disconnect() {
+        super.disconnect();
+        final InputPin fromInPin = ((RigidPin)getFromPin().getModulePinImp()).getInputPin();
+        final List<OutputPin> toOutPins = getToPins()
+                .stream()
+                .map(p -> ((RigidPin)p.getModulePinImp()).getOutputPin())
+                .collect(Collectors.toList());
+        
+        fromInPin.removeConnection(this);
+        for (final var out : toOutPins) {
+            out.removeConnection(this);
+        }
     }
 
     @Override
