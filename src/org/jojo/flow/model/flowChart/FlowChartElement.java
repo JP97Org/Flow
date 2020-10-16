@@ -55,7 +55,7 @@ public abstract class FlowChartElement extends Subject implements DOMable {
         return this.warnings.get(this.warnings.size() - 1);
     }
     
-    protected Comparator<FlowChartElement> getIdComparator() {
+    public static Comparator<FlowChartElement> getIdComparator() {
         return new Comparator<FlowChartElement>() {
             @Override
             public int compare(FlowChartElement o1, FlowChartElement o2) {

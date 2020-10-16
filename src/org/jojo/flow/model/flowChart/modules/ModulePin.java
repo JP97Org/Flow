@@ -3,6 +3,7 @@ package org.jojo.flow.model.flowChart.modules;
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -229,11 +230,41 @@ public abstract class ModulePin extends Subject implements DOMable {
         return Objects.hash(this.gr);
     }
     
+    private int fixedHashCode() {
+        final int prime = 31;
+        int factor = 0;
+        final String className = getClass().getName();
+        for (final char c : className.toCharArray()) {
+            factor += c;
+        }
+        factor += this.gr.getLinePoint().x + this.gr.getLinePoint().y;
+        factor += (long)Math.signum(this.gr.getLinePoint().x);
+        factor += (long)Math.signum(this.gr.getLinePoint().y);
+        factor = factor == 0 ? 1 : factor;
+        return prime * factor;
+    }
+    
     @Override
     public boolean equals(final Object other) {
         if (other != null && other.getClass().equals(this.getClass())) {
             return this.gr.equals(((ModulePin)other).gr);
         }
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() 
+                + " with GR= " + getGraphicalRepresentation() 
+                + " | IMP= " + getModulePinImp();
+    }
+
+    public static Comparator<? super ModulePin> getComparator() { // TODO doc that comparator does not always imply 0 => equals
+        return new Comparator<ModulePin>() {
+            @Override
+            public int compare(ModulePin o1, ModulePin o2) {
+                return Integer.valueOf(o1.fixedHashCode()).compareTo(o2.fixedHashCode());
+            }
+        };
     }
 }

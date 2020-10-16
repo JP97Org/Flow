@@ -61,7 +61,7 @@ public class FlowChart extends FlowChartElement{
     
     public boolean addConnection(final Connection connection) {
         Objects.requireNonNull(connection);
-        final boolean ok = connection.connect();
+        final boolean ok = this.modules.containsAll(connection.getConnectedModules()) && connection.connect();
         if (ok) {
             this.connections.add(connection);
             this.gr.addConnection((ConnectionGR) connection.getGraphicalRepresentation());
@@ -75,9 +75,9 @@ public class FlowChart extends FlowChartElement{
         return ok;
     }
     
-    private boolean connectAll() { //TODO wird spaeter evtl. private
+    private boolean connectAll() {
         boolean ret = reconnect();
-        removeDuplicatePins();
+        ret &= removeDuplicatePins();
         ret &= reconnect();
         return ret;
     }
@@ -85,8 +85,7 @@ public class FlowChart extends FlowChartElement{
     private boolean reconnect() {
         boolean ret = true;
         for (final var c : this.connections) {
-            c.disconnect();
-            ret &= c.connect();
+            ret &= c.reconnect();
         }
         return ret;
     }
@@ -147,7 +146,20 @@ public class FlowChart extends FlowChartElement{
         return ret;
     }
     
+    public List<DefaultArrow> getArrows() {
+        return getConnections()
+                .stream()
+                .filter(c -> c instanceof DefaultArrow)
+                .map(c -> (DefaultArrow)c)
+                .collect(Collectors.toList());
+    }
+    
     public DefaultArrow validate() throws ValidationException {
+        final List<DefaultArrow> arrows = getArrows();
+        for (final var arrow : arrows) {
+            arrow.putData(null);
+        }
+        
         final List<FlowModule> moduleList = getModules().stream().sorted().collect(Collectors.toList());
         if (moduleList.isEmpty()) {
             return null; // no modules --> valid
@@ -159,7 +171,7 @@ public class FlowChart extends FlowChartElement{
         final Set<FlowModule> visitedModules = new HashSet<>();
         final Set<FlowModule> roots = new HashSet<>();
         for (FlowModule module = moduleZero; visitedModules.size() < moduleList.size(); 
-                module = setComplement(visitedModules, moduleSet).first()
+                module = setComplement(visitedModules, moduleSet).stream().findFirst().orElse(null)
                 /* module is element of modulelList but not of visitedModules  */) {
             final Pair<Set<FlowModule>, Set<FlowModule>> visitedModulesAndFoundRoots =
                     bfsDependency(module);
@@ -310,7 +322,7 @@ public class FlowChart extends FlowChartElement{
         return ret;
     }
 
-    private void removeDuplicatePins() {
+    private boolean removeDuplicatePins() {
         final Map<ModulePin, FlowModule> modulePins = new HashMap<>();
         this.modules.stream()
             .map(m -> m.getAllModulePins())
@@ -378,6 +390,22 @@ public class FlowChart extends FlowChartElement{
                 }
             }
         }
+        return checkIDs() && checkConnectionsPinsModules();
+    }
+
+    private boolean checkIDs() {
+        final List<FlowChartElement> elements = new ArrayList<>(this.modules);
+        elements.addAll(this.connections);
+        elements.add(this);
+        elements.add(GENERIC_ERROR_ELEMENT);
+        final int[] ids = elements.stream().mapToInt(e -> e.getId()).toArray();
+        return Arrays.stream(ids).count() == Arrays.stream(ids).distinct().count();
+    }
+    
+    private boolean checkConnectionsPinsModules() {
+        return this.connections
+                .stream()
+                .allMatch(c -> this.modules.containsAll(c.getConnectedModules()));
     }
 
     @Override

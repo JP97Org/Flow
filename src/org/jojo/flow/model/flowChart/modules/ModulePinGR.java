@@ -15,8 +15,8 @@ import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
 public abstract class ModulePinGR extends GraphicalRepresentation {
-    private final int height;
-    private final int width;
+    private int height;
+    private int width;
     
     private boolean isIconTextAllowed;
     private String iconText;
@@ -98,6 +98,12 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
             if (domMap.containsKey(GraphicalRepresentationDOM.NAME)) {
                 domMap = ((DOM)domMap.get(GraphicalRepresentationDOM.NAME)).getDOMMap();
             }
+            final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
+            final String hStr = hDom.elemGet();
+            this.height = Integer.parseInt(hStr);
+            final DOM wDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
+            final String wStr = wDom.elemGet();
+            this.width = Integer.parseInt(wStr);
             final DOM domIs = (DOM) domMap.get("isIconTextAllowed");
             final String str = domIs.elemGet();
             this.isIconTextAllowed = Boolean.parseBoolean(str);
@@ -122,6 +128,16 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
                 ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
                 domMap = ((DOM)domMap.get(GraphicalRepresentationDOM.NAME)).getDOMMap();
             }
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
+            final String hStr = hDom.elemGet();
+            ok(hStr != null, OK.ERR_MSG_NULL);
+            ok(s -> Integer.parseInt(s), hStr);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_WIDTH) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM wDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
+            final String wStr = wDom.elemGet();
+            ok(wStr != null, OK.ERR_MSG_NULL);
+            ok(s -> Integer.parseInt(s), wStr);
             ok(domMap.get("isIconTextAllowed") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM domIs = (DOM) domMap.get("isIconTextAllowed");
             final String str = domIs.elemGet();
@@ -138,7 +154,7 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
             ok(PinOrientation.of(pOrName) != null, OK.ERR_MSG_NULL);
             return true;
         } catch (ParsingException e) {
-            e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning();
+            e.getWarning().setAffectedElement((new ModelFacade()).getMainFlowChart()).reportWarning();
             return false;
         }
     }
@@ -154,5 +170,10 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
             return this.linePoint.equals(((ModulePinGR)other).linePoint);
         }
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return super.toString() + " and linePoint= "  + getLinePoint();
     }
 }

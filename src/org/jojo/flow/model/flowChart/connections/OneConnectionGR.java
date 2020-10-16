@@ -194,7 +194,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
     public boolean isDOMValid(final DOM dom) {
         Objects.requireNonNull(dom);
         try {
-            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getFlowChart());
+            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getMainFlowChart());
             final Map<String, Object> domMap = dom.getDOMMap();
             ok(domMap.get("fromPin") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM fromPinDom = (DOM)domMap.get("fromPin");
@@ -246,7 +246,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
             ok(s -> Color.getColor(rgbStr, Color.BLACK), rgbStr);
             return true;
         } catch (ParsingException e) {
-            e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning();
+            e.getWarning().setAffectedElement((new ModelFacade()).getMainFlowChart()).reportWarning();
             return false;
         }
     }

@@ -91,6 +91,7 @@ public class RecursiveSignature extends DataSignature {
         return ofString(info, 0);
     }
     
+    //TODO what to do when rec. signature itself or contained rec. signature is not checking
     private DataSignature ofString(final String infoLevel, int level) {
         final String prepared = infoLevel.substring(1, infoLevel.length() - 1);
         final String splitString = getSplitString(level);

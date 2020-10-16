@@ -1,7 +1,9 @@
 package org.jojo.flow.model.simulation;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jojo.flow.model.FlowException;
@@ -26,9 +28,12 @@ public class SchedulingStepper extends Stepper {
 
     public SchedulingStepper(final FlowChart flowChart, final Scheduler scheduler, final Time<Fraction> explicitTimeStep) throws FlowException {
         super(scheduler);
-        this.flowChart = flowChart;
+        this.flowChart = Objects.requireNonNull(flowChart);
         this.explicitTimeStep = explicitTimeStep;
-        this.paused = false;
+        if (explicitTimeStep != null && explicitTimeStep.equals(Time.getFractionConstant(new Fraction(0)))) {
+            throw new IllegalArgumentException("time step must not be 0");
+        }
+        this.paused = true;
         reset();
     }
     
@@ -107,16 +112,39 @@ public class SchedulingStepper extends Stepper {
         
         final List<FlowModule> schedule = getScheduler().getSchedule(modulesToStep);
         for (final FlowModule module : schedule) {
-            try {
-                module.run();
-            } catch (Exception e) {
-                try {
-                    reset();
-                } catch (FlowException e1) {
-                    // should not happen
-                    e1.printStackTrace();
+            if (Thread.interrupted()) {
+                throw new ModuleRunException(new Warning(module, ModuleRunException.MOD_RUN_EXC_STR + "interrupted", true));
+            }
+            
+            ModuleRunException exc = null;
+            (new ArrayList<>(module.getWarnings())).stream().forEach(w -> module.warningResolved(w));
+            final Thread runThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        module.run();
+                    } catch (Exception e) {
+                        try {
+                            reset();
+                        } catch (FlowException e1) {
+                            // should not happen
+                            e1.printStackTrace();
+                        }
+                        new Warning(module, ModuleRunException.MOD_RUN_EXC_STR + e.getMessage()).reportWarning();
+                    }
                 }
-                throw new ModuleRunException(new Warning(module, ModuleRunException.MOD_RUN_EXC_STR + e.getMessage(), true));
+            });
+            runThread.start();
+            try {
+                runThread.join();
+                if (!module.getWarnings().isEmpty()) {
+                    exc = new ModuleRunException(module.getLastWarning());
+                }
+            } catch (InterruptedException e) {
+                exc = exc == null ? new ModuleRunException(new Warning(module, ModuleRunException.MOD_RUN_EXC_STR + "interrupt with message: " +  e.getMessage(), true)) : exc;
+            }
+            if (exc != null) {
+                throw exc;
             }
         }
         this.stepCount++;
@@ -144,6 +172,11 @@ public class SchedulingStepper extends Stepper {
     @Override
     public void pause() {
         this.paused = true;
+    }
+    
+    @Override
+    public void unpause() {
+        this.paused = false;
     }
 
     @Override

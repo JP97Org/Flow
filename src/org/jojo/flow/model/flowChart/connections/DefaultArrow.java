@@ -62,11 +62,15 @@ public class DefaultArrow extends Connection {
      */
     public boolean putDataSignature(final DataSignature signature) {
         if (this.dataType.equals(Objects.requireNonNull(signature)) && signature.isCheckingRecursive()) {
-            this.dataType = signature;
-            notifyObservers(signature);
+            forcePutDataSignature(signature);
             return true;
         }
         return false;
+    }
+    
+    public void forcePutDataSignature(final DataSignature signature) {
+        this.dataType = Objects.requireNonNull(signature);
+        notifyObservers(signature);
     }
 
     @Override
@@ -127,7 +131,8 @@ public class DefaultArrow extends Connection {
             dom.appendString("data", this.data == null ? "null" : this.data.toSerializedString());
         } catch (ClassNotFoundException | IOException e) {
             // should not happen
-            e.printStackTrace(); //TODO maybe warn
+            new Warning(this, e.toString(), true).reportWarning();
+            return null;
         }
         return dom;
     }
@@ -146,7 +151,7 @@ public class DefaultArrow extends Connection {
                 this.data = dataStr.equals("null") ? null : Data.ofSerializedString(dataStr);
             } catch (ClassNotFoundException | IOException e) {
                 // should not happen
-                e.printStackTrace();
+                new Warning(this, e.toString(), true).reportWarning();
             }
             notifyObservers();
         }

@@ -62,13 +62,15 @@ public class BasicSignature extends DataSignature {
     
     @Override
     public DataSignature ofString(final String info) {
+        //TODO schauen ob das so passt mit dem deaktivieren
         final String prepared = info.substring(1, info.length() - 1);
         final String[] elems = prepared.split(",\\s");
+        final BasicSignatureComponentSignature[] componentsLocal = new BasicSignatureComponentSignature[elems.length];
+        final boolean isSizesCheckingDeactivated = prepared.startsWith(new DontCareDataSignature().getNameOfDataId());
         prepareElems(elems);
         if (elems.length != BasicSignatureComponents.values().length) {
             return null;
         }
-        final BasicSignatureComponentSignature[] componentsLocal = new BasicSignatureComponentSignature[elems.length];
         componentsLocal[BasicSignatureComponents.BASIC_TYPE.index] = 
                 (BasicSignatureComponentSignature) new BasicTypeDataSignature(BasicType.INT)
                     .ofString(elems[BasicSignatureComponents.BASIC_TYPE.index]);
@@ -78,6 +80,9 @@ public class BasicSignature extends DataSignature {
         componentsLocal[BasicSignatureComponents.UNIT.index] = 
                 (BasicSignatureComponentSignature) new UnitDataSignature(UnitSignature.NO_UNIT)
                     .ofString(elems[BasicSignatureComponents.UNIT.index]); 
+        if (isSizesCheckingDeactivated) {
+            componentsLocal[BasicSignatureComponents.SIZES.index].deactivateChecking();
+        }
         return new BasicSignature(getDataId(), componentsLocal);
     }
    

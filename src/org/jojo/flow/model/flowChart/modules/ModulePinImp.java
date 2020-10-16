@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.jojo.flow.model.data.Data;
+import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.connections.Connection;
 
 public abstract class ModulePinImp {
@@ -27,7 +28,9 @@ public abstract class ModulePinImp {
     }
     
     public synchronized List<Connection> getConnections() {
-        return new ArrayList<>(this.connections);
+        final List<Connection> ret = new ArrayList<>(this.connections);
+        ret.sort(FlowChartElement.getIdComparator());
+        return ret;
     }
     
     public synchronized boolean addConnection(final Connection toAdd)  {
@@ -77,4 +80,7 @@ public abstract class ModulePinImp {
         }
         return false;
     }
+    
+    @Override
+    public abstract String toString();
 }

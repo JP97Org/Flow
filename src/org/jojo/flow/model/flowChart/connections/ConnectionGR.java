@@ -26,8 +26,6 @@ public abstract class ConnectionGR extends FlowChartElementGR {
     
     protected boolean isAddable(final OneConnectionGR connection) {
         if (connection == null || !connection.getFromPin().equals(this.fromPin)) {
-            System.err.println("arg: " + connection.getFromPin().getLinePoint()); //TODO debug remove
-            System.err.println("this: " + this.fromPin.getLinePoint()); //TODO debug remove
             return false;
         }
         return true;

@@ -102,6 +102,12 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
             final Map<String, Object> domMap = dom.getDOMMap();
+            final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
+            final String hStr = hDom.elemGet();
+            this.height = Integer.parseInt(hStr);
+            final DOM wDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
+            final String wStr = wDom.elemGet();
+            this.width = Integer.parseInt(wStr);
             final DOM elemDom = (DOM)domMap.get("element");
             final String elemIdStr = elemDom.elemGet();
             final int elemId = Integer.parseInt(elemIdStr);
@@ -116,8 +122,18 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
     public boolean isDOMValid(final DOM dom) {
         Objects.requireNonNull(dom);
         try {
-            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getFlowChart());
+            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getMainFlowChart());
             final Map<String, Object> domMap = dom.getDOMMap();
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
+            final String hStr = hDom.elemGet();
+            ok(hStr != null, OK.ERR_MSG_NULL);
+            ok(s -> Integer.parseInt(s), hStr);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_WIDTH) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+            final DOM wDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
+            final String wStr = wDom.elemGet();
+            ok(wStr != null, OK.ERR_MSG_NULL);
+            ok(s -> Integer.parseInt(s), wStr);
             ok(domMap.get("element") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM elemDom = (DOM)domMap.get("element");
             final String elemIdStr = elemDom.elemGet();
@@ -131,7 +147,7 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
             ok(text != null, OK.ERR_MSG_NULL);
             return true;
         } catch (ParsingException e) {
-            e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning();
+            e.getWarning().setAffectedElement((new ModelFacade()).getMainFlowChart()).reportWarning();
             return false;
         }
     }

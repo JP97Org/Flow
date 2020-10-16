@@ -5,7 +5,6 @@ import static org.jojo.flow.model.storeLoad.OK.ok;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
@@ -18,9 +17,15 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
     private String name;
     private int priority;
     
+    private FlowModule module;
+    
     public ExternalConfig(final String name, final int priority) {
         this.name = name;
         this.priority = priority;
+    }
+    
+    public void setModule(final FlowModule module) {
+        this.module = module;
     }
     
     public String getName() {
@@ -49,7 +54,7 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
     public boolean equals(final Object other) {
         if (other != null && other instanceof ExternalConfig) {
             final ExternalConfig oc = (ExternalConfig)other;
-            return this.name == oc.name && this.priority == oc.priority;
+            return this.name.equals(oc.name) && this.priority == oc.priority;
         }
         return false;
     }
@@ -96,7 +101,7 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
             ok(x -> Integer.parseInt(priorityDom.elemGet()), "");
             return true;
         } catch (ParsingException e) {
-            e.getWarning().setAffectedElement(new ModelFacade().getFlowChart()).reportWarning(); //TODO affect module
+            e.getWarning().setAffectedElement(this.module).reportWarning();
             return false;
         }
     }

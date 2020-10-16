@@ -2,6 +2,7 @@ package org.jojo.flow.model.flowChart.modules;
 
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,8 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     
     public FlowModule(final int id, final ExternalConfig externalConfig) {
         super(id);
-        this.externalConfig = externalConfig;
+        this.externalConfig = Objects.requireNonNull(externalConfig);
+        this.externalConfig.setModule(this);
         this.externalConfig.registerObserver(this);
     }
     
@@ -54,9 +56,9 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     public abstract void run() throws Exception;
     
     public DefaultArrow validate() throws ValidationException {
-        final DefaultArrow ret = checkInputDataTypes();
-        if (ret == null) { // everything ok
-            putDefaultDataOnOutgoingConnections();
+        DefaultArrow ret = checkInputDataTypes();
+        if (ret == null) { // input data types ok
+            ret = putDefaultDataOnOutgoingConnections();
         }
         return ret;
     }
@@ -85,8 +87,9 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
             
             final DefaultArrow arrow = pin.getConnections().isEmpty() ? null : (DefaultArrow) (pin.getConnections().get(0));
             data = arrow == null ? null : arrow.getData();
-            if (data == null) { // TODO schauen, dass data vor validation auf allen pfeilen null ist 
-                // we are a module in a cycle (selected as root). However, we still need to check other pins
+            if (data == null) {
+                // We are a module selected as a root on this pin arrow cycle.
+                // However, we still need to check other pins.
                 continue;
             }
             
@@ -97,7 +100,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         return null;
     }
     
-    private void putDefaultDataOnOutgoingConnections() throws ValidationException {
+    private DefaultArrow putDefaultDataOnOutgoingConnections() throws ValidationException {
         final List<OutputPin> allOutputPins = getDefaultOutputs();
         if (allOutputPins.stream().anyMatch(x -> !(x.getModulePinImp() instanceof DefaultPin))) {
             throw new ValidationException(new Warning(this, "an output module pin-imp is not default", true));
@@ -110,9 +113,12 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 if (data == null) {
                     throw new ValidationException(new Warning(this, "an output pin of this module has not specified default data", true));
                 }
-                arrow.putData(data);
+                if (!arrow.putDataSignature(data.getDataSignature().getCopy()) || !arrow.putData(data)) {
+                    return arrow;
+                }
             }
         }
+        return null;
     }
 
     public abstract void setInternalConfig(final DOM internalConfigDOM);
@@ -270,8 +276,11 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     
     @Override
     public String toString() {
-        return "ID= " + this.getId() + " | " + this.externalConfig.toString() + " | allConnectionsOfAllPins= " 
-                                              + getAllModulePins().stream()
-                                                  .map(p -> p.getConnections()).collect(Collectors.toList());
+        final List<ModulePin> allPins = new ArrayList<>(this.getAllModulePins());
+        allPins.sort(ModulePin.getComparator());
+        return "ID= " + this.getId() + " | " + this.externalConfig.toString() 
+                    + " | allPins= " + allPins
+                    + " | allConnectionsOfAllPins= " 
+                    + allPins.stream().map(p -> p.getConnections()).collect(Collectors.toList());
     }
 }

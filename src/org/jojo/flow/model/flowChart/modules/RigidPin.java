@@ -17,4 +17,9 @@ public class RigidPin extends ModulePinImp {
     public OutputPin getOutputPin() {
         return this.outputPin;
     }
+    
+    @Override
+    public String toString() {
+        return "RigidPin with defaultData= " + getDefaultData();
+    }
 }

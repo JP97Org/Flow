@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.jojo.flow.model.Warning;
+
 public class DynamicClassLoader extends ClassLoader {
     private final Map<String, File> externalClassesMap;
     private final File tmpDirForJarExtraction;
@@ -87,7 +89,7 @@ public class DynamicClassLoader extends ClassLoader {
             
                 return defineClass(name, classData, 0, classData.length);
             } catch (IOException e) {
-                e.printStackTrace(); //TODO warn instead
+                new Warning(null, e.toString(), true).reportWarning();
                 return null;
             }
         }

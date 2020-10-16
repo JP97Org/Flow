@@ -88,14 +88,14 @@ public class ConnectionLineGR extends GraphicalRepresentation {
     public boolean isDOMValid(DOM dom) {
         Objects.requireNonNull(dom);
         try {
-            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getFlowChart());
+            ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getMainFlowChart());
             final Map<String, Object> domMap = dom.getDOMMap();
             ok(domMap.get("positionB") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM posBDom = (DOM)domMap.get("positionB");
             ok(d -> PointDOM.pointOf(d), posBDom);
             return true;
         } catch (ParsingException e) {
-            e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning();
+            e.getWarning().setAffectedElement((new ModelFacade()).getMainFlowChart()).reportWarning();
             return false;
         }
     }

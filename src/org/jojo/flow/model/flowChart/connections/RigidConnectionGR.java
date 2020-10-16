@@ -72,7 +72,7 @@ public class RigidConnectionGR extends ConnectionGR {
         final List<OneConnectionGR> before = this.getSingleConnections();
         final var beforePin = this.getFromPin();
         try {
-            ok(super.isDOMValid(dom), "FCE_GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getFlowChart());
+            ok(super.isDOMValid(dom), "FCE_GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getMainFlowChart());
             deleteAllConnections();
             final Map<String, Object> domMap = dom.getDOMMap();
             ok(domMap.get("fromPin") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
@@ -105,7 +105,7 @@ public class RigidConnectionGR extends ConnectionGR {
         } catch (ParsingException e) {
             setFromPin(beforePin);
             before.forEach(c -> addConnection(c));
-            e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning();
+            e.getWarning().setAffectedElement((new ModelFacade()).getMainFlowChart()).reportWarning();
             return false;
         }
     }

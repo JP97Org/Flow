@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
+import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
 import org.jojo.flow.model.data.units.Frequency;
@@ -20,6 +21,7 @@ import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.LabelGR;
+import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionException;
 import org.jojo.flow.model.flowChart.connections.ConnectionLineGR;
@@ -45,9 +47,14 @@ import org.jojo.flow.model.flowChart.modules.DefaultPin;
 public final class DynamicObjectLoader {
     private static final Point INPOS = new Point(50, 50);
     
-    //TODO werden spaeter evtl. private
-    public static final Point RIGID_ONE_POS = new Point(10, 10);
-    public static final Point RIGID_TWO_POS = new Point(20, 10); 
+    private static final Point RIGID_ONE_POS = new Point(10, 10);
+    public static final Point RIGID_ONE_POS() {
+        return new Point(RIGID_ONE_POS.x, RIGID_ONE_POS.y);
+    }
+    private static final Point RIGID_TWO_POS = new Point(20, 10); 
+    public static final Point RIGID_TWO_POS() {
+        return new Point(RIGID_TWO_POS.x, RIGID_TWO_POS.y);
+    }
     
     private DynamicObjectLoader() {
         
@@ -89,12 +96,12 @@ public final class DynamicObjectLoader {
                         new RigidPin(loadModule(MockModule.class.getName()), 
                                 new RigidPinGR(RIGID_TWO_POS, className, 10, 10)), className);
             } else {
-                //TODO exc
+                new Warning(null, "invalid connection classname= " + className, true).reportWarning();
                 return null;
             }
         } catch (ConnectionException e) {
             // should not happen
-            e.printStackTrace();
+            new Warning(null, e.toString(), true).reportWarning();
             return null;
         }
     }
@@ -106,7 +113,7 @@ public final class DynamicObjectLoader {
     public static GraphicalRepresentation loadGR(final String className, final boolean hasDefaultPin) {
         final String mmc = MockModuleGR.class.getName();
         if (className.equals(mmc)) {
-            return new MockModuleGR(new Point(0,0), 10, 10, "Mock"); //TODO mock noch durch echte ModGR erstellung korrigieren
+            return new MockModuleGR(new Point(0,0), 10, 10, "Mock");
         } else if (className.equals(FlowChartGR.class.getName())) {
             return new FlowChartGR();
         } else if (className.equals(LabelGR.class.getName())) {
@@ -131,14 +138,13 @@ public final class DynamicObjectLoader {
             return new DefaultOutputPinGR(new Point(0,0), "", 1, 1);
         }
         else {
-            System.err.println("class not found: " + className + "!"); //TODO EXC
+            new Warning(null, "invalid GR classname= " + className, true).reportWarning();
             return null;
         }
     }
     
     public static ModulePin loadPin(final String className, final String classNameImp) {
-        //TODO evtl. auch noch anders machen anstatt das MockModule zur erzeugung
-        final FlowModule mock = ModelFacade.mock;
+        final FlowModule mock = loadModule(MockModule.class.getName());
         return loadPin(className, classNameImp, mock);
     }
     
@@ -159,13 +165,12 @@ public final class DynamicObjectLoader {
             }
         }
         
-        System.err.println("class not found: " + className + "!"); //TODO EXC
+        new Warning(null, "invalid pin classname= " + className, true).reportWarning();
         return null;
     }
     
     public static RigidPin loadRigidPin(final FlowModule moduleArg) {
-        //TODO evtl. auch noch anders machen anstatt das MockModule zur erzeugung
-        final FlowModule mock = ModelFacade.mock;
+        final FlowModule mock = loadModule(MockModule.class.getName());
         final FlowModule module = moduleArg == null ? mock : moduleArg;
         final RigidPinGR gr = (RigidPinGR)loadGR(RigidPinGR.class.getName());
         return new RigidPin(module, gr);
@@ -186,11 +191,6 @@ public final class DynamicObjectLoader {
             final Object modObj = constr.newInstance(id, new ExternalConfig("NAME", 0));
             final FlowModule ret = (FlowModule)modObj;
             
-            // TODO remove this if clause, it is only for debugging
-            if (ModelFacade.mock == null) {
-                ModelFacade.mock = (MockModule) ret;
-            }
-            
             return ret;
         } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | 
                 InstantiationException | IllegalAccessException | IllegalArgumentException | 
@@ -201,12 +201,15 @@ public final class DynamicObjectLoader {
     }
     
     public static class MockModule extends FlowModule {
+        private final MockModuleGR gr;
         private ModulePin pinOut;
         private ModulePin pinIn;
         private List<ModulePin> rigidPins;
         
         public MockModule(int id, ExternalConfig externalConfig) {
             super(id, externalConfig);
+            this.gr = (MockModuleGR) loadGR(MockModuleGR.class.getName());
+            this.gr.setModuleMock(this);
         }
         
         @Override
@@ -237,10 +240,36 @@ public final class DynamicObjectLoader {
         public Frequency<Fraction> getFrequency() {
             return Frequency.getFractionConstant(new Fraction(1));
         }
+        
+        @Override
+        public DefaultArrow validate() throws ValidationException {
+            getAllModulePins(); // if initializing is necessary
+            final DataSignature before = 
+                    ((DefaultPin)this.pinIn.getModulePinImp()).getCheckDataSignature().getCopy();
+            final DataSignature checkingDataSignature = 
+                    ((DefaultPin)this.pinOut.getModulePinImp()).getCheckDataSignature().getCopy();
+            try {
+                ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(checkingDataSignature);
+            } catch (FlowException e) {
+                // should not happen
+                e.printStackTrace();
+            }
+            final DefaultArrow ret = super.validate();
+            try {
+                ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(before);
+            } catch (FlowException e) {
+                // should not happen
+                e.printStackTrace();
+            }
+            return ret;
+        }
 
         @Override
         public void run() throws Exception {
-
+            Thread.sleep(500);
+            /*for(long i = 0; i < 1000000000; i++) {
+                
+            }*/
         }
 
         @Override
@@ -350,21 +379,17 @@ public final class DynamicObjectLoader {
         
         @Override
         public void setInternalConfig(DOM internalConfigDOM) {
-            // TODO Auto-generated method stub
             
         }
         
         @Override
         public boolean isInternalConfigDOMValid(DOM internalConfigDOM) {
-            // TODO Auto-generated method stub
             return true;
         } 
 
         @Override
         public GraphicalRepresentation getGraphicalRepresentation() {
-            MockModuleGR ret = new MockModuleGR(new Point(0,0), 10, 10, "Mock");
-            ret.setModuleMock(this);
-            return ret;
+            return this.gr;
         }
 
         @Override

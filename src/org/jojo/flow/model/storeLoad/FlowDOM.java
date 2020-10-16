@@ -1,5 +1,6 @@
 package org.jojo.flow.model.storeLoad;
 
+import org.jojo.flow.model.Warning;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -31,7 +32,7 @@ public class FlowDOM extends DOM {
             }
         }
         if (flowNode == null) {
-            //TODO warn
+            new Warning(null, "no flow node found", true).reportWarning();
             return null; 
         }
         final NodeList flowNodeList = flowNode.getChildNodes();

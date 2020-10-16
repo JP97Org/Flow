@@ -3,14 +3,15 @@ package org.jojo.flow;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.data.BasicSignatureComponents;
-import org.jojo.flow.model.data.Data;
+import org.jojo.flow.model.data.units.Time;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.FlowChartGR;
+import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionException;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
@@ -20,21 +21,20 @@ import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
-import org.jojo.flow.model.flowChart.modules.RigidPin;
+import org.jojo.flow.model.simulation.Simulation;
+import org.jojo.flow.model.simulation.SimulationConfiguration;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.FlowDOM;
 import org.jojo.flow.model.storeLoad.ModuleClassesList;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
-import org.jojo.flow.model.storeLoad.FlowChartDOM;
 
 public class Main {
     // TODO at the moment only test main class
     public static void main(String[] args) {
         FlowChart flowChart = new FlowChart(0, new FlowChartGR());
-        ModelFacade.flowChart = flowChart;
+        new ModelFacade().setMainFlowChart(flowChart);
         final MockModule mod = (MockModule)DynamicObjectLoader.loadModule(DynamicObjectLoader.MockModule.class.getName(), 100);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
         flowChart.addModule(mod);
@@ -54,7 +54,7 @@ public class Main {
             rigidCon.setFromPin(mod.getAllOutputs().stream()
                     .filter(p -> p instanceof OutputPin)
                     .filter(p -> ((ModulePinGR)p.getGraphicalRepresentation())
-                            .getLinePoint().equals(DynamicObjectLoader.RIGID_ONE_POS))
+                            .getLinePoint().equals(DynamicObjectLoader.RIGID_ONE_POS()))
                     .findFirst().orElse(null));
         } catch (ConnectionException e1) {
             e1.printStackTrace();
@@ -70,21 +70,20 @@ public class Main {
             rigidCon.addToPin(mod.getAllInputs().stream()
                     .filter(p -> p instanceof InputPin)
                     .filter(p -> ((ModulePinGR)p.getGraphicalRepresentation())
-                            .getLinePoint().equals(DynamicObjectLoader.RIGID_TWO_POS))
+                            .getLinePoint().equals(DynamicObjectLoader.RIGID_TWO_POS()))
                     .findFirst().orElse(null));
         } catch (ConnectionException e) {
             e.printStackTrace();
         }
         System.out.println(flowChart.addConnection(con));
         System.out.println(flowChart.addConnection(rigidCon));
-        //System.out.println(flowChart.connectAll());
         final String original0 = flowChart.toString();
         System.out.println(original0);
         final var dom = flowChart.getDOM();
         System.out.println(flowChart.isDOMValid(dom));
         flowChart.restoreFromDOM(dom);
         System.out.println(flowChart.getWarnings());
-        System.out.println(ModelFacade.mock.getWarnings());
+        System.out.println(flowChart.getModules().get(0).getWarnings());
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
         final DOM flowDom = new FlowDOM(dom);
         final String originalFcStr = flowChart.toString();
@@ -92,33 +91,57 @@ public class Main {
         new StoreLoadFacade().storeFlowChart(new File("/home/jojo/Schreibtisch/flow.xml"), flowDom);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
         
-        ModelFacade.flowChart = new StoreLoadFacade().loadFlowChart(new File("/home/jojo/Schreibtisch/flow.xml"));
-        flowChart = ModelFacade.flowChart;
-        System.out.println(flowChart.getWarnings());
+        new ModelFacade().setMainFlowChart(new StoreLoadFacade().loadFlowChart(new File("/home/jojo/Schreibtisch/flow.xml")));
+        flowChart = new ModelFacade().getMainFlowChart();
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
+        System.out.println(flowChart.getWarnings());
         final DOM newFcDom = flowChart.getDOM();
         System.out.println(flowChart.isDOMValid(dom));
         final DOM newDom = new FlowDOM(newFcDom);
         System.out.println(newDom.getDOMMap());
-        final DOM newDomOfFc = flowChart.getDOM();
         System.out.println(flowChart);
         System.out.println(original0);
         System.out.println(originalFcStr);
         System.out.println(flowChart.toString().equals(original0));
         System.out.println(original0.equals(originalFcStr));
-        System.out.println(dom.equals(newDomOfFc));
+        try {
+            final DefaultArrow arrow = flowChart.validate();
+            System.out.println(arrow);
+            System.out.println(arrow == null);
+        } catch (ValidationException e1) {
+            e1.printStackTrace();
+        }
+        
+        //Simulation Test
+        final Time<Double> timeout = Time.getDoubleConstant(1);
+        try {
+            Simulation sim = new Simulation(flowChart, new SimulationConfiguration(timeout));
+            sim.start();
+            System.out.println(sim.isRunning());
+            Thread.sleep(1000);
+            sim.stop();
+            for (int i = 0; sim.isRunning(); i++) {
+                Thread.sleep(10);
+                if (i == 500) {
+                    System.err.println("TIMEOUT of 5000ms exceeded by waiting for simulation to stop!");
+                }
+            }
+            System.out.println(flowChart.getWarnings());
+            System.out.println(!sim.isRunning());
+        } catch (FlowException | InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         
         //Class Loader Test
-        final var classLoader = new DynamicClassLoader(new File("/home/jojo/tmp/flow"));
         try {
-            final List<Class<? extends FlowModule>> moduleClasses = new ModuleClassesList(classLoader, 
-                    true, 
-                    new File("/home/jojo/qfpm.jar")).getModuleClassesList();
+            final ModuleClassesList list = new StoreLoadFacade().getNewModuleClassesList(new File("/home/jojo/tmp/flow"), new File("/home/jojo/qfpm.jar")).loadAll();
+            final List<Class<? extends FlowModule>> moduleClasses = list.getModuleClassesList();
             System.out.println(moduleClasses);
-            final FlowModule loaded = DynamicObjectLoader.loadModule(classLoader, moduleClasses.get(0).getName(), 400);
+            final FlowModule loaded = DynamicObjectLoader.loadModule(list.getClassLoader(), moduleClasses.get(0).getName(), 400);
             System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
             flowChart = new FlowChart(0, new FlowChartGR());
-            ModelFacade.flowChart = flowChart;
+            new ModelFacade().setMainFlowChart(flowChart);
             flowChart.addModule(loaded);
             System.out.println(flowChart);
         } catch (ClassNotFoundException | IOException e) {

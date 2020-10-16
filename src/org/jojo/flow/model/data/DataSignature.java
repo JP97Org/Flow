@@ -132,8 +132,9 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
         return isRecursiveSignature() && this.dataId != BUNDLE;
     }
     
-    public void deactivateChecking() {
+    public DataSignature deactivateChecking() {
         this.dataId = DONT_CARE;
+        return this;
     }
     
     public boolean isChecking() {
@@ -197,7 +198,7 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
         return "" + getNameOfDataId() + " | ";
     }
     
-    private String getNameOfDataId() {
+    protected String getNameOfDataId() {
         if (getDataId() == DONT_CARE) {
             return "not checking";
         } else if (getDataId() == NO_SIZES) {
@@ -318,7 +319,7 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
         return Arrays.asList(getComponents()).iterator();
     }
     
-    private static class DontCareDataSignature extends DataSignature {
+    protected static class DontCareDataSignature extends DataSignature {
         /**
          * 
          */

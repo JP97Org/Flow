@@ -21,8 +21,9 @@ public abstract class Stepper implements IStepper, Runnable {
     }
     
     public abstract void stepForward() throws ModuleRunException;
-    public abstract void stepOnce() throws ModuleRunException;
+    public abstract void stepOnce() throws ModuleRunException; //TODO this and all other step methods calling this method clears all modules' warning lists
     
+    public abstract void unpause();
     public abstract void pause();
     public abstract boolean isPaused();
     public abstract void reset() throws FlowException;

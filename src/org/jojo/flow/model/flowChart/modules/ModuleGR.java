@@ -207,7 +207,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
     public boolean isDOMValid(final DOM dom) {
         Objects.requireNonNull(dom);
         try {
-            ok(super.isDOMValid(dom), "FCE_GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getFlowChart()); //TODO write to module
+            ok(super.isDOMValid(dom), "FCE_GR " + OK.ERR_MSG_DOM_NOT_VALID, getModule());
             final Map<String, Object> domMap = dom.getDOMMap();
             ok(domMap.get(ModulePinDOM.NAME_MODULE_ID) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM modIdDom = (DOM) domMap.get(ModulePinDOM.NAME_MODULE_ID);
@@ -252,7 +252,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
             ok(i == 4, "Not 4 corners, corners count: " + i);
             return true;
         } catch (ParsingException e) {
-            e.getWarning().setAffectedElement((new ModelFacade()).getFlowChart()).reportWarning(); //TODO write to module
+            e.getWarning().setAffectedElement(getModule()).reportWarning();
             return false;
         }
     }

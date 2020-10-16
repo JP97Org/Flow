@@ -104,4 +104,9 @@ public abstract class GraphicalRepresentation extends Subject implements DOMable
             return false;
         }
     }
+    
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " with position= " + getPosition();
+    }
 }

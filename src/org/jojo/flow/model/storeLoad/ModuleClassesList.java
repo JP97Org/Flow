@@ -33,22 +33,29 @@ public class ModuleClassesList {
         }
     }
     
-    public void addJarFile(final File jarFile) throws ClassNotFoundException, IOException {
+    public DynamicClassLoader getClassLoader() {
+        return this.loader;
+    }
+    
+    public ModuleClassesList addJarFile(final File jarFile) throws ClassNotFoundException, IOException {
         this.jarFiles.add(jarFile);
         if (this.isLoadingAll) {
             load(jarFile);
         }
+        return this;
     }
     
-    public void loadJarFile(final File jarFile) throws ClassNotFoundException, IOException {
+    public ModuleClassesList loadJarFile(final File jarFile) throws ClassNotFoundException, IOException {
         this.jarFiles.add(jarFile);
         load(jarFile);
+        return this;
     }
 
-    public void loadAll() throws ClassNotFoundException, IOException {
+    public ModuleClassesList loadAll() throws ClassNotFoundException, IOException {
         for (final File file : this.jarFiles) {
             load(file);
         }
+        return this;
     }
     
     @SuppressWarnings("unchecked")

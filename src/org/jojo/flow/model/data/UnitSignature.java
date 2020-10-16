@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import org.jojo.flow.model.Warning;
+
 public final class UnitSignature implements Serializable {
     /**
      * 
@@ -62,7 +64,7 @@ public final class UnitSignature implements Serializable {
     public final int mole;
     public final int candela;
     
-    public UnitSignature() {
+    private UnitSignature() {
         this.meter = 0;
         this.kilogramm = 0;
         this.second = 0;
@@ -114,7 +116,7 @@ public final class UnitSignature implements Serializable {
         return add(other);
     }
     
-    public UnitSignature multiply(UnitSignature other) {
+    public UnitSignature multiply(final UnitSignature other) {
         return new UnitSignature(addEach(other.getUnitSignatureArray()));
     }
     
@@ -126,7 +128,7 @@ public final class UnitSignature implements Serializable {
         return ret;
     }
     
-    public UnitSignature divide(UnitSignature other) {
+    public UnitSignature divide(final UnitSignature other) {
         return new UnitSignature(subtractEach(other.getUnitSignatureArray()));
     }
     
@@ -179,9 +181,10 @@ public final class UnitSignature implements Serializable {
         return ret.endsWith(" * ") ? ret.substring(0, ret.length() - 3) : ret;
     }
     
-
     public static UnitSignature ofString(final String unitAsString) {
-        if (unitAsString.equals("")) {
+        if (unitAsString == null || unitAsString.equals("null")) {
+            return null;
+        } else if (unitAsString.equals("") ) {
             return NO_UNIT;
         }
         final int arr[] = NO_UNIT.getUnitSignatureArray();
@@ -204,17 +207,17 @@ public final class UnitSignature implements Serializable {
                         case "mol": arr[5] = exp; break;
                         case "cd": arr[6] = exp; break;
                         default: 
-                            //TODO maybe warn
                             isErr = true;
+                            new Warning(null, "base unit name unknown: " + buName, isErr).reportWarning();
                     }
                 } else {
-                    //TODO maybe warn
-                    isErr = false;
+                    isErr = true;
+                    new Warning(null, "base unit string has unknown format: " + baseUnitStr, isErr).reportWarning();
                 }
             }
             catch (NumberFormatException e) {
-                e.printStackTrace();
                 isErr = true;
+                new Warning(null, e.toString(), isErr).reportWarning();
             }
         }
         return isErr ? null : new UnitSignature(arr);

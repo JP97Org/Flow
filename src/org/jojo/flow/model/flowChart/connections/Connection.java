@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jojo.flow.model.FlowException;
@@ -18,6 +19,7 @@ import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.ModulePinImp;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
+import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
@@ -44,13 +46,19 @@ public abstract class Connection extends FlowChartElement {
         }
     }
     
-    public boolean connect() {
+    public synchronized boolean reconnect() {
+        disconnect();
+        return connect();
+    }
+    
+    public synchronized boolean connect() {
         if (!this.toPins.isEmpty()) {
             try {
                 this.fromPin.addConnection(this);
             } catch (ListSizeException e) {
                 // should not happen
                 e.printStackTrace();
+                return false;
             }
             for (final var p : this.toPins) {
                 try {
@@ -67,7 +75,7 @@ public abstract class Connection extends FlowChartElement {
         return false;
     }
     
-    public void disconnect() {
+    public synchronized void disconnect() {
         this.fromPin.removeConnection(this);
         this.toPins.forEach(p -> p.removeConnection(this));
     }
@@ -87,7 +95,15 @@ public abstract class Connection extends FlowChartElement {
     }
     
     public synchronized List<InputPin> getToPins() {
-        return new ArrayList<>(this.toPins);
+        final List<InputPin> ret = new ArrayList<>(this.toPins);
+        ret.sort(ModulePin.getComparator());
+        return ret;
+    }
+    
+    public final Set<FlowModule> getConnectedModules() {
+        final List<ModulePin> pins = new ArrayList<>(this.toPins);
+        pins.add(getFromPin());
+        return pins.stream().map(p -> p.getModule()).collect(Collectors.toSet());
     }
     
     public boolean isPinImpInConnection(final ModulePinImp modulePinImp) {
@@ -274,10 +290,6 @@ public abstract class Connection extends FlowChartElement {
                         e.printStackTrace();
                         return false;
                     }
-                }
-                final boolean debugOk = pinFrom.isDOMValid(fromDomFinal);
-                if (!debugOk) { //TODO remove this debugOK
-                    System.err.println("debug");
                 }
                 final boolean ok = pinFrom.isDOMValid(fromDomFinal) && setFromPin((OutputPin)pinFrom);
                 setFromPin(before);

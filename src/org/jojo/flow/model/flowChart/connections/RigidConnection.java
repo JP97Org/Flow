@@ -3,6 +3,7 @@ package org.jojo.flow.model.flowChart.connections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.InternalConfig;
@@ -44,7 +45,7 @@ public class RigidConnection extends Connection {
             } catch (ListSizeException e) {
                 // should not happen
                 disconnect();
-                e.printStackTrace();
+                new Warning(this, e.toString(), true).reportWarning();
                 return false;
             }
         }
@@ -79,7 +80,7 @@ public class RigidConnection extends Connection {
 
     @Override
     protected boolean checkDataTypes() {
-        return true; //no data type checking for rigid pins at the moment
+        return true; // no data type checking for rigid pins at the moment
     }
 
     @Override

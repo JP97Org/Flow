@@ -155,7 +155,7 @@ public class Unit<T extends Number> implements Serializable {
     public static final Unit<Integer> BAR = getIntegerConstant(100000).multiply(PASCAL);
     public static final Unit<Integer> ATMOSPERE = getIntegerConstant(101325).multiply(PASCAL);
     public static final Unit<BigDecimal> ERG = getBigDecimalConstant(100.).operateSafely(MULTIPLY, NANO).multiply(JOULE);
-    public static final Unit<Double> PS = getDoubleConstant(735.49875).multiply(WATT);
+    public static final Unit<Double> HP = getDoubleConstant(735.49875).multiply(WATT);
     public static final Unit<Double> RAD = getDoubleConstant(0.01).multiply(GRAY);
     public static final Unit<Integer> HECTARE = getIntegerConstant(10000).multiply(SQUARE_METER);
     public static final Unit<Double> LITRE = getDoubleConstant(0.001).multiply(CUBE_METER);
@@ -170,7 +170,7 @@ public class Unit<T extends Number> implements Serializable {
     public final T value;
     public final UnitSignature unit;
     
-    public Unit(final Type type, final T value, final UnitSignature unit) {
+    protected Unit(final Type type, final T value, final UnitSignature unit) {
         this.type = type;
         this.value = value;
         this.unit = unit;
@@ -186,6 +186,14 @@ public class Unit<T extends Number> implements Serializable {
         return new Unit<Integer>(INT, value, NO_UNIT);
     }
     
+    public static Unit<Long> getLongConstant(final long value) {
+        return new Unit<Long>(INT, value, NO_UNIT);
+    }
+    
+    public static Unit<BigInteger> getBigIntConstant(final BigInteger value) {
+        return new Unit<BigInteger>(BIG_INT, value, NO_UNIT);
+    }
+    
     public static Unit<Double> getDoubleConstant(final double value) {
         return new Unit<Double>(DOUBLE, value, NO_UNIT);
     }
@@ -196,6 +204,10 @@ public class Unit<T extends Number> implements Serializable {
     
     public static Unit<BigDecimal> getBigDecimalConstant(final double value) {
         return new Unit<BigDecimal>(BIG_DECIMAL, new BigDecimal(value), NO_UNIT);
+    }
+    
+    public static Unit<BigDecimal> getBigDecimalConstant(final BigDecimal value) {
+        return new Unit<BigDecimal>(BIG_DECIMAL, value, NO_UNIT);
     }
     
     private Unit<T> operateSafely(final Operation operation, Unit<T> other) {
@@ -498,7 +510,7 @@ public class Unit<T extends Number> implements Serializable {
             final Unit<Fraction> ret = (Unit<Fraction>) this;
             return ret;
         } else if (this.type == Type.BYTE || this.type == Type.SHORT || this.type == Type.INT || this.type == Type.LONG) {
-            return new Unit<Fraction>(FRACTION, new Fraction(this.value.longValue(), 1), this.unit);
+            return new Unit<Fraction>(FRACTION, new Fraction(this.value.longValue(), 1L), this.unit);
         }
         return new Unit<Fraction>(FRACTION, new Fraction(this.value.doubleValue()), this.unit);
     }
