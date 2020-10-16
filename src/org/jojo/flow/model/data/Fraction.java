@@ -2,7 +2,9 @@ package org.jojo.flow.model.data;
 
 import java.util.Objects;
 
-public class Fraction extends Number {
+import org.jojo.flow.api.IFraction;
+
+public class Fraction extends Number implements IFraction {
     /**
      * 
      */
@@ -117,10 +119,11 @@ public class Fraction extends Number {
         return (double)this.numerator / (double)this.denominator;
     }
 
-    public Fraction add(final Fraction other) {
-        final long kgv = kgv(this.denominator, other.denominator);
+    @Override
+    public IFraction add(final IFraction other) {
+        final long kgv = kgv(this.denominator, other.getDenominator());
         return new Fraction((this.numerator * kgv) / this.denominator 
-                + (other.numerator * kgv) / other.denominator, kgv);
+                + (other.getNumerator() * kgv) / other.getDenominator(), kgv);
     }
     
     private static long kgv(long a, long b) {
@@ -140,27 +143,38 @@ public class Fraction extends Number {
         return signum * a;
     }
     
-    public Fraction subtract(final Fraction other) {
+    @Override
+    public IFraction subtract(final IFraction other) {
         return add(new Fraction((-1) * other.getNumerator(), getDenominator()));
     }
     
-    public Fraction multiply(final Fraction other) {
-        return new Fraction(this.numerator * other.numerator, this.denominator * other.denominator);
+    @Override
+    public IFraction multiply(final IFraction other) {
+        return new Fraction(this.getNumerator() * other.getNumerator(), 
+                this.getDenominator() * other.getDenominator());
     }
     
-    public Fraction divide(final Fraction other) {
-        return multiply(new Fraction(other.denominator, other.numerator));
+    @Override
+    public IFraction divide(final IFraction other) {
+        return multiply(new Fraction(other.getDenominator(), other.getNumerator()));
     }
     
+    @Override
     public int hashCode() {
         return Objects.hash(this.numerator, this.denominator);
     }
     
+    @Override
     public boolean equals(final Object other) {
         if (other != null && other instanceof Fraction) {
             final Fraction frac = (Fraction)other;
             return (this.numerator == frac.numerator && this.denominator == frac.denominator);
         }
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return this.numerator + " / " + this.denominator;
     }
 }

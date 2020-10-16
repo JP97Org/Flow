@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
-import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
 import org.jojo.flow.model.data.units.Frequency;
@@ -186,9 +186,8 @@ public final class DynamicObjectLoader {
     
     public static FlowModule loadModule(final ClassLoader classLoader, final String className, final int id) {
         try {
-            final Class<?> moduleToLoadClass = Class.forName(className, true, classLoader);
-            final var constr = moduleToLoadClass.getConstructor(int.class, ExternalConfig.class);
-            final Object modObj = constr.newInstance(id, new ExternalConfig("NAME", 0));
+            final Object modObj = load(classLoader, className, 
+                    new Class<?>[] {int.class, ExternalConfig.class}, id, new ExternalConfig("NAME", 0));
             final FlowModule ret = (FlowModule)modObj;
             
             return ret;
@@ -198,6 +197,12 @@ public final class DynamicObjectLoader {
             new Warning(null, e.toString(), true).reportWarning();
         }
         return null;
+    }
+    
+    public static Object load(final ClassLoader classLoader, final String className, final Class<?>[] parameterTypes, final Object... initArgs) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        final Class<?> moduleToLoadClass = Class.forName(className, true, classLoader);
+        final var constr = moduleToLoadClass.getConstructor(parameterTypes);
+        return constr.newInstance(initArgs);
     }
     
     public static class MockModule extends FlowModule {
@@ -244,9 +249,9 @@ public final class DynamicObjectLoader {
         @Override
         public DefaultArrow validate() throws ValidationException {
             getAllModulePins(); // if initializing is necessary
-            final DataSignature before = 
+            final IDataSignature before = 
                     ((DefaultPin)this.pinIn.getModulePinImp()).getCheckDataSignature().getCopy();
-            final DataSignature checkingDataSignature = 
+            final IDataSignature checkingDataSignature = 
                     ((DefaultPin)this.pinOut.getModulePinImp()).getCheckDataSignature().getCopy();
             try {
                 ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(checkingDataSignature);

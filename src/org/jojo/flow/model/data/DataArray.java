@@ -3,21 +3,23 @@ package org.jojo.flow.model.data;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.jojo.flow.api.IDataSignature;
+
 public class DataArray extends RecursiveCheckable implements Iterable<Data> {
     /**
      * 
      */
     private static final long serialVersionUID = -8746884178319083769L;
     private final Data[] data;
-    private final DataSignature dataSignature;
+    private final IDataSignature dataSignature;
     
-    public DataArray(final Data[] data, final DataSignature componentSignature) throws DataTypeIncompatException {
+    public DataArray(final Data[] data, final IDataSignature iDataSignature) throws DataTypeIncompatException {
         this.data = data;
-        if (!componentSignature.isCheckingRecursive()) {
+        if (!iDataSignature.isCheckingRecursive()) {
             throw new DataTypeIncompatException("the component signature must be checking recursive");
         }
-        if (Arrays.stream(data).anyMatch(x -> !x.hasSameType(componentSignature))) {
-            throw new DataTypeIncompatException("all data must have this signature: " + componentSignature);
+        if (Arrays.stream(data).anyMatch(x -> !x.hasSameType(iDataSignature))) {
+            throw new DataTypeIncompatException("all data must have this signature: " + iDataSignature);
         }
         this.dataSignature = new RecursiveSignature(this);
     }
@@ -43,7 +45,7 @@ public class DataArray extends RecursiveCheckable implements Iterable<Data> {
     }
 
     @Override
-    public DataSignature getDataSignature() {
+    public IDataSignature getDataSignature() {
         return this.dataSignature;
     }
 

@@ -9,9 +9,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
-import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.ListSizeException;
@@ -201,7 +201,7 @@ public abstract class Connection extends FlowChartElement {
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
             final ModulePin pinFrom = DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
             pinFrom.restoreFromDOM(fromDom);
-            final DataSignature fromBeforeSign = pinFrom.getModulePinImp() instanceof DefaultPin 
+            final IDataSignature fromBeforeSign = pinFrom.getModulePinImp() instanceof DefaultPin 
                     ? ((DefaultPin)pinFrom.getModulePinImp()).getCheckDataSignature().getCopy()
                             : null;
             if (fromBeforeSign != null) {
@@ -227,7 +227,7 @@ public abstract class Connection extends FlowChartElement {
                     final String pinToLoadImp = cnDomImp.elemGet();
                     final ModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
                     pin.restoreFromDOM(toDom);
-                    final DataSignature toBeforeSign = pin.getModulePinImp() instanceof DefaultPin 
+                    final IDataSignature toBeforeSign = pin.getModulePinImp() instanceof DefaultPin 
                             ? ((DefaultPin)pin.getModulePinImp()).getCheckDataSignature().getCopy()
                                     : null;
                     if (toBeforeSign != null) {
@@ -278,7 +278,7 @@ public abstract class Connection extends FlowChartElement {
             final var before = getFromPin();
             final var fromDomFinal = fromDom;
             ok(ok(x -> {try {
-                final DataSignature checkSignBefore = pinFrom.getModulePinImp() instanceof DefaultPin 
+                final IDataSignature checkSignBefore = pinFrom.getModulePinImp() instanceof DefaultPin 
                         ? ((DefaultPin)pinFrom.getModulePinImp()).getCheckDataSignature() : null;
                 if (checkSignBefore != null) {
                     final var copy = checkSignBefore.getCopy();
@@ -319,7 +319,7 @@ public abstract class Connection extends FlowChartElement {
                     ok(pinToLoadImp != null, OK.ERR_MSG_NULL);
                     final ModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
                     ok(ok(x -> {try {
-                        final DataSignature checkSignBefore = pin.getModulePinImp() instanceof DefaultPin 
+                        final IDataSignature checkSignBefore = pin.getModulePinImp() instanceof DefaultPin 
                                 ? ((DefaultPin)pin.getModulePinImp()).getCheckDataSignature() : null;
                         if (checkSignBefore != null) {
                             final var copy = checkSignBefore.getCopy();

@@ -6,8 +6,8 @@ import java.awt.Point;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jojo.flow.IObserver;
-import org.jojo.flow.ISubject;
+import org.jojo.flow.api.IObserver;
+import org.jojo.flow.api.ISubject;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.storeLoad.DOM;

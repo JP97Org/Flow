@@ -1,9 +1,9 @@
 package org.jojo.flow.test.model.data;
 
+import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.data.BasicSignatureComponents;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataArray;
-import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.DataTypeIncompatException;
 import org.jojo.flow.model.data.IllegalUnitOperationException;
 import org.jojo.flow.model.data.RawDataSet;
@@ -14,7 +14,7 @@ public class DataSignatureTest {
     public void testDeactivateChecking() throws IllegalUnitOperationException {
         final RawDataSet dataOne = new RawDataSet(new byte[] {0, 1, 2});
         final RawDataSet dataTwo = new RawDataSet(new byte[] {3, 4, 5});
-        final DataSignature copy = dataOne.getDataSignature().getCopy();
+        final IDataSignature copy = dataOne.getDataSignature().getCopy();
         Assert.assertEquals(dataOne.getDataSignature(), copy);
         Assert.assertFalse(dataOne.getDataSignature() == copy);
         Assert.assertTrue(dataOne.hasSameType(copy));
@@ -25,14 +25,14 @@ public class DataSignatureTest {
         Assert.assertFalse(dataThree.hasSameType(dataOne.getDataSignature()));
         try {
             final DataArray arr = new DataArray(new Data[] {dataOne, dataTwo}, dataOne.getDataSignature());
-            final DataSignature arrCopy = arr.getDataSignature().getCopy();
+            final IDataSignature arrCopy = arr.getDataSignature().getCopy();
             Assert.assertEquals(arr.getDataSignature(), arrCopy);
             Assert.assertFalse(arr.getDataSignature() == arrCopy);
             Assert.assertEquals(2, arrCopy.size());
             Assert.assertEquals(dataOne.getDataSignature(), arrCopy.getComponent(0));
             Assert.assertEquals(dataTwo.getDataSignature(), arrCopy.getComponent(1));
             int i = 0;
-            for (final DataSignature data : arrCopy) {
+            for (final IDataSignature data : arrCopy) {
                 Assert.assertEquals(data, arrCopy.getComponent(i));
                 i++;
             }
@@ -51,10 +51,10 @@ public class DataSignatureTest {
     @Test
     public void testHashEfficientCopy() {
         final RawDataSet dataOne = new RawDataSet(new byte[] {0, 1, 2});
-        final DataSignature heCopy = dataOne.getDataSignature().tryGetHashEfficientCopy();
+        final IDataSignature heCopy = dataOne.getDataSignature().tryGetHashEfficientCopy();
         System.out.println("HashCode of HE-Copy: " + heCopy.hashCode());
         Assert.assertTrue(heCopy.isHashEfficient());
-        final DataSignature heCopyTwo = heCopy.tryGetHashEfficientCopy();
+        final IDataSignature heCopyTwo = heCopy.tryGetHashEfficientCopy();
         System.out.println("HashCode of HE-Copy2: " + heCopyTwo.hashCode());
         Assert.assertEquals(heCopy, heCopyTwo);
         Assert.assertEquals(heCopy.hashCode(), heCopyTwo.hashCode());

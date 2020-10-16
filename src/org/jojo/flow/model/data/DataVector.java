@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import org.jojo.flow.api.IDataSignature;
+
 public class DataVector extends RecursiveCheckable implements Iterable<Data> {
     /**
      * 
@@ -12,20 +14,20 @@ public class DataVector extends RecursiveCheckable implements Iterable<Data> {
     private static final long serialVersionUID = 4082764662720440203L;
     private int lastKnownSize;
     private final List<Data> data;
-    private final DataSignature componentSignature;
-    private DataSignature dataSignature;
+    private final IDataSignature componentSignature;
+    private IDataSignature dataSignature;
     
-    public DataVector(final List<Data> data, final DataSignature componentSignature) throws DataTypeIncompatException {
+    public DataVector(final List<Data> data, final IDataSignature iDataSignature) throws DataTypeIncompatException {
         Objects.requireNonNull(data);
         this.lastKnownSize = data.size();
         this.data = data;
-        if (!componentSignature.isCheckingRecursive()) {
+        if (!iDataSignature.isCheckingRecursive()) {
             throw new DataTypeIncompatException("the component signature must be checking recursive");
         }
-        if (data.stream().anyMatch(x -> !x.hasSameType(componentSignature))) {
-            throw new DataTypeIncompatException("all data must have this signature: " + componentSignature);
+        if (data.stream().anyMatch(x -> !x.hasSameType(iDataSignature))) {
+            throw new DataTypeIncompatException("all data must have this signature: " + iDataSignature);
         }
-        this.componentSignature = componentSignature;
+        this.componentSignature = iDataSignature;
         this.dataSignature = new RecursiveSignature(this);
     }
     
@@ -61,7 +63,7 @@ public class DataVector extends RecursiveCheckable implements Iterable<Data> {
     }
 
     @Override
-    public DataSignature getDataSignature() {
+    public IDataSignature getDataSignature() {
         return this.dataSignature;
     }
 

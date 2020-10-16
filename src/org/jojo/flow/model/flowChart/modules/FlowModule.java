@@ -10,11 +10,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.IObserver;
-import org.jojo.flow.ISubject;
+import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.api.IObserver;
+import org.jojo.flow.api.ISubject;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
-import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.flowChart.FlowChartElement;
@@ -78,7 +78,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 throw new ValidationException(new Warning(this, "an input pin of this module has not specified default data", true));
             }
             
-            final DataSignature pinDataSignature = pin.getCheckDataSignature();
+            final IDataSignature pinDataSignature = pin.getCheckDataSignature();
             if (pinDataSignature == null) {
                 throw new ValidationException(new Warning(this, "an input pin of this module has not specified a data signature", true));
             } else if (!pinDataSignature.isCheckingRecursive()) {

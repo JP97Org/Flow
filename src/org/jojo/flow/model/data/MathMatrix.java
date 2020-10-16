@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.jojo.flow.api.BasicType;
+
 public final class MathMatrix<T extends Number> extends BasicCheckable {
     /**
      * 

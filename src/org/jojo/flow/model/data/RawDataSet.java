@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
 
+import org.jojo.flow.api.BasicType;
+
 public final class RawDataSet extends BasicCheckable {
     /**
      * 

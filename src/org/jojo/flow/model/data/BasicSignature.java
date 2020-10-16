@@ -2,6 +2,8 @@ package org.jojo.flow.model.data;
 
 import java.util.Arrays;
 
+import org.jojo.flow.api.BasicType;
+
 public class BasicSignature extends DataSignature {
     /**
      * 

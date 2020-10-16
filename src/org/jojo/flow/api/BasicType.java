@@ -1,9 +1,11 @@
-package org.jojo.flow.model.data;
+package org.jojo.flow.api;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Objects;
+
+import org.jojo.flow.model.data.Unit;
 
 public enum BasicType {
     BOOL, CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL, FRACTION, UNKNOWN;
@@ -33,7 +35,7 @@ public enum BasicType {
         if (value instanceof BigDecimal) {
             return Unit.Type.BIG_DECIMAL;
         }
-        if (value instanceof Fraction) {
+        if (value instanceof IFraction) {
             return Unit.Type.FRACTION;
         }
         return null;

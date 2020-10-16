@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.api.IDataSignature;
+
 public class RecursiveSignature extends DataSignature {
     /**
      * 
      */
     private static final long serialVersionUID = -1286793948272706994L;
-    private final List<DataSignature> components;
+    private final List<IDataSignature> components;
     
     public RecursiveSignature(final RecursiveCheckable data) {
         super(data.getDataId());
@@ -27,7 +29,7 @@ public class RecursiveSignature extends DataSignature {
                 .collect(Collectors.toList());
     }
     
-    private RecursiveSignature(final int dataId, final List<DataSignature> components) {
+    private RecursiveSignature(final int dataId, final List<IDataSignature> components) {
         super(dataId);
         this.components = components;
     }
@@ -49,7 +51,7 @@ public class RecursiveSignature extends DataSignature {
     }
 
     @Override
-    public DataSignature getComponent(int index) {
+    public IDataSignature getComponent(int index) {
         return this.components.get(index);
     }
 
@@ -87,19 +89,19 @@ public class RecursiveSignature extends DataSignature {
     }
     
     @Override
-    public DataSignature ofString(final String info) {
+    public IDataSignature ofString(final String info) {
         return ofString(info, 0);
     }
     
     //TODO what to do when rec. signature itself or contained rec. signature is not checking
-    private DataSignature ofString(final String infoLevel, int level) {
+    private IDataSignature ofString(final String infoLevel, int level) {
         final String prepared = infoLevel.substring(1, infoLevel.length() - 1);
         final String splitString = getSplitString(level);
         final String[] split = prepared.split(splitString);
         
-        List<DataSignature> retList = new ArrayList<>();
+        List<IDataSignature> retList = new ArrayList<>();
         for (final String dsStr : split) {
-            DataSignature local;
+            IDataSignature local;
             if (dsStr.startsWith(toStringDs() + "[")) {
                 local = ofString(dsStr.replaceFirst(toStringDs(), ""), level + 1);
             } else {

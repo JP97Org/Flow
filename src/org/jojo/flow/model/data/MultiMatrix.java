@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import org.jojo.flow.api.BasicType;
+
 public final class MultiMatrix<T> extends BasicCheckable implements Iterable<T> {
     /**
      * 

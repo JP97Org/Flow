@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jojo.flow.model.data.BasicType;
+import org.jojo.flow.api.BasicType;
 import org.jojo.flow.model.data.IllegalUnitOperationException;
 import org.jojo.flow.model.data.MultiMatrix;
 import org.jojo.flow.model.data.UnitSignature;

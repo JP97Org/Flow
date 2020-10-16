@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.awt.Shape;
 import java.io.IOException;
 
+import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
@@ -23,7 +24,7 @@ import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class DefaultArrow extends Connection {
-    private DataSignature dataType;
+    private IDataSignature dataType;
     private Data data;
     private GraphicalRepresentation gr;
     
@@ -50,27 +51,27 @@ public class DefaultArrow extends Connection {
         return false;
     }
     
-    public DataSignature getDataSignature() {
+    public IDataSignature getDataSignature() {
         return this.dataType;
     }
     
     /**
      * Sets a data signature to the arrow which matches the data signature at the moment,
      * but must be completely checking.
-     * @param signature - the given data signature which must be recursively checking
+     * @param iDataSignature - the given data signature which must be recursively checking
      * @return whether putting the new data signature was successful
      */
-    public boolean putDataSignature(final DataSignature signature) {
-        if (this.dataType.equals(Objects.requireNonNull(signature)) && signature.isCheckingRecursive()) {
-            forcePutDataSignature(signature);
+    public boolean putDataSignature(final IDataSignature iDataSignature) {
+        if (this.dataType.equals(Objects.requireNonNull(iDataSignature)) && iDataSignature.isCheckingRecursive()) {
+            forcePutDataSignature(iDataSignature);
             return true;
         }
         return false;
     }
     
-    public void forcePutDataSignature(final DataSignature signature) {
-        this.dataType = Objects.requireNonNull(signature);
-        notifyObservers(signature);
+    public void forcePutDataSignature(final IDataSignature checkingDataSignature) {
+        this.dataType = Objects.requireNonNull(checkingDataSignature);
+        notifyObservers(checkingDataSignature);
     }
 
     @Override

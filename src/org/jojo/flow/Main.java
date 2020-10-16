@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.jojo.flow.api.IAPI;
+import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.api.IFraction;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.data.BasicSignatureComponents;
@@ -147,6 +150,13 @@ public class Main {
         } catch (ClassNotFoundException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } 
+        }
+        
+        //API test
+        IAPI.initialize();
+        IDataSignature sign = IDataSignature.getDefaultImplementation();
+        System.out.println(sign);
+        IFraction frac = IFraction.getDefaultImplementation(3L, 5L);
+        System.out.println(frac);
     }
 }

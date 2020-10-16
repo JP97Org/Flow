@@ -2,6 +2,8 @@ package org.jojo.flow.model.data;
 
 import java.util.Objects;
 
+import org.jojo.flow.api.BasicType;
+
 public final class StringDataSet extends BasicCheckable {
     /**
      * 

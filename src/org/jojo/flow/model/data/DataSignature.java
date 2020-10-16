@@ -1,11 +1,13 @@
 package org.jojo.flow.model.data;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 
-public abstract class DataSignature implements Iterable<DataSignature>, Serializable {
+import org.jojo.flow.api.BasicType;
+import org.jojo.flow.api.IDataSignature;
+
+public abstract class DataSignature implements IDataSignature {
     /**
      * 
      */
@@ -55,30 +57,32 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
     
     @Override
     public boolean equals(final Object other) {
-        if (other != null && other instanceof DataSignature) {
-            final DataSignature otherSig = (DataSignature)other;
-            return this.dataId == otherSig.dataId || !isChecking() || !otherSig.isChecking();
+        if (other != null && other instanceof IDataSignature) {
+            final IDataSignature otherSig = (IDataSignature)other;
+            return this.dataId == otherSig.getDataId() || !isChecking() || !otherSig.isChecking();
         }
         return false;
     }
     
-    public abstract DataSignature getCopy();
+    @Override
+    public abstract IDataSignature getCopy();
     
-    public DataSignature tryGetHashEfficientCopy() {
-        final DataSignature copy = getCopy();
-        final DataSignature ret = new DataSignature(this.dataId, copy.isCheckingRecursive()) {
+    @Override
+    public IDataSignature tryGetHashEfficientCopy() {
+        final IDataSignature copy = getCopy();
+        final IDataSignature ret = new DataSignature(this.dataId, copy.isCheckingRecursive()) {
             /**
              * 
              */
             private static final long serialVersionUID = -5593591045946032816L;
 
             @Override
-            public DataSignature getCopy() {
+            public IDataSignature getCopy() {
                 return copy.getCopy(); // loses hash efficiency
             }
 
             @Override
-            public DataSignature getComponent(final int index) {
+            public IDataSignature getComponent(final int index) {
                 return copy.getComponent(index);
             }
 
@@ -93,14 +97,14 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
             }
 
             @Override
-            public DataSignature ofString(final String info) {
+            public IDataSignature ofString(final String info) {
                 return copy.ofString(info); // loses hash efficiency
             }
             
             @Override
             public int hashCode() {
                 if (isCheckingRecursive()) {
-                    final DataSignature[] components = getComponents();
+                    final IDataSignature[] components = getComponents();
                     return Objects.hash(getDataId(), Arrays.deepHashCode(components));
                 } else {
                     return copy.hashCode();
@@ -110,11 +114,11 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
             @Override
             public boolean equals(final Object other) {
                 if (isCheckingRecursive()) {
-                    if (other != null && other instanceof DataSignature) {
-                        final DataSignature otherSig = (DataSignature)other;
-                        final DataSignature[] components = getComponents();
-                        final DataSignature[] otherComponents = otherSig.getComponents();
-                        return copy.dataId == otherSig.dataId && Arrays.deepEquals(components, otherComponents);
+                    if (other != null && other instanceof IDataSignature) {
+                        final IDataSignature otherSig = (DataSignature)other;
+                        final IDataSignature[] components = getComponents();
+                        final IDataSignature[] otherComponents = otherSig.getComponents();
+                        return copy.getDataId() == otherSig.getDataId() && Arrays.deepEquals(components, otherComponents);
                     }
                     return false;
                 }
@@ -124,23 +128,28 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
         return ret;
     }
     
+    @Override
     public boolean isRecursiveSignature() {
         return this.dataId == BUNDLE || this.dataId == ARRAY || this.dataId == VECTOR;
     }
     
+    @Override
     public boolean isSingleTypeRecursiveSignature() {
         return isRecursiveSignature() && this.dataId != BUNDLE;
     }
     
+    @Override
     public DataSignature deactivateChecking() {
         this.dataId = DONT_CARE;
         return this;
     }
     
+    @Override
     public boolean isChecking() {
         return this.dataId != DONT_CARE;
     }
     
+    @Override
     public boolean isCheckingRecursive() {
         boolean ret = isChecking();
         
@@ -151,26 +160,32 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
         return ret;
     }
     
+    @Override
     public boolean isHashEfficient() {
         return isCheckingRecursive() && this.isHashEfficient;
     }
     
-    public abstract DataSignature getComponent(final int index);
+    @Override
+    public abstract IDataSignature getComponent(final int index);
     
+    @Override
     public abstract int size();
     
-    public DataSignature[] getComponents() {
-        final DataSignature[] components = new DataSignature[size()];
+    @Override
+    public IDataSignature[] getComponents() {
+        final IDataSignature[] components = new DataSignature[size()];
         for (int i = 0; i < size(); i++) {
             components[i] = getComponent(i);
         }
         return components;
     }
     
-    protected int getDataId() {
+    @Override
+    public int getDataId() {
         return this.dataId;
     }
     
+    @Override
     public Class<?> getDataClass() {
         switch(getDataId()) {
             case SCALAR: return ScalarDataSet.class;
@@ -262,7 +277,7 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
         }
     }
     
-    private static DataSignature createDataSignatureByIdAndInfo(final int id, final String info) {
+    private static IDataSignature createDataSignatureByIdAndInfo(final int id, final String info) {
         final Integer[][] matrix = {{1}};
         final Unit<Integer> unit = Unit.getIntegerConstant(0);
         final UnitSignature unitSign = UnitSignature.NO_UNIT;
@@ -306,20 +321,22 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
     @Override
     public abstract String toString();
     
-    public abstract DataSignature ofString(final String info);
+    @Override
+    public abstract IDataSignature ofString(final String info);
     
-    public static DataSignature of(final String string) {
+    public static IDataSignature of(final String string) {
         final String name = string.replaceFirst("\\s\\|.*", "");
         final String info = string.replaceFirst("[^|]*\\|\\s", "");
         final int id = getDataIdOfName(name);
         return createDataSignatureByIdAndInfo(id, info);
     }
 
-    public Iterator<DataSignature> iterator() {
+    @Override
+    public Iterator<IDataSignature> iterator() {
         return Arrays.asList(getComponents()).iterator();
     }
     
-    protected static class DontCareDataSignature extends DataSignature {
+    public static class DontCareDataSignature extends DataSignature {
         /**
          * 
          */
@@ -332,14 +349,14 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
         }
         
         @Override
-        public DataSignature getCopy() {
+        public IDataSignature getCopy() {
             final DontCareDataSignature ret = new DontCareDataSignature();
             ret.info = info;
             return ret;
         }
 
         @Override
-        public DataSignature getComponent(int index) {
+        public IDataSignature getComponent(int index) {
             return null;
         }
 
@@ -354,7 +371,7 @@ public abstract class DataSignature implements Iterable<DataSignature>, Serializ
         }
 
         @Override
-        public DataSignature ofString(final String info) {
+        public IDataSignature ofString(final String info) {
             this.info = info;
             return getCopy();
         }

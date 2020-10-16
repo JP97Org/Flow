@@ -1,6 +1,6 @@
-package org.jojo.flow;
+package org.jojo.flow.api;
 
-public interface IObserver {
+public interface IObserver extends IAPI {
     void update(ISubject subject, Object argument);
     void update();
 }

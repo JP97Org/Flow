@@ -3,6 +3,8 @@ package org.jojo.flow.model.data;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.jojo.flow.api.BasicType;
+
 public final class Matrix<T> extends BasicCheckable {
     /**
      * 

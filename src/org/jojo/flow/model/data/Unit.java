@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
+import org.jojo.flow.api.IFraction;
+
 public class Unit<T extends Number> implements Serializable {
     /**
      * 
@@ -265,7 +267,7 @@ public class Unit<T extends Number> implements Serializable {
                     break;
                 case FRACTION:
                     if (this.value instanceof Fraction && other.value instanceof Fraction) {
-                        value = ((Fraction) this.value).add((Fraction) other.value);
+                        value = (Fraction) ((IFraction) this.value).add((IFraction) other.value);
                     } else {
                         throw new IllegalUnitOperationException("actual number type does not match declared type");
                     }
@@ -325,7 +327,7 @@ public class Unit<T extends Number> implements Serializable {
                     break;
                 case FRACTION:
                     if (this.value instanceof Fraction && other.value instanceof Fraction) {
-                        value = ((Fraction) this.value).subtract((Fraction) other.value);
+                        value = (Fraction) ((IFraction) this.value).subtract((IFraction) other.value);
                     } else {
                         throw new IllegalUnitOperationException("actual number type does not match declared type");
                     }
@@ -385,7 +387,7 @@ public class Unit<T extends Number> implements Serializable {
                     break;
                 case FRACTION:
                     if (this.value instanceof Fraction && other.value instanceof Fraction) {
-                        value = ((Fraction) this.value).multiply((Fraction) other.value);
+                        value = (Fraction) ((IFraction) this.value).multiply((IFraction) other.value);
                     } else {
                         throw new IllegalUnitOperationException("actual number type does not match declared type");
                     }
@@ -449,7 +451,7 @@ public class Unit<T extends Number> implements Serializable {
                     break;
                 case FRACTION:
                     if (this.value instanceof Fraction && other.value instanceof Fraction) {
-                        value = ((Fraction) this.value).divide((Fraction) other.value);
+                        value = (Fraction) ((IFraction) this.value).divide((IFraction) other.value);
                     } else {
                         throw new IllegalUnitOperationException("actual number type does not match declared type");
                     }

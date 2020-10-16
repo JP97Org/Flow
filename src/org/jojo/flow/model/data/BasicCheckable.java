@@ -1,5 +1,7 @@
 package org.jojo.flow.model.data;
 
+import org.jojo.flow.api.BasicType;
+
 abstract class BasicCheckable extends Data {
     /**
      * 

@@ -3,8 +3,8 @@ package org.jojo.flow.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jojo.flow.IObserver;
-import org.jojo.flow.ISubject;
+import org.jojo.flow.api.IObserver;
+import org.jojo.flow.api.ISubject;
 
 public abstract class Subject implements ISubject {
     private final List<IObserver> observerList;

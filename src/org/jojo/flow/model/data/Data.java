@@ -5,11 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
-public abstract class Data implements Serializable {
+import org.jojo.flow.api.IData;
+import org.jojo.flow.api.IDataSignature;
+
+public abstract class Data implements IData {
     /**
      * 
      */
@@ -17,10 +19,10 @@ public abstract class Data implements Serializable {
 
     protected abstract int getDataId();
     
-    public abstract DataSignature getDataSignature();
+    public abstract IDataSignature getDataSignature();
     
-    public boolean hasSameType(final DataSignature other) {
-        return getDataSignature().equals(other);
+    public boolean hasSameType(final IDataSignature dataType) {
+        return getDataSignature().equals(dataType);
     }
     
     @Override

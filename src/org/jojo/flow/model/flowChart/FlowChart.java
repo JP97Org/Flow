@@ -13,9 +13,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
-import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
@@ -349,8 +349,8 @@ public class FlowChart extends FlowChartElement{
                         final InputPin inPin = (InputPin)pin;
                         connection.removeToPin(inPin);
                         try {
-                            DataSignature beforeSign = null;
-                            DataSignature copy = null;
+                            IDataSignature beforeSign = null;
+                            IDataSignature copy = null;
                             if (inPin.getModulePinImp() instanceof DefaultPin) {
                                 final DefaultPin defaultPin = ((DefaultPin)inPin.getModulePinImp());
                                 beforeSign = defaultPin.getCheckDataSignature();
@@ -369,8 +369,8 @@ public class FlowChart extends FlowChartElement{
                     } else { // pin is OutputPin
                         final OutputPin outPin = (OutputPin)pin;
                         try {
-                            DataSignature beforeSign = null;
-                            DataSignature copy = null;
+                            IDataSignature beforeSign = null;
+                            IDataSignature copy = null;
                             if (outPin.getModulePinImp() instanceof DefaultPin) {
                                 final DefaultPin defaultPin = ((DefaultPin)outPin.getModulePinImp());
                                 beforeSign = defaultPin.getCheckDataSignature();

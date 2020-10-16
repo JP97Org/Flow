@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.data.Data;
@@ -149,7 +150,7 @@ public abstract class ModulePin extends Subject implements DOMable {
             if (domMap.containsKey("checkDataSignature")) {
                 final DOM cdsDom = (DOM)domMap.get("checkDataSignature");
                 final String cdsString = cdsDom.elemGet();
-                final DataSignature cds = DataSignature.of(cdsString);
+                final IDataSignature cds = DataSignature.of(cdsString);
                 ((DefaultPin)this.imp).forceSetCheckDataSignature(cds);
             }
             notifyObservers();
@@ -215,7 +216,7 @@ public abstract class ModulePin extends Subject implements DOMable {
                 final DOM cdsDom = (DOM)domMap.get("checkDataSignature");
                 final String cdsString = cdsDom.elemGet();
                 ok(cdsString != null, OK.ERR_MSG_NULL);
-                final DataSignature cds = DataSignature.of(cdsString);
+                final IDataSignature cds = DataSignature.of(cdsString);
                 ok(cds != null, OK.ERR_MSG_NULL);
             }
             return true;
