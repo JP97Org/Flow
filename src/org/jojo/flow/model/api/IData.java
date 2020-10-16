@@ -1,11 +1,11 @@
-package org.jojo.flow.api;
+package org.jojo.flow.model.api;
 
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.model.api.IDataSignature;
 
-public interface IData extends Serializable {
+public interface IData extends IAPI, Serializable {
     
     IDataSignature getDataSignature();
     

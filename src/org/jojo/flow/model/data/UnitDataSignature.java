@@ -2,6 +2,8 @@ package org.jojo.flow.model.data;
 
 import java.util.Objects;
 
+import org.jojo.flow.model.api.UnitSignature;
+
 public class UnitDataSignature extends BasicSignatureComponentSignature {
     /**
      * 

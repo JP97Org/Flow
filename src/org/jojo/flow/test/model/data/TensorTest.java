@@ -1,9 +1,9 @@
 package org.jojo.flow.test.model.data;
 
-import org.jojo.flow.api.BasicType;
+import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.IllegalUnitOperationException;
 import org.jojo.flow.model.data.Tensor;
-import org.jojo.flow.model.data.UnitSignature;
 import org.junit.*;
 
 public class TensorTest {

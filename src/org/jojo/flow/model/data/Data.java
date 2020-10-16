@@ -8,8 +8,8 @@ import java.io.ObjectOutputStream;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
-import org.jojo.flow.api.IData;
-import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.model.api.IData;
+import org.jojo.flow.model.api.IDataSignature;
 
 public abstract class Data implements IData {
     /**

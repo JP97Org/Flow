@@ -13,9 +13,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;

@@ -1,11 +1,9 @@
-package org.jojo.flow.api;
+package org.jojo.flow.model.api;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Objects;
-
-import org.jojo.flow.model.data.Unit;
 
 public enum BasicType {
     BOOL, CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL, FRACTION, UNKNOWN;

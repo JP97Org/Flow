@@ -1,4 +1,4 @@
-package org.jojo.flow.api;
+package org.jojo.flow.model.api;
 
 public interface IFraction extends IAPI {
     public static IFraction getDefaultImplementation(final long value){

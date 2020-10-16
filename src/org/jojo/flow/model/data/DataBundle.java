@@ -1,17 +1,25 @@
 package org.jojo.flow.model.data;
 
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.List;
 
-public class DataBundle extends RecursiveCheckable implements Iterable<Data> {
+import org.jojo.flow.model.api.IData;
+import org.jojo.flow.model.api.IDataBundle;
+import org.jojo.flow.model.api.IDataSignature;
+
+public class DataBundle extends RecursiveCheckable implements IDataBundle {
     /**
      * 
      */
     private static final long serialVersionUID = -1411478059148157427L;
-    private final Data[] data;
-    private final DataSignature dataSignature;
+    private final IData[] data;
+    private final IDataSignature dataSignature;
     
-    public DataBundle(final Data[] data) throws DataTypeIncompatException {
+    public DataBundle(final List<IData> data) throws DataTypeIncompatException  {
+        this(data.toArray(new IData[data.size()]));
+    }
+    
+    public DataBundle(final IData[] data) throws DataTypeIncompatException {
         this.data = data;
         final DataSignature[] componentSignatures = Arrays.stream(data)
                 .map(x -> x.getDataSignature())
@@ -23,7 +31,7 @@ public class DataBundle extends RecursiveCheckable implements Iterable<Data> {
     }
     
     @Override
-    public Data get(int index) {
+    public IData get(int index) {
         return this.data[index];
     }
 
@@ -43,7 +51,7 @@ public class DataBundle extends RecursiveCheckable implements Iterable<Data> {
     }
 
     @Override
-    public DataSignature getDataSignature() {
+    public IDataSignature getDataSignature() {
         return this.dataSignature;
     }
 
@@ -65,25 +73,4 @@ public class DataBundle extends RecursiveCheckable implements Iterable<Data> {
         }
         return false;
     }
-
-    @Override
-    public Iterator<Data> iterator() {
-        return new Iterator<>() {
-            private int index = 0;
-
-            @Override
-            public boolean hasNext() {
-                return index < size();
-            }
-
-            @Override
-            public Data next() {
-                if (hasNext()) {
-                    return get(index++);
-                }
-                return null;
-            }
-        };
-    }
-
 }

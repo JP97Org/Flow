@@ -6,10 +6,10 @@ import java.awt.Point;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jojo.flow.api.IObserver;
-import org.jojo.flow.api.ISubject;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.IObserver;
+import org.jojo.flow.model.api.ISubject;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;

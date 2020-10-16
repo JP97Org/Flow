@@ -9,9 +9,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.ListSizeException;

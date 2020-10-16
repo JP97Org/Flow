@@ -10,10 +10,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.api.IDataSignature;
-import org.jojo.flow.api.IObserver;
-import org.jojo.flow.api.ISubject;
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IObserver;
+import org.jojo.flow.model.api.ISubject;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;

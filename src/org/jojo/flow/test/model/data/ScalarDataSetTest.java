@@ -1,10 +1,10 @@
 package org.jojo.flow.test.model.data;
 
-import org.jojo.flow.api.BasicType;
+import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.Unit;
+import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.IllegalUnitOperationException;
 import org.jojo.flow.model.data.ScalarDataSet;
-import org.jojo.flow.model.data.Unit;
-import org.jojo.flow.model.data.UnitSignature;
 import org.junit.*;
 
 public class ScalarDataSetTest {

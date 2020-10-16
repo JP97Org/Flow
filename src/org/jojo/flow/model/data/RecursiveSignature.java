@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.model.api.IDataSignature;
 
 public class RecursiveSignature extends DataSignature {
     /**

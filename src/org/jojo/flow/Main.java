@@ -2,14 +2,22 @@ package org.jojo.flow;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
-import org.jojo.flow.api.IAPI;
-import org.jojo.flow.api.IDataSignature;
-import org.jojo.flow.api.IFraction;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.api.IAPI;
+import org.jojo.flow.model.api.IData;
+import org.jojo.flow.model.api.IDataArray;
+import org.jojo.flow.model.api.IDataBundle;
+import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IFraction;
+import org.jojo.flow.model.api.IMathMatrix;
+import org.jojo.flow.model.api.IMatrix;
+import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.BasicSignatureComponents;
+import org.jojo.flow.model.data.StringDataSet;
 import org.jojo.flow.model.data.units.Time;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartElement;
@@ -158,5 +166,14 @@ public class Main {
         System.out.println(sign);
         IFraction frac = IFraction.getDefaultImplementation(3L, 5L);
         System.out.println(frac);
+        final IData[] arr = new IData[] {new StringDataSet("A")};
+        final IDataArray dataArray = IDataArray.getDefaultImplementation(arr, arr[0].getDataSignature()); 
+        System.out.println(dataArray);
+        final IDataBundle dataBundle = IDataBundle.getDefaultImplementation(Arrays.asList(arr)); 
+        System.out.println(dataBundle);
+        final IMathMatrix<Integer> mm = IMathMatrix.getDefaultImplementation(new Integer[][] {{1}}, UnitSignature.NO_UNIT);
+        System.out.println(mm);
+        final IMatrix<Integer> m = IMatrix.getDefaultImplementation(new Integer[][] {{1}}, UnitSignature.NO_UNIT);
+        System.out.println(m);
     }
 }

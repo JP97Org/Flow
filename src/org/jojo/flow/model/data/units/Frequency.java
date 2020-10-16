@@ -1,9 +1,9 @@
 package org.jojo.flow.model.data.units;
 
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.Unit;
+import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.Fraction;
-import org.jojo.flow.model.data.Unit;
-import org.jojo.flow.model.data.UnitSignature;
 
 public class Frequency<T extends Number> extends Unit<T> {
     /**

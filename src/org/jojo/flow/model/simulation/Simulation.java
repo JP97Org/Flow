@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.Unit;
 import org.jojo.flow.model.data.Fraction;
-import org.jojo.flow.model.data.Unit;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.data.units.Time;
 import org.jojo.flow.model.flowChart.FlowChart;

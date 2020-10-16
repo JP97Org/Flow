@@ -1,19 +1,20 @@
 package org.jojo.flow.model.data;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
-import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.model.api.IData;
+import org.jojo.flow.model.api.IDataArray;
+import org.jojo.flow.model.api.IDataSignature;
 
-public class DataArray extends RecursiveCheckable implements Iterable<Data> {
+public class DataArray extends RecursiveCheckable implements IDataArray {
     /**
      * 
      */
     private static final long serialVersionUID = -8746884178319083769L;
-    private final Data[] data;
+    private final IData[] data;
     private final IDataSignature dataSignature;
     
-    public DataArray(final Data[] data, final IDataSignature iDataSignature) throws DataTypeIncompatException {
+    public DataArray(final IData[] data, final IDataSignature iDataSignature) throws DataTypeIncompatException {
         this.data = data;
         if (!iDataSignature.isCheckingRecursive()) {
             throw new DataTypeIncompatException("the component signature must be checking recursive");
@@ -25,7 +26,7 @@ public class DataArray extends RecursiveCheckable implements Iterable<Data> {
     }
     
     @Override
-    public Data get(int index) {
+    public IData get(int index) {
         return this.data[index];
     }
 
@@ -66,26 +67,6 @@ public class DataArray extends RecursiveCheckable implements Iterable<Data> {
             return Arrays.equals(this.data, otherM.data);
         }
         return false;
-    }
-
-    @Override
-    public Iterator<Data> iterator() {
-        return new Iterator<>() {
-            private int index = 0;
-
-            @Override
-            public boolean hasNext() {
-                return index < size();
-            }
-
-            @Override
-            public Data next() {
-                if (hasNext()) {
-                    return get(index++);
-                }
-                return null;
-            }
-        };
     }
 
 }

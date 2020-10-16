@@ -3,9 +3,11 @@ package org.jojo.flow.model.data;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.jojo.flow.api.BasicType;
+import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.IMatrix;
+import org.jojo.flow.model.api.UnitSignature;
 
-public final class Matrix<T> extends BasicCheckable {
+public final class Matrix<T> extends BasicCheckable implements IMatrix<T> {
     /**
      * 
      */
@@ -26,6 +28,7 @@ public final class Matrix<T> extends BasicCheckable {
         this.dataSignature = new BasicSignature(this);
     }
     
+    @Override
     public Pair<T[][], UnitSignature> getMatrix() {
         return new Pair<T[][], UnitSignature>(this.matrix, this.unit);
     }

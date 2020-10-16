@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 
-import org.jojo.flow.api.BasicType;
-import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.Unit;
+import org.jojo.flow.model.api.UnitSignature;
 
 public abstract class DataSignature implements IDataSignature {
     /**

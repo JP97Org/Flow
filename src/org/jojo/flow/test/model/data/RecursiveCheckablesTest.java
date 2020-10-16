@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataArray;
 import org.jojo.flow.model.data.DataBundle;
@@ -25,7 +26,7 @@ public class RecursiveCheckablesTest {
             Assert.assertEquals(dataOne, arr.get(0));
             Assert.assertEquals(dataTwo, arr.get(1));
             int i = 0;
-            for (final Data data : arr) {
+            for (final IData data : arr) {
                 Assert.assertEquals(data, arr.get(i));
                 i++;
             }
@@ -48,13 +49,13 @@ public class RecursiveCheckablesTest {
         final RawDataSet dataTwo = new RawDataSet(new byte[] {3, 4, 5});
         final RawDataSet dataThree = new RawDataSet(new byte[] {6, 7, 8});
         try {
-            final List<Data> vecList = new ArrayList<>(Arrays.asList(new Data[] {dataOne, dataTwo}));
+            final List<IData> vecList = new ArrayList<>(Arrays.asList(new Data[] {dataOne, dataTwo}));
             final DataVector vec = new DataVector(vecList, dataOne.getDataSignature());
             Assert.assertEquals(2, vec.size());
             Assert.assertEquals(dataOne, vec.get(0));
             Assert.assertEquals(dataTwo, vec.get(1));
             int i = 0;
-            for (final Data data : vec) {
+            for (final IData data : vec) {
                 Assert.assertEquals(data, vec.get(i));
                 i++;
             }
@@ -64,7 +65,7 @@ public class RecursiveCheckablesTest {
             Assert.assertEquals(3, vec.size());
             Assert.assertEquals(dataThree, vec.get(2));
             i = 0;
-            for (final Data data : vec) {
+            for (final IData data : vec) {
                 Assert.assertEquals(data, vec.get(i));
                 i++;
             }
@@ -91,7 +92,7 @@ public class RecursiveCheckablesTest {
             Assert.assertEquals(dataOne, arr.get(0));
             Assert.assertEquals(dataTwo, arr.get(1));
             int i = 0;
-            for (final Data data : arr) {
+            for (final IData data : arr) {
                 Assert.assertEquals(data, arr.get(i));
                 i++;
             }

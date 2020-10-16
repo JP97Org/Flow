@@ -1,15 +1,16 @@
-package org.jojo.flow.model.data;
+package org.jojo.flow.model.api;
 
-import static org.jojo.flow.model.data.UnitSignature.*;
-import static org.jojo.flow.model.data.Unit.Type.*;
-import static org.jojo.flow.model.data.Unit.Operation.*;
+import static org.jojo.flow.model.api.Unit.Operation.*;
+import static org.jojo.flow.model.api.Unit.Type.*;
+import static org.jojo.flow.model.api.UnitSignature.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
-import org.jojo.flow.api.IFraction;
+import org.jojo.flow.model.data.Fraction;
+import org.jojo.flow.model.data.IllegalUnitOperationException;
 
 public class Unit<T extends Number> implements Serializable {
     /**
@@ -172,13 +173,18 @@ public class Unit<T extends Number> implements Serializable {
     public final T value;
     public final UnitSignature unit;
     
-    protected Unit(final Type type, final T value, final UnitSignature unit) {
-        this.type = type;
-        this.value = value;
-        this.unit = unit;
+    public Unit(final Type type, final T value, final UnitSignature unit) {
+        this.type = Objects.requireNonNull(type);
+        this.value = Objects.requireNonNull(value);
+        this.unit = Objects.requireNonNull(unit);
+        
+        if (!BasicType.of(value).equals(type)) {
+            throw new IllegalArgumentException("value has type= " + BasicType.of(value) + " but declared was type= " + type);
+        }
     }
     
     public Unit(final Unit<T> toCopy) {
+        Objects.requireNonNull(toCopy);
         this.type = toCopy.type;
         this.value = toCopy.value;
         this.unit = toCopy.unit;

@@ -1,23 +1,24 @@
 package org.jojo.flow.model.data;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.model.api.IData;
+import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IDataVector;
 
-public class DataVector extends RecursiveCheckable implements Iterable<Data> {
+public class DataVector extends RecursiveCheckable implements IDataVector {
     /**
      * 
      */
     private static final long serialVersionUID = 4082764662720440203L;
     private int lastKnownSize;
-    private final List<Data> data;
+    private final List<IData> data;
     private final IDataSignature componentSignature;
     private IDataSignature dataSignature;
     
-    public DataVector(final List<Data> data, final IDataSignature iDataSignature) throws DataTypeIncompatException {
+    public DataVector(final List<IData> data, final IDataSignature iDataSignature) throws DataTypeIncompatException {
         Objects.requireNonNull(data);
         this.lastKnownSize = data.size();
         this.data = data;
@@ -31,7 +32,7 @@ public class DataVector extends RecursiveCheckable implements Iterable<Data> {
         this.dataSignature = new RecursiveSignature(this);
     }
     
-    public void add(final Data toAdd) throws DataTypeIncompatException {
+    public void add(final IData toAdd) throws DataTypeIncompatException {
         if (!toAdd.hasSameType(this.componentSignature)) {
             throw new DataTypeIncompatException("all data must have this signature: " + componentSignature);
         }
@@ -43,7 +44,7 @@ public class DataVector extends RecursiveCheckable implements Iterable<Data> {
     }
     
     @Override
-    public Data get(int index) {
+    public IData get(int index) {
         return this.data.get(index);
     }
 
@@ -96,26 +97,6 @@ public class DataVector extends RecursiveCheckable implements Iterable<Data> {
             return Arrays.deepEquals(this.data.toArray(), otherM.data.toArray());
         }
         return false;
-    }
-
-    @Override
-    public Iterator<Data> iterator() {
-        return new Iterator<>() {
-            private int index = 0;
-
-            @Override
-            public boolean hasNext() {
-                return index < size();
-            }
-
-            @Override
-            public Data next() {
-                if (hasNext()) {
-                    return get(index++);
-                }
-                return null;
-            }
-        };
     }
 
 }

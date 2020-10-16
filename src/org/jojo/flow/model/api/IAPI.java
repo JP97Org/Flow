@@ -1,19 +1,34 @@
-package org.jojo.flow.api;
+package org.jojo.flow.model.api;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jojo.flow.model.data.DataArray;
+import org.jojo.flow.model.data.DataBundle;
 import org.jojo.flow.model.data.DataSignature;
+import org.jojo.flow.model.data.DataVector;
 import org.jojo.flow.model.data.Fraction;
+import org.jojo.flow.model.data.MathMatrix;
+import org.jojo.flow.model.data.Matrix;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 
 public interface IAPI {
     static final Map<Class<?>, Class<?>> apiToDefaultImplementationMap = new HashMap<>();
     
     static void initialize() {
+        // Basic Types
         apiToDefaultImplementationMap.put(IFraction.class, Fraction.class);
+        // Data Signatures
         apiToDefaultImplementationMap.put(IDataSignature.class, DataSignature.DontCareDataSignature.class);
+        // Basic Checkables
+        // TODO
+        apiToDefaultImplementationMap.put(IMatrix.class, Matrix.class);
+        apiToDefaultImplementationMap.put(IMathMatrix.class, MathMatrix.class);
+        // Recursive Checkables
+        apiToDefaultImplementationMap.put(IDataArray.class, DataArray.class);
+        apiToDefaultImplementationMap.put(IDataVector.class, DataVector.class);
+        apiToDefaultImplementationMap.put(IDataBundle.class, DataBundle.class);
     }
     
     static IAPI defaultImplementationOfThisApi(final Class<?>[] parameterTypes, final Object... initArgs) {

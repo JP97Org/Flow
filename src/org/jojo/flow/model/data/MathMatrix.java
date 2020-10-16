@@ -5,9 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.jojo.flow.api.BasicType;
+import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.IMathMatrix;
+import org.jojo.flow.model.api.Unit;
+import org.jojo.flow.model.api.UnitSignature;
 
-public final class MathMatrix<T extends Number> extends BasicCheckable {
+public final class MathMatrix<T extends Number> extends BasicCheckable implements IMathMatrix<T>  {
     /**
      * 
      */
@@ -33,26 +36,28 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         this((T[][])matrix, unit);
     }
     
+    @Override
     public Pair<T[][], UnitSignature> getMatrix() {
         @SuppressWarnings("unchecked")
         final T[][] tmatr = (T[][]) this.matrix;
         return new Pair<T[][], UnitSignature>(tmatr, this.unit);
     }
     
-    public MathMatrix<T> add(final MathMatrix<T> other) throws IllegalArgumentException, IllegalUnitOperationException {
+    @Override
+    public IMathMatrix<T> add(final IMathMatrix<T> other) throws IllegalArgumentException, IllegalUnitOperationException {
         if (!getBasicType().equals(other.getBasicType())) {
             throw new IllegalArgumentException("other matrix does not have the same basic type");
-        } else if (this.matrix.length != other.matrix.length || this.matrix[0].length != other.matrix[0].length) { 
+        } else if (this.matrix.length != other.getMatrix().first.length || this.matrix[0].length != other.getMatrix().first[0].length) { 
             throw new IllegalArgumentException("incorrect dimensions");
         }
-        this.unit.add(other.unit); // check if units are ok
+        this.unit.add(other.getUnitSignature()); // check if units are ok
         final List<List<Number>> retList = new ArrayList<>();
         
         for (int o = 0; o < this.matrix.length; o++) {
             final List<Number> toAdd = new ArrayList<>();
             for (int i = 0; i < this.matrix[o].length; i++) {
                 final Number value = this.matrix[o][i];
-                final Number otherValue = other.matrix[o][i];
+                final Number otherValue = other.getMatrix().first[o][i];
                 final Unit<Number> unitThisVal = new Unit<>(BasicType.of(value), value, UnitSignature.NO_UNIT);
                 final Unit<Number> unitOtherVal = new Unit<>(BasicType.of(otherValue), otherValue, UnitSignature.NO_UNIT);
                 final Number result = unitThisVal.add(unitOtherVal).value;
@@ -61,7 +66,7 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
             retList.add(toAdd);
         }
 
-        return new MathMatrix<T>(toArray(retList), this.unit.add(other.unit));
+        return new MathMatrix<T>(toArray(retList), this.unit.add(other.getUnitSignature()));
     }
     
     private T[][] toArray(List<List<Number>> retList) {
@@ -76,7 +81,8 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         return retT;
     }
     
-    public MathMatrix<T> multiply(final Unit<T> scalar) {
+    @Override
+    public IMathMatrix<T> multiply(final Unit<T> scalar) {
         @SuppressWarnings("unchecked")
         final MathMatrix<T> ret = new MathMatrix<T>(Arrays
                 .stream(this.matrix)
@@ -95,8 +101,9 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         return ret;
     }
     
-    public MathMatrix<T> multiply(final MathMatrix<T> other) throws IllegalArgumentException, IllegalUnitOperationException {
-        return new MathMatrix<T>(multiply(this.matrix, other.matrix), this.unit.multiply(other.unit));
+    @Override
+    public IMathMatrix<T> multiply(final IMathMatrix<T> other) throws IllegalArgumentException, IllegalUnitOperationException {
+        return new MathMatrix<T>(multiply(this.matrix, other.getMatrix().first), this.unit.multiply(other.getUnitSignature()));
     }
     
     private T[][] multiply(final Number[][] matrixA, final Number[][] matrixB) {
@@ -135,6 +142,7 @@ public final class MathMatrix<T extends Number> extends BasicCheckable {
         return toArray(res);
     }
     
+    @Override
     public T determinant() throws UnsupportedOperationException {
         if (this.matrix.length != this.matrix[0].length) {
             throw new UnsupportedOperationException("matrix must be quadratic");

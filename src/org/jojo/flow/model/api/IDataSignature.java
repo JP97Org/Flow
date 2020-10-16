@@ -1,4 +1,4 @@
-package org.jojo.flow.api;
+package org.jojo.flow.model.api;
 
 import java.io.Serializable;
 

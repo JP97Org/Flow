@@ -3,7 +3,8 @@ package org.jojo.flow.model.data;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.jojo.flow.api.BasicType;
+import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.UnitSignature;
 
 public final class Tensor<T> extends BasicCheckable {
     /**

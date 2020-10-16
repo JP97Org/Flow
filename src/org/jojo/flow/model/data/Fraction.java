@@ -2,7 +2,7 @@ package org.jojo.flow.model.data;
 
 import java.util.Objects;
 
-import org.jojo.flow.api.IFraction;
+import org.jojo.flow.model.api.IFraction;
 
 public class Fraction extends Number implements IFraction {
     /**

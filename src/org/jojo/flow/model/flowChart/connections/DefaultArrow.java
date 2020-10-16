@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import java.awt.Shape;
 import java.io.IOException;
 
-import org.jojo.flow.api.IDataSignature;
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;

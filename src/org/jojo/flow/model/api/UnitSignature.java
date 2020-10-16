@@ -1,10 +1,11 @@
-package org.jojo.flow.model.data;
+package org.jojo.flow.model.api;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.data.IllegalUnitOperationException;
 
 public final class UnitSignature implements Serializable {
     /**

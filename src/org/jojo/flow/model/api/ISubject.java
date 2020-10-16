@@ -1,4 +1,4 @@
-package org.jojo.flow.api;
+package org.jojo.flow.model.api;
 
 public interface ISubject extends IAPI {
     void registerObserver(final IObserver observer);

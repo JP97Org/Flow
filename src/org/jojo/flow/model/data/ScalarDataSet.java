@@ -2,7 +2,9 @@ package org.jojo.flow.model.data;
 
 import java.util.Objects;
 
-import org.jojo.flow.api.BasicType;
+import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.Unit;
+import org.jojo.flow.model.api.UnitSignature;
 
 public final class ScalarDataSet<T extends Number> extends BasicCheckable {
     /**

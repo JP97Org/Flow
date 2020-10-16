@@ -1,6 +1,6 @@
 package org.jojo.flow.test.model.data;
 
-import org.jojo.flow.api.IDataSignature;
+import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.data.BasicSignatureComponents;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataArray;
