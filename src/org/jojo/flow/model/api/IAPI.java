@@ -11,19 +11,29 @@ import org.jojo.flow.model.data.DataVector;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.MathMatrix;
 import org.jojo.flow.model.data.Matrix;
+import org.jojo.flow.model.data.MultiMatrix;
+import org.jojo.flow.model.data.RawDataSet;
+import org.jojo.flow.model.data.ScalarDataSet;
+import org.jojo.flow.model.data.StringDataSet;
+import org.jojo.flow.model.data.Tensor;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 
 public interface IAPI {
     static final Map<Class<?>, Class<?>> apiToDefaultImplementationMap = new HashMap<>();
     
-    static void initialize() {
+    static void initialize() { 
         // Basic Types
         apiToDefaultImplementationMap.put(IFraction.class, Fraction.class);
         // Data Signatures
         apiToDefaultImplementationMap.put(IDataSignature.class, DataSignature.DontCareDataSignature.class);
-        // Basic Checkables        // TODO
+        // Basic Checkables
+        apiToDefaultImplementationMap.put(IScalar.class, ScalarDataSet.class);
+        apiToDefaultImplementationMap.put(IStringData.class, StringDataSet.class);
+        apiToDefaultImplementationMap.put(IRaw.class, RawDataSet.class);
         apiToDefaultImplementationMap.put(IMatrix.class, Matrix.class);
         apiToDefaultImplementationMap.put(IMathMatrix.class, MathMatrix.class);
+        apiToDefaultImplementationMap.put(ITensor.class, Tensor.class);
+        apiToDefaultImplementationMap.put(IMultiMatrix.class, MultiMatrix.class);
         // Recursive Checkables
         apiToDefaultImplementationMap.put(IDataArray.class, DataArray.class);
         apiToDefaultImplementationMap.put(IDataVector.class, DataVector.class);

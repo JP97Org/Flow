@@ -4,11 +4,12 @@ import java.util.Objects;
 
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IDefaultPin;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataTypeIncompatException;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 
-public class DefaultPin extends ModulePinImp {
+public class DefaultPin extends ModulePinImp implements IDefaultPin {
     private IDataSignature checkDataSignature;
     
     public DefaultPin(final FlowModule module, final Data defaultData) {
@@ -17,6 +18,7 @@ public class DefaultPin extends ModulePinImp {
         this.checkDataSignature = defaultData.getDataSignature().getCopy();
     }
     
+    @Override
     public IDataSignature getCheckDataSignature() {
         return this.checkDataSignature;
     }
@@ -28,6 +30,7 @@ public class DefaultPin extends ModulePinImp {
      * @param checkingDataSignature - the data signature to be set
      * @throws FlowException if the data signature to be set and the already set one do not match
      */
+    @Override
     public void setCheckDataSignature(final IDataSignature checkingDataSignature) throws FlowException {
         if (this.checkDataSignature.equals(checkingDataSignature)) {
             forceSetCheckDataSignature(checkingDataSignature);

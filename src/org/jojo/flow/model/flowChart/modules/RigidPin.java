@@ -1,6 +1,8 @@
 package org.jojo.flow.model.flowChart.modules;
 
-public class RigidPin extends ModulePinImp {
+import org.jojo.flow.model.api.IRigidPin;
+
+public class RigidPin extends ModulePinImp implements IRigidPin {
     private final InputPin inputPin;
     private final OutputPin outputPin;
     
@@ -10,10 +12,12 @@ public class RigidPin extends ModulePinImp {
         this.outputPin = new OutputPin(this, gr);
     }
     
+    @Override
     public InputPin getInputPin() {
         return this.inputPin;
     }
     
+    @Override
     public OutputPin getOutputPin() {
         return this.outputPin;
     }

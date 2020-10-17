@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Objects;
 
 import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.IMultiMatrix;
 import org.jojo.flow.model.api.UnitSignature;
 
-public final class MultiMatrix<T> extends BasicCheckable implements Iterable<T> {
+public final class MultiMatrix<T> extends BasicCheckable implements IMultiMatrix<T> {
     /**
      * 
      */

@@ -2,18 +2,29 @@ package org.jojo.flow.model.data;
 
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 
 import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.IRaw;
 import org.jojo.flow.model.api.UnitSignature;
 
-public final class RawDataSet extends BasicCheckable {
+public final class RawDataSet extends BasicCheckable implements IRaw {
     /**
      * 
      */
     private static final long serialVersionUID = -2317113448843956394L;
     private final byte[] data;
     private final DataSignature dataSignature;
+    
+    public RawDataSet(final List<Byte> data) {
+        Objects.requireNonNull(data);
+        this.data = new byte[data.size()];
+        for (int i = 0; i < data.size(); i++) {
+            this.data[i] = data.get(i);
+        }
+        this.dataSignature = new BasicSignature(this);
+    }
     
     public RawDataSet(final byte[] data) {
         this.data = Objects.requireNonNull(data);

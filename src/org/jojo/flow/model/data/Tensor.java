@@ -4,9 +4,10 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.ITensor;
 import org.jojo.flow.model.api.UnitSignature;
 
-public final class Tensor<T> extends BasicCheckable {
+public final class Tensor<T> extends BasicCheckable implements ITensor<T> {
     /**
      * 
      */
@@ -29,6 +30,7 @@ public final class Tensor<T> extends BasicCheckable {
         this.dataSignature = new BasicSignature(this);
     }
     
+    @Override
     public Pair<T[][][], UnitSignature> getTensor() {
         return new Pair<T[][][], UnitSignature>(this.tensor, this.unit);
     }

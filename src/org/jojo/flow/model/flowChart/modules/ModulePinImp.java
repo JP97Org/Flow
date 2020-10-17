@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.jojo.flow.model.api.IModulePinImp;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.connections.Connection;
 
-public abstract class ModulePinImp {
+public abstract class ModulePinImp implements IModulePinImp {
     private FlowModule module;
     private final List<Connection> connections;
     private Data defaultData;

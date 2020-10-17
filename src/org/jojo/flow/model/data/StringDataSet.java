@@ -3,9 +3,10 @@ package org.jojo.flow.model.data;
 import java.util.Objects;
 
 import org.jojo.flow.model.api.BasicType;
+import org.jojo.flow.model.api.IStringData;
 import org.jojo.flow.model.api.UnitSignature;
 
-public final class StringDataSet extends BasicCheckable {
+public final class StringDataSet extends BasicCheckable implements IStringData {
     /**
      * 
      */
