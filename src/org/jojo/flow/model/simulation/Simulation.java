@@ -33,7 +33,7 @@ public class Simulation {
         try {
             timeStep = frequency == null 
                     ? null : Time.of(Unit.getFractionConstant(new Fraction(1)).divide(frequency));
-            this.stepper = new SchedulingStepper(this.flowChart, new PriorityScheduler(), timeStep);
+            this.stepper = new SchedulingStepper(this.flowChart, new PriorityScheduler(), timeStep, config.isRealtime());
         } catch (ArithmeticException | FlowException e) {
             // should not happen
             new Warning(null, e.toString(), true).reportWarning();
@@ -127,5 +127,10 @@ public class Simulation {
             throw new IllegalStateException("simulation must not be running when config should be changed");
         }
         this.config = Objects.requireNonNull(config);
+        reloadStepper();
+    }
+    
+    public void reloadStepper() {
+        initStepper();
     }
 }

@@ -18,6 +18,7 @@ import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 
 public class SchedulingStepper extends Stepper {
+    private static final long OVERHEAD_TIME = 5;
     private final FlowChart flowChart;
     private final Time<Fraction> explicitTimeStep;
 
@@ -25,8 +26,10 @@ public class SchedulingStepper extends Stepper {
     private Time<Fraction> timeStep;
     private int stepCount;
     private Time<Fraction> timePassed;
+    
+    private final boolean isRealtime; //TODO do not use realtime if time step < 100ms
 
-    public SchedulingStepper(final FlowChart flowChart, final Scheduler scheduler, final Time<Fraction> explicitTimeStep) throws FlowException {
+    public SchedulingStepper(final FlowChart flowChart, final Scheduler scheduler, final Time<Fraction> explicitTimeStep, final boolean isRealtime) throws FlowException {
         super(scheduler);
         this.flowChart = Objects.requireNonNull(flowChart);
         this.explicitTimeStep = explicitTimeStep;
@@ -34,6 +37,7 @@ public class SchedulingStepper extends Stepper {
             throw new IllegalArgumentException("time step must not be 0");
         }
         this.paused = true;
+        this.isRealtime = isRealtime;
         reset();
     }
     
@@ -63,7 +67,7 @@ public class SchedulingStepper extends Stepper {
                         return Double.valueOf(f1.value.doubleValue()).compareTo(f2.value.doubleValue());
                     }
                 }).orElse(maxFrequency);
-        return maxFrequency.value.intValue() == 0
+        return maxFrequency.value.getNumerator() == 0
                 ? Frequency.getFractionConstant(new Fraction(1))
                 : maxFrequency;
     }
@@ -104,6 +108,7 @@ public class SchedulingStepper extends Stepper {
 
     @Override
     public void stepOnce() throws ModuleRunException {
+        final long baseTime = System.currentTimeMillis();
         final List<FlowModule> allModules = this.flowChart.getModules();
         final List<FlowModule> modulesToStep = allModules
                 .stream()
@@ -147,6 +152,20 @@ public class SchedulingStepper extends Stepper {
                 throw exc;
             }
         }
+        
+        if (this.isRealtime) {
+            final long timeStep = Math.round(this.timeStep.value.doubleValue() * 1000.);
+            final long timeDifference = System.currentTimeMillis() - baseTime;
+            final long timeToSleep = timeStep - (timeDifference + OVERHEAD_TIME);
+            if (timeToSleep > 0) {
+                try {
+                    Thread.sleep(timeToSleep);
+                } catch (InterruptedException e) {
+                    new Warning(flowChart, "realtime sleep interrupted, please set higher timeout or deactivate realtime", false).reportWarning();
+                }
+            }
+        }
+        
         this.stepCount++;
         try {
             this.timePassed = Time.of(this.timePassed.add(this.timeStep));

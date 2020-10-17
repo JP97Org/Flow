@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.jojo.flow.model.data.units.Time;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.ValidationException;
@@ -32,7 +33,10 @@ public class ModelFacade {
     
     private FlowChart dynamicMainFlowChart;
     private static final List<FlowChart> otherFlowCharts = new ArrayList<>();
+
     private final List<FlowChart> dynamicOtherFlowCharts;
+    
+    private static final Time<Double> DEFAULT_TIMEOUT = Time.getDoubleConstant(60.);
     
     public ModelFacade() {
         this(false);
@@ -121,11 +125,11 @@ public class ModelFacade {
     }
     
     public synchronized Simulation getSimulation() {
-        return getSimulation(getMainFlowChart(), null);
+        return getSimulation(getMainFlowChart());
     }
     
     public synchronized Simulation getSimulation(final FlowChart flowChart) {
-        return getSimulation(flowChart, null);
+        return getSimulation(flowChart, new SimulationConfiguration(DEFAULT_TIMEOUT));
     }
     
     public synchronized Simulation getSimulation(final FlowChart flowChart, final SimulationConfiguration config) {

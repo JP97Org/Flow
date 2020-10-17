@@ -135,6 +135,7 @@ public class Main {
                 Thread.sleep(10);
                 if (i == 500) {
                     System.err.println("TIMEOUT of 5000ms exceeded by waiting for simulation to stop!");
+                    break;
                 }
             }
             System.out.println(flowChart.getWarnings());

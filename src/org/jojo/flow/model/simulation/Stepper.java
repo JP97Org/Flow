@@ -3,11 +3,12 @@ package org.jojo.flow.model.simulation;
 import java.util.Objects;
 
 import org.jojo.flow.model.FlowException;
+import org.jojo.flow.model.api.IMinimalStepper;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.data.units.Time;
 
-public abstract class Stepper implements IStepper, Runnable {
+public abstract class Stepper implements IMinimalStepper, Runnable {
     private final Scheduler scheduler;
     
     public Stepper(final Scheduler scheduler) {

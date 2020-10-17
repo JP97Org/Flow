@@ -271,7 +271,7 @@ public final class DynamicObjectLoader {
 
         @Override
         public void run() throws Exception {
-            Thread.sleep(500);
+            Thread.sleep(100);
             /*for(long i = 0; i < 1000000000; i++) {
                 
             }*/

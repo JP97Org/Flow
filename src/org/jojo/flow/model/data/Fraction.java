@@ -1,5 +1,6 @@
 package org.jojo.flow.model.data;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import org.jojo.flow.model.api.IFraction;
@@ -33,7 +34,8 @@ public class Fraction extends Number implements IFraction {
     }
     
     private Fraction(final double value, final String formatString) {
-        final String valStr = String.format(formatString, value);
+        String valStr = String.format(Locale.US, formatString, value);
+        valStr = valStr.replaceAll("0+$", "");
         StringBuilder numeratorStr = new StringBuilder();
         boolean beforePoint = true;
         int pow = 0;
@@ -58,7 +60,7 @@ public class Fraction extends Number implements IFraction {
 
     private static long pow(long base, long pow) {
         int ret = 1;
-        for (long i = 0; i < base; i++) {
+        for (long i = 0; i < pow; i++) {
             ret *= base;
         }
         return ret;
