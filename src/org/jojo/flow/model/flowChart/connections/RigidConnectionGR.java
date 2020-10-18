@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.api.IOneConnectionGR;
+import org.jojo.flow.model.api.IRigidConnectionGR;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -16,7 +18,7 @@ import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 
-public class RigidConnectionGR extends ConnectionGR {
+public class RigidConnectionGR extends ConnectionGR implements IRigidConnectionGR {
     public RigidConnectionGR(final RigidPinGR asFromPin, final RigidPinGR asToPin) {
         super(asFromPin, asToPin);
     }
@@ -69,7 +71,7 @@ public class RigidConnectionGR extends ConnectionGR {
     @Override
     public boolean isDOMValid(final DOM dom) {
         Objects.requireNonNull(dom);
-        final List<OneConnectionGR> before = this.getSingleConnections();
+        final List<IOneConnectionGR> before = this.getSingleConnections();
         final var beforePin = this.getFromPin();
         try {
             ok(super.isDOMValid(dom), "FCE_GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getMainFlowChart());

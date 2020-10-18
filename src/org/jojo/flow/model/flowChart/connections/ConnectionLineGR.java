@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IConnectionLineGR;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -16,7 +17,7 @@ import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
-public class ConnectionLineGR extends GraphicalRepresentation {
+public class ConnectionLineGR extends GraphicalRepresentation implements IConnectionLineGR {
     private Point positionB;
     
     public ConnectionLineGR(final Point positionA, final Point positionB) {
@@ -39,18 +40,22 @@ public class ConnectionLineGR extends GraphicalRepresentation {
         return true;
     }
     
+    @Override
     public Point getPositionA() {
         return getPosition();
     }
 
+    @Override
     public Point getPositionB() {
         return this.positionB;
     }
     
+    @Override
     public void setPositionA(final Point positionA) {
         setPosition(positionA);
     }
 
+    @Override
     public void setPositionB(final Point positionB) {
         this.positionB = Objects.requireNonNull(positionB);
         notifyObservers(positionB);

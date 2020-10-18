@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
@@ -24,7 +25,7 @@ import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
-public class DefaultArrow extends Connection {
+public class DefaultArrow extends Connection implements IDefaultArrow {
     private IDataSignature dataType;
     private IData data;
     private GraphicalRepresentation gr;
@@ -39,10 +40,12 @@ public class DefaultArrow extends Connection {
                 (Shape)null); //TODO get arrow shape
     }
     
+    @Override
     public IData getData() {
         return this.data;
     }
     
+    @Override
     public boolean putData(final IData data) {
         if (data == null || data.hasSameType(this.dataType)) {
             this.data = data;
@@ -52,6 +55,7 @@ public class DefaultArrow extends Connection {
         return false;
     }
     
+    @Override
     public IDataSignature getDataSignature() {
         return this.dataType;
     }
@@ -62,6 +66,7 @@ public class DefaultArrow extends Connection {
      * @param iDataSignature - the given data signature which must be recursively checking
      * @return whether putting the new data signature was successful
      */
+    @Override
     public boolean putDataSignature(final IDataSignature iDataSignature) {
         if (this.dataType.equals(Objects.requireNonNull(iDataSignature)) && iDataSignature.isCheckingRecursive()) {
             forcePutDataSignature(iDataSignature);
@@ -70,6 +75,7 @@ public class DefaultArrow extends Connection {
         return false;
     }
     
+    @Override
     public void forcePutDataSignature(final IDataSignature checkingDataSignature) {
         this.dataType = Objects.requireNonNull(checkingDataSignature);
         notifyObservers(checkingDataSignature);

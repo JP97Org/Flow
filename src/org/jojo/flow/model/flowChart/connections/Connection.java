@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.modules.InputPin;
@@ -29,7 +30,7 @@ import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 
-public abstract class Connection extends FlowChartElement {
+public abstract class Connection extends FlowChartElement implements IConnection {
     private final List<InputPin> toPins;
     private OutputPin fromPin;
     private String name;
@@ -46,11 +47,13 @@ public abstract class Connection extends FlowChartElement {
         }
     }
     
+    @Override
     public synchronized boolean reconnect() {
         disconnect();
         return connect();
     }
     
+    @Override
     public synchronized boolean connect() {
         if (!this.toPins.isEmpty()) {
             try {
@@ -75,37 +78,45 @@ public abstract class Connection extends FlowChartElement {
         return false;
     }
     
+    @Override
     public synchronized void disconnect() {
         this.fromPin.removeConnection(this);
         this.toPins.forEach(p -> p.removeConnection(this));
     }
     
+    @Override
     public String getName() {
         return this.name;
     }
     
+    @Override
     public void setName(final String name) {
         this.name = name;
     }
     
+    @Override
     public abstract String getInfo();
     
+    @Override
     public OutputPin getFromPin() {
         return this.fromPin;
     }
     
+    @Override
     public synchronized List<InputPin> getToPins() {
         final List<InputPin> ret = new ArrayList<>(this.toPins);
         ret.sort(ModulePin.getComparator());
         return ret;
     }
     
+    @Override
     public final Set<FlowModule> getConnectedModules() {
         final List<ModulePin> pins = new ArrayList<>(this.toPins);
         pins.add(getFromPin());
         return pins.stream().map(p -> p.getModule()).collect(Collectors.toSet());
     }
     
+    @Override
     public boolean isPinImpInConnection(final ModulePinImp modulePinImp) {
         final List<ModulePin> allPins = getToPins()
                 .stream()
@@ -115,6 +126,7 @@ public abstract class Connection extends FlowChartElement {
         return allPins.stream().anyMatch(p -> p.getModulePinImp().equals(modulePinImp));
     }
     
+    @Override
     public synchronized boolean addToPin(final InputPin toPin) throws ConnectionException {
         this.toPins.add(toPin);
         final boolean connectionMatchesPins = connectionMatchesPins();
@@ -131,6 +143,7 @@ public abstract class Connection extends FlowChartElement {
         return ok;
     }
     
+    @Override
     public synchronized boolean removeToPin(final InputPin toPin) {
         final boolean ret = this.toPins.remove(toPin);
         if (ret) {
@@ -139,6 +152,7 @@ public abstract class Connection extends FlowChartElement {
         return ret;
     }
     
+    @Override
     public synchronized boolean removeToPin(final int index) {
         if (index >= this.toPins.size()) {
             return false;
@@ -149,6 +163,7 @@ public abstract class Connection extends FlowChartElement {
         return true;
     }
     
+    @Override
     public synchronized boolean setFromPin(final OutputPin fromPin) throws ConnectionException {
         final OutputPin before = this.fromPin;
         this.fromPin = fromPin;

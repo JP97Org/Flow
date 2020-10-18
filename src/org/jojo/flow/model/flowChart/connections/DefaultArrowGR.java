@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.api.IDefaultArrowGR;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
@@ -17,7 +18,7 @@ import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 
-public class DefaultArrowGR extends ConnectionGR {
+public class DefaultArrowGR extends ConnectionGR implements IDefaultArrowGR {
     private Shape defaultArrow; //TODO evtl. anderer Typ jenachdem ob das so geht
     private Shape selectedArrow; //TODO evtl. anderer Typ jenachdem ob das so geht
     
@@ -36,19 +37,23 @@ public class DefaultArrowGR extends ConnectionGR {
         addConnection(new OneConnectionGR(getFromPin(), toPin));
     }
 
+    @Override
     public Shape getDefaultArrow() {
         return this.defaultArrow;
     }
 
+    @Override
     public void setDefaultArrow(final Shape defaultArrow) {
         this.defaultArrow = Objects.requireNonNull(defaultArrow);
         notifyObservers(defaultArrow);
     }
 
+    @Override
     public Shape getSelectedArrow() {
         return this.selectedArrow;
     }
 
+    @Override
     public void setSelectedArrow(final Shape selectedArrow) {
         this.selectedArrow = Objects.requireNonNull(selectedArrow);
         notifyObservers(selectedArrow);

@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IConnectionLineGR;
+import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -23,7 +25,7 @@ import org.jojo.flow.model.storeLoad.PointDOM;
 import static org.jojo.flow.model.flowChart.connections.ConnectionLineGR.isLine;
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
-public class OneConnectionGR extends GraphicalRepresentation {
+public class OneConnectionGR extends GraphicalRepresentation implements IOneConnectionGR {
     private ModulePinGR fromPin; // output pin
     private ModulePinGR toPin; // input pin
     
@@ -41,6 +43,7 @@ public class OneConnectionGR extends GraphicalRepresentation {
         setToPin(new Point(fromPin.getPosition().x, toPin.getPosition().y), Objects.requireNonNull(toPin));
     }
 
+    @Override
     public void setToPin(final Point diversionPoint, final ModulePinGR toPin) {
         Objects.requireNonNull(diversionPoint);
         Objects.requireNonNull(toPin);
@@ -50,14 +53,17 @@ public class OneConnectionGR extends GraphicalRepresentation {
         notifyObservers();
     }
     
-    public List<ConnectionLineGR> getLines() {
+    @Override
+    public List<IConnectionLineGR> getLines() {
         return new ArrayList<>(this.lines);
     }
  
+    @Override
     public List<Point> getDiversionPoints() {
         return new ArrayList<>(this.diversionPoints);
     }
     
+    @Override
     public boolean setPath(final List<Point> diversionPoints) {
         Objects.requireNonNull(diversionPoints);
         boolean ret = (!diversionPoints.isEmpty()) 
@@ -113,19 +119,23 @@ public class OneConnectionGR extends GraphicalRepresentation {
         return this.diversionPoints.stream().mapToInt(p -> p.y).max().orElse(0);
     }
 
+    @Override
     public Color getColor() {
         return this.color;
     }
 
+    @Override
     public void setColor(final Color color) {
         this.color = Objects.requireNonNull(color);
         notifyObservers(color);
     }
     
+    @Override
     public ModulePinGR getFromPin() {
         return this.fromPin;
     }
 
+    @Override
     public ModulePinGR getToPin() {
         return this.toPin;
     }

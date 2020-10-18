@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.api.IInternalConfig;
+import org.jojo.flow.model.api.IRigidConnection;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.ListSizeException;
@@ -12,7 +13,7 @@ import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
 
-public class RigidConnection extends Connection {
+public class RigidConnection extends Connection implements IRigidConnection {
     private GraphicalRepresentation gr;
     
     public RigidConnection(final int id, final RigidPin asFromPin, final RigidPin asToPin, final String name) throws ConnectionException {

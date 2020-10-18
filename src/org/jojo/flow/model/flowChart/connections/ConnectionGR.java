@@ -1,5 +1,7 @@
 package org.jojo.flow.model.flowChart.connections;
 
+import org.jojo.flow.model.api.IConnectionGR;
+import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.flowChart.FlowChartElementGR;
 
 import java.awt.Color;
@@ -11,9 +13,9 @@ import java.util.stream.Collectors;
 
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 
-public abstract class ConnectionGR extends FlowChartElementGR {
+public abstract class ConnectionGR extends FlowChartElementGR implements IConnectionGR {
     private ModulePinGR fromPin;
-    private final List<OneConnectionGR> connections;
+    private final List<IOneConnectionGR> connections;
     
     public ConnectionGR(final ModulePinGR fromPin, final ModulePinGR toPin) { 
         super(fromPin.getPosition());
@@ -22,6 +24,7 @@ public abstract class ConnectionGR extends FlowChartElementGR {
         addToPin(new Point(fromPin.getPosition().x, toPin.getPosition().y), toPin);
     }
     
+    @Override
     public abstract void addToPin(final Point diversionPoint, final ModulePinGR toPin);
     
     protected boolean isAddable(final OneConnectionGR connection) {
@@ -31,13 +34,13 @@ public abstract class ConnectionGR extends FlowChartElementGR {
         return true;
     }
     
-    protected void addConnection(final OneConnectionGR connection) {
-        Objects.requireNonNull(connection);
-        if (!connection.getFromPin().equals(this.fromPin)) {
+    protected void addConnection(final IOneConnectionGR c) {
+        Objects.requireNonNull(c);
+        if (!c.getFromPin().equals(this.fromPin)) {
             throw new IllegalArgumentException("from pin is not the same as the one of this connection");
         }
-        this.connections.add(connection);
-        notifyObservers(connection);
+        this.connections.add(c);
+        notifyObservers(c);
     }
     
     protected void setFromPin(final ModulePinGR fromPin) {
@@ -48,13 +51,14 @@ public abstract class ConnectionGR extends FlowChartElementGR {
         this.connections.clear();
     }
     
+    @Override
     public boolean removeToPin(final ModulePinGR toPin) {
-        final List<OneConnectionGR> toRemove = this.connections
+        final List<IOneConnectionGR> toRemove = this.connections
                 .stream()
                 .filter(c -> c.getToPin().equals(toPin))
                 .collect(Collectors.toList());
         boolean ret = !toRemove.isEmpty();
-        for (final OneConnectionGR toRemoveElem : toRemove) {
+        for (final IOneConnectionGR toRemoveElem : toRemove) {
             ret &= this.connections.remove(toRemoveElem);
         }
         if (ret) {
@@ -63,18 +67,22 @@ public abstract class ConnectionGR extends FlowChartElementGR {
         return ret;
     }
     
+    @Override
     public ModulePinGR getFromPin() {
         return this.fromPin;
     }
     
+    @Override
     public List<ModulePinGR> getToPins() {
         return this.connections.stream().map(c -> c.getToPin()).collect(Collectors.toList());
     }
     
-    public List<OneConnectionGR> getSingleConnections() {
+    @Override
+    public List<IOneConnectionGR> getSingleConnections() {
         return new ArrayList<>(this.connections);
     }
     
+    @Override
     public void setColor(final Color color) {
         Objects.requireNonNull(color);
         this.connections.forEach(c -> c.setColor(color));
