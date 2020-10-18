@@ -9,14 +9,15 @@ import java.util.Objects;
 import javax.swing.Icon;
 
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.IDOMable;
+import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DOMable;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
-public abstract class GraphicalRepresentation extends Subject implements DOMable {
+public abstract class GraphicalRepresentation extends Subject implements IDOMable, IGraphicalRepresentation {
     private Point position;
     private Icon defaultIcon;
     private Icon selectedIcon;
@@ -25,31 +26,39 @@ public abstract class GraphicalRepresentation extends Subject implements DOMable
         this.setPosition(position);
     }
 
+    @Override
     public Point getPosition() {
         return this.position;
     }
 
+    @Override
     public void setPosition(final Point position) {
         this.position = Objects.requireNonNull(position);
         notifyObservers(position);
     }
     
+    @Override
     public abstract int getHeight();
+    @Override
     public abstract int getWidth();
 
+    @Override
     public Icon getDefaultIcon() {
         return this.defaultIcon;
     }
 
+    @Override
     public void setDefaultIcon(final Icon defaultIcon) {
         this.defaultIcon = Objects.requireNonNull(defaultIcon);
         notifyObservers(defaultIcon);
     }
 
+    @Override
     public Icon getSelectedIcon() {
         return this.selectedIcon;
     }
 
+    @Override
     public void setSelectedIcon(final Icon selectedIcon) {
         this.selectedIcon = Objects.requireNonNull(selectedIcon);
         notifyObservers(selectedIcon);

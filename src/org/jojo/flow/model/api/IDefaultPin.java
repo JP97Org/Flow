@@ -14,5 +14,4 @@ public interface IDefaultPin extends IModulePinImp {
      * @throws FlowException if the data signature to be set and the already set one do not match
      */
     void setCheckDataSignature(IDataSignature checkingDataSignature) throws FlowException;
-
 }

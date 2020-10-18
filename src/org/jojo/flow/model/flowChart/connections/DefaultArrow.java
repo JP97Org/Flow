@@ -7,12 +7,13 @@ import java.awt.Shape;
 import java.io.IOException;
 
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -25,7 +26,7 @@ import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class DefaultArrow extends Connection {
     private IDataSignature dataType;
-    private Data data;
+    private IData data;
     private GraphicalRepresentation gr;
     
     public DefaultArrow(final int id, final OutputPin fromPin, final InputPin toPin, final String name) throws ConnectionException {
@@ -38,11 +39,11 @@ public class DefaultArrow extends Connection {
                 (Shape)null); //TODO get arrow shape
     }
     
-    public Data getData() {
+    public IData getData() {
         return this.data;
     }
     
-    public boolean putData(final Data data) {
+    public boolean putData(final IData data) {
         if (data == null || data.hasSameType(this.dataType)) {
             this.data = data;
             notifyObservers(data);
@@ -103,12 +104,12 @@ public class DefaultArrow extends Connection {
     }
 
     @Override
-    public InternalConfig serializeInternalConfig() {
+    public IInternalConfig serializeInternalConfig() {
         return null; // no internal config exists
     }
 
     @Override
-    public void restoreSerializedInternalConfig(InternalConfig internalConfig) {
+    public void restoreSerializedInternalConfig(IInternalConfig internalConfig) {
         // no internal config exists
     }
 

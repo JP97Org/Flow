@@ -6,12 +6,11 @@ import java.util.List;
 
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.Warning;
-import org.jojo.flow.model.flowChart.modules.InternalConfig;
-import org.jojo.flow.model.storeLoad.DOMable;
+import org.jojo.flow.model.api.IDOMable;
+import org.jojo.flow.model.api.IFlowChartElement;
+import org.jojo.flow.model.api.IInternalConfig;
 
-public abstract class FlowChartElement extends Subject implements DOMable {
-    public static final FlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1, new FlowChartGR());
-    
+public abstract class FlowChartElement extends Subject implements IDOMable, IFlowChartElement {
     private int id;
     private final List<Warning> warnings;
     
@@ -20,22 +19,30 @@ public abstract class FlowChartElement extends Subject implements DOMable {
         this.warnings = new ArrayList<>();
     }
     
+    @Override
     public abstract GraphicalRepresentation getGraphicalRepresentation();
-    public abstract InternalConfig serializeInternalConfig();
-    public abstract void restoreSerializedInternalConfig(InternalConfig internalConfig);
+    @Override
+    public abstract IInternalConfig serializeInternalConfig();
+    @Override
+    public abstract void restoreSerializedInternalConfig(IInternalConfig internalConfig);
+    @Override
     public abstract String serializeSimulationState();
+    @Override
     public abstract void restoreSerializedSimulationState(String simulationState);
     
+    @Override
     public void reportWarning(final Warning warning) {
         this.warnings.add(warning);
         notifyObservers(warning);
     }
     
+    @Override
     public void warningResolved(final Warning warning) {
         this.warnings.remove(warning);
         notifyObservers(warning);
     }
     
+    @Override
     public final int getId() {
         return id;
     }
@@ -44,10 +51,12 @@ public abstract class FlowChartElement extends Subject implements DOMable {
         this.id = id;
     }
     
+    @Override
     public List<Warning> getWarnings() {
         return new ArrayList<>(this.warnings);
     }
 
+    @Override
     public Warning getLastWarning() {
         if (this.warnings.isEmpty()) {
             return null;

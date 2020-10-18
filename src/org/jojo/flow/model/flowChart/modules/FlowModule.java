@@ -11,9 +11,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IObserver;
 import org.jojo.flow.model.api.ISubject;
+import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
@@ -28,7 +31,7 @@ import org.jojo.flow.model.storeLoad.ModuleDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 
-public abstract class FlowModule extends FlowChartElement implements Comparable<FlowModule>, IObserver {
+public abstract class FlowModule extends FlowChartElement implements IObserver, IFlowModule {
     private final ExternalConfig externalConfig;
     
     public FlowModule(final int id, final ExternalConfig externalConfig) {
@@ -48,13 +51,17 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         notifyObservers(getExternalConfig());
     }
     
+    @Override
     public abstract List<ModulePin> getAllModulePins();
     protected abstract void setAllModulePins(DOM pinsDom);
     protected abstract boolean isPinsDOMValid(DOM pinsDom);
     
+    @Override
     public abstract Frequency<Fraction> getFrequency();
+    @Override
     public abstract void run() throws Exception;
     
+    @Override
     public DefaultArrow validate() throws ValidationException {
         DefaultArrow ret = checkInputDataTypes();
         if (ret == null) { // input data types ok
@@ -73,7 +80,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 .map(x -> (DefaultPin)x.getModulePinImp())
                 .collect(Collectors.toList());
         for (final DefaultPin pin : allInputPins) {
-            Data data = pin.getDefaultData();
+            IData data = pin.getDefaultData();
             if (data == null) {
                 throw new ValidationException(new Warning(this, "an input pin of this module has not specified default data", true));
             }
@@ -121,18 +128,24 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         return null;
     }
 
+    @Override
     public abstract void setInternalConfig(final DOM internalConfigDOM);
+    @Override
     public abstract boolean isInternalConfigDOMValid(final DOM internalConfigDOM);
-    public abstract InternalConfig getInternalConfig();
+    @Override
+    public abstract IInternalConfig getInternalConfig();
     
+    @Override
     public final boolean hasInternalConfig() {
         return getInternalConfig() != null;
     }
     
+    @Override
     public final ExternalConfig getExternalConfig() {
         return this.externalConfig;
     }
     
+    @Override
     public final List<InputPin> getDefaultInputs() {
         return getAllInputs()
                 .stream()
@@ -140,6 +153,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 .collect(Collectors.toList());
     }
     
+    @Override
     public final List<OutputPin> getDefaultOutputs() {
         return getAllOutputs()
                 .stream()
@@ -147,6 +161,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 .collect(Collectors.toList());
     }
     
+    @Override
     public final List<InputPin> getAllInputs() {
         return this.getAllModulePins()
                 .stream()
@@ -155,6 +170,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 .collect(Collectors.toList());
     }
     
+    @Override
     public final List<OutputPin> getAllOutputs() {
         return this.getAllModulePins()
                 .stream()
@@ -163,6 +179,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
                 .collect(Collectors.toList());
     }
     
+    @Override
     public final List<FlowModule> getDefaultDependencyList() {
         final Set<FlowModule> retSet = new HashSet<>();
         retSet.addAll(getDefaultInputs()
@@ -175,6 +192,7 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
         return retSet.stream().collect(Collectors.toList());
     }
     
+    @Override
     public final List<FlowModule> getDefaultAdjacencyList() {
         final Set<FlowModule> retSet = new HashSet<>();
         retSet.addAll(getDefaultOutputs()
@@ -202,8 +220,8 @@ public abstract class FlowModule extends FlowChartElement implements Comparable<
     }
     
     @Override
-    public final int compareTo(final FlowModule other) {
-        int ret = this.externalConfig.compareTo(other.externalConfig);
+    public final int compareTo(final IFlowModule other) {
+        int ret = this.externalConfig.compareTo(other.getExternalConfig());
         if (ret == 0) {
             ret = Integer.valueOf(getId()).compareTo(other.getId());
         }

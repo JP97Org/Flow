@@ -13,6 +13,7 @@ import java.util.Objects;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
@@ -33,7 +34,6 @@ import org.jojo.flow.model.flowChart.connections.DefaultArrowGR;
 import org.jojo.flow.model.flowChart.modules.ExternalConfig;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
@@ -378,7 +378,7 @@ public final class DynamicObjectLoader {
         }
 
         @Override
-        public InternalConfig getInternalConfig() {
+        public IInternalConfig getInternalConfig() {
             return null;
         }
         
@@ -398,12 +398,12 @@ public final class DynamicObjectLoader {
         }
 
         @Override
-        public InternalConfig serializeInternalConfig() {
+        public IInternalConfig serializeInternalConfig() {
             return null;
         }
 
         @Override
-        public void restoreSerializedInternalConfig(InternalConfig internalConfig) {
+        public void restoreSerializedInternalConfig(IInternalConfig internalConfig) {
             
         }
 

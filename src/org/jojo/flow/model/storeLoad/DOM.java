@@ -11,12 +11,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IDOMable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-public abstract class DOM implements DOMable { 
+public abstract class DOM implements IDOMable { 
     private static Document documentStatic;
     
     public static final String NAME_OTHERS = "Others";
@@ -95,21 +96,21 @@ public abstract class DOM implements DOMable {
         append(elem);
     }
     
-    public <T extends DOMable> void appendList(final String name, final List<T> list) {
+    public <T extends IDOMable> void appendList(final String name, final List<T> list) {
         Objects.requireNonNull(list);
         final var elem = getDocument().createElement(Objects.requireNonNull(name));
         list.forEach(p -> elem.appendChild(p.getDOM().getParentNode()));
         append(elem);
     }
     
-    public void appendCustomDOM(final String name, final DOMable domable) {
+    public void appendCustomDOM(final String name, final IDOMable domable) {
         Objects.requireNonNull(domable);
         final var elem = getDocument().createElement(Objects.requireNonNull(name));
         elem.appendChild(domable.getDOM().getParentNode());
         append(elem);
     }
     
-    public void appendCustomDOM(final DOMable domable) {
+    public void appendCustomDOM(final IDOMable domable) {
         Objects.requireNonNull(domable);
         append(domable.getDOM().getParentNode());
     }

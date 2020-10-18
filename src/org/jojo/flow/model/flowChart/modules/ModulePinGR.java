@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.api.IModulePinGR;
+import org.jojo.flow.model.api.PinOrientation;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
@@ -14,7 +16,7 @@ import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
-public abstract class ModulePinGR extends GraphicalRepresentation {
+public abstract class ModulePinGR extends GraphicalRepresentation implements IModulePinGR {
     private int height;
     private int width;
     
@@ -44,37 +46,45 @@ public abstract class ModulePinGR extends GraphicalRepresentation {
         return this.width;
     }
 
+    @Override
     public boolean isIconTextAllowed() {
         return this.isIconTextAllowed;
     }
 
+    @Override
     public void setIconTextAllowed(final boolean isIconTextAllowed) {
         this.isIconTextAllowed = isIconTextAllowed;
         notifyObservers(isIconTextAllowed);
     }
 
+    @Override
     public String getIconText() {
         return this.iconText;
     }
 
+    @Override
     public void setIconText(final String iconText) {
         this.iconText = iconText;
         notifyObservers(iconText);
     }
 
+    @Override
     public Point getLinePoint() {
         return this.linePoint;
     }
 
+    @Override
     public void setLinePoint(final Point linePoint) {
         this.linePoint = Objects.requireNonNull(linePoint);
         notifyObservers(linePoint);
     }
 
+    @Override
     public PinOrientation getPinOrientation() {
         return this.pinOrientation;
     }
 
+    @Override
     public void setPinOrientation(PinOrientation pinOrientation) {
         this.pinOrientation = Objects.requireNonNull(pinOrientation);
         notifyObservers(pinOrientation);

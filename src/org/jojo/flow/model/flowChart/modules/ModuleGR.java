@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.swing.Icon;
 
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.flowChart.FlowChartElementGR;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
@@ -21,7 +22,7 @@ import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
-public abstract class ModuleGR extends FlowChartElementGR {
+public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {
     private FlowModule module;
     
     private double scale;
@@ -48,6 +49,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
         this.module = module;
     }
     
+    @Override
     public void setModuleMock(final MockModule mock) {
         this.module = mock;
     }
@@ -69,6 +71,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
         return this.width;
     }
     
+    @Override
     public final Point[] getCorners() {
         return Arrays.stream(this.corners).toArray(Point[]::new);
     }
@@ -93,22 +96,28 @@ public abstract class ModuleGR extends FlowChartElementGR {
         super.setSelectedIcon(selectedIcon);
     }
     
+    @Override
     public abstract String getInfoText();
+    @Override
     public abstract Window getInternalConfigWindow();
     
+    @Override
     public final int getPriority() {
         return this.module.getExternalConfig().getPriority();
     }
     
+    @Override
     public final double getScale() {
         return this.scale;
     }
     
+    @Override
     public final void setScale(final double scale) {
         this.scale = scale;
         notifyObservers(scale);
     }
     
+    @Override
     public final void rotateLeft() {
         setPosition(this.corners[1]);
         final int oldHeight = this.height;
@@ -118,6 +127,7 @@ public abstract class ModuleGR extends FlowChartElementGR {
         notifyObservers();
     }
     
+    @Override
     public final void rotateRight() {
         setPosition(this.corners[3]);
         final int oldHeight = this.height;
@@ -127,10 +137,12 @@ public abstract class ModuleGR extends FlowChartElementGR {
         notifyObservers();
     }
     
+    @Override
     public final boolean isIconTextAllowed() {
         return this.isIconTextAllowed;
     }
     
+    @Override
     public final void setIsIconTextAllowed(final boolean isIconTextAllowed) {
         this.isIconTextAllowed = isIconTextAllowed;
         notifyObservers(isIconTextAllowed);
@@ -140,11 +152,13 @@ public abstract class ModuleGR extends FlowChartElementGR {
         return this.iconText;
     }
     
+    @Override
     public final void setIconText(final String iconText) {
         this.iconText = iconText;
         notifyObservers(iconText);
     }
 
+    @Override
     public final FlowModule getModule() {
         return this.module;
     }

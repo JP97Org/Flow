@@ -1,11 +1,12 @@
 package org.jojo.flow.model.flowChart.modules;
 
 import org.jojo.flow.model.Warning;
-import org.jojo.flow.model.data.Data;
+import org.jojo.flow.model.api.IData;
+import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 
-public class InputPin extends ModulePin {  
+public class InputPin extends ModulePin implements IInputPin {  
     public InputPin(final ModulePinImp imp, final ModulePinGR gr) {
         super(imp, gr);
     }
@@ -19,7 +20,8 @@ public class InputPin extends ModulePin {
         }
     }
     
-    public Data getData() {
+    @Override
+    public IData getData() {
         return getConnections().isEmpty() 
                 ? getDefaultData() 
                         : (getConnections().get(0) instanceof DefaultArrow 

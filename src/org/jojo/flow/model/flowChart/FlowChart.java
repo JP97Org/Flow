@@ -16,13 +16,14 @@ import java.util.stream.Collectors;
 import org.jojo.flow.model.FlowException;
 import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IFlowChartElement;
+import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
@@ -292,12 +293,12 @@ public class FlowChart extends FlowChartElement{
     }
 
     @Override
-    public InternalConfig serializeInternalConfig() {
+    public IInternalConfig serializeInternalConfig() {
         return null; // no internal config exists
     }
 
     @Override
-    public void restoreSerializedInternalConfig(InternalConfig internalConfig) {
+    public void restoreSerializedInternalConfig(IInternalConfig internalConfig) {
         // no internal config exists
     }
 
@@ -394,7 +395,7 @@ public class FlowChart extends FlowChartElement{
     }
 
     private boolean checkIDs() {
-        final List<FlowChartElement> elements = new ArrayList<>(this.modules);
+        final List<IFlowChartElement> elements = new ArrayList<>(this.modules);
         elements.addAll(this.connections);
         elements.add(this);
         elements.add(GENERIC_ERROR_ELEMENT);

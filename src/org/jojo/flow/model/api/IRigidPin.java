@@ -8,5 +8,4 @@ public interface IRigidPin extends IModulePinImp {
     InputPin getInputPin();
 
     OutputPin getOutputPin();
-
 }

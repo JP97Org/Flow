@@ -1,4 +1,4 @@
-package org.jojo.flow.model.flowChart.modules;
+package org.jojo.flow.model.api;
 
 import java.util.Arrays;
 

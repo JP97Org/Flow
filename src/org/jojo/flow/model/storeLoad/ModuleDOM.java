@@ -3,8 +3,8 @@ package org.jojo.flow.model.storeLoad;
 import java.util.List;
 import java.util.Objects;
 
+import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.flowChart.modules.ExternalConfig;
-import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.w3c.dom.Element;
 
@@ -26,7 +26,7 @@ public class ModuleDOM extends FlowChartElementDOM {
         ((Element)getParentNode()).setAttribute(NAME_NAME, Objects.requireNonNull(name));
     }
     
-    public void setInternalConfig(final InternalConfig config) {
+    public void setInternalConfig(final IInternalConfig config) {
         appendCustomDOM(config);
     }
     

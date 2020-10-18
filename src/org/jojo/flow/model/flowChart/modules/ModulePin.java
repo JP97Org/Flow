@@ -10,20 +10,21 @@ import java.util.Objects;
 
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IModulePin;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DOMable;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 
-public abstract class ModulePin extends Subject implements DOMable {
+public abstract class ModulePin extends Subject implements IDOMable, IModulePin {
     private final ModulePinImp imp;
     private final ModulePinGR gr;
     
@@ -32,10 +33,12 @@ public abstract class ModulePin extends Subject implements DOMable {
         this.gr = Objects.requireNonNull(gr);
     }
     
+    @Override
     public GraphicalRepresentation getGraphicalRepresentation() {
         return this.gr;
     }
     
+    @Override
     public FlowModule getModule() {
         return this.imp.getModule();
     }
@@ -44,10 +47,12 @@ public abstract class ModulePin extends Subject implements DOMable {
         this.imp.setModule(module);
     }
     
+    @Override
     public synchronized List<Connection> getConnections() {
         return this.imp.getConnections();
     }
     
+    @Override
     public synchronized boolean addConnection(final Connection toAdd) throws ListSizeException {
         final boolean ret = this.imp.addConnection(toAdd);
         if (ret) {
@@ -56,6 +61,7 @@ public abstract class ModulePin extends Subject implements DOMable {
         return ret;
     }
     
+    @Override
     public synchronized boolean removeConnection(final Connection toRemove) {
         final boolean ret = this.imp.removeConnection(toRemove);
         if (ret) {
@@ -64,6 +70,7 @@ public abstract class ModulePin extends Subject implements DOMable {
         return ret;
     }
     
+    @Override
     public synchronized boolean removeConnection(final int index) {
         final Connection toRemove = index >= getConnections().size() ? null : getConnections().get(index);
         final boolean ret = this.imp.removeConnection(index);
@@ -73,6 +80,7 @@ public abstract class ModulePin extends Subject implements DOMable {
         return ret;
     }
     
+    @Override
     public Data getDefaultData() {
         return this.imp.getDefaultData();
     }
@@ -82,6 +90,7 @@ public abstract class ModulePin extends Subject implements DOMable {
         notifyObservers(defaultData);
     }
     
+    @Override
     public ModulePinImp getModulePinImp() {
         return this.imp;
     }

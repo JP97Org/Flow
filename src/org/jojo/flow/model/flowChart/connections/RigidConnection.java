@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jojo.flow.model.Warning;
+import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.InternalConfig;
 import org.jojo.flow.model.flowChart.modules.ListSizeException;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
@@ -89,12 +89,12 @@ public class RigidConnection extends Connection {
     }
 
     @Override
-    public InternalConfig serializeInternalConfig() {
+    public IInternalConfig serializeInternalConfig() {
         return null; // no internal config exists
     }
 
     @Override
-    public void restoreSerializedInternalConfig(InternalConfig internalConfig) {
+    public void restoreSerializedInternalConfig(IInternalConfig internalConfig) {
         // no internal config exists
     }
 

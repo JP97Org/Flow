@@ -6,14 +6,15 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.IDOMable;
+import org.jojo.flow.model.api.IExternalConfig;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DOMable;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.ParsingException;
 
-public class ExternalConfig extends Subject implements Comparable<ExternalConfig>, DOMable {
+public class ExternalConfig extends Subject implements IDOMable, IExternalConfig {
     private String name;
     private int priority;
     
@@ -24,23 +25,28 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
         this.priority = priority;
     }
     
+    @Override
     public void setModule(final FlowModule module) {
         this.module = module;
     }
     
+    @Override
     public String getName() {
         return this.name;
     }
     
+    @Override
     public int getPriority() {
         return this.priority;
     }
     
+    @Override
     public void setPriority(final int newPriority) {
         this.priority = newPriority;
         notifyObservers(newPriority);
     }
     
+    @Override
     public Pair<String, Integer> getConfig() {
         return new Pair<>(this.name, this.priority);
     }
@@ -65,11 +71,11 @@ public class ExternalConfig extends Subject implements Comparable<ExternalConfig
     }
 
     @Override
-    public final int compareTo(final ExternalConfig o) { 
-        if (this.priority != o.priority) {
-            return Integer.valueOf(this.priority).compareTo(o.priority);
+    public final int compareTo(final IExternalConfig o) { 
+        if (this.priority != o.getPriority()) {
+            return Integer.valueOf(this.priority).compareTo(o.getPriority());
         }
-        return this.name.compareTo(o.name);
+        return this.name.compareTo(o.getName());
     }
 
     public DOM getDOM() {
