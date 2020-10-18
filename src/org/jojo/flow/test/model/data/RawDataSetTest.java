@@ -1,7 +1,8 @@
 package org.jojo.flow.test.model.data;
 
 import java.util.Base64;
-import org.jojo.flow.model.data.IllegalUnitOperationException;
+
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.data.RawDataSet;
 import org.junit.*;
 

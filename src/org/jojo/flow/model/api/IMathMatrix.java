@@ -1,6 +1,6 @@
 package org.jojo.flow.model.api;
 
-import org.jojo.flow.model.data.IllegalUnitOperationException;
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.data.Pair;
 
 public interface IMathMatrix<T extends Number> extends IBasicCheckable {

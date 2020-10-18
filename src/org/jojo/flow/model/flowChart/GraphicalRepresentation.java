@@ -8,13 +8,13 @@ import java.util.Objects;
 
 import javax.swing.Icon;
 
+import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
 public abstract class GraphicalRepresentation extends Subject implements IDOMable, IGraphicalRepresentation {

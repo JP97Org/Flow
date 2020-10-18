@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import java.awt.Shape;
 import java.io.IOException;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.ConnectionException;
+import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultArrow;
@@ -19,7 +21,6 @@ import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 

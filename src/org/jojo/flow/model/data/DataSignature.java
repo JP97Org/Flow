@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 
+import org.jojo.flow.exc.DataTypeIncompatException;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.Unit;

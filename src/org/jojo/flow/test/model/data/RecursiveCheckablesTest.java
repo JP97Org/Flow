@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jojo.flow.exc.DataTypeIncompatException;
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataArray;
 import org.jojo.flow.model.data.DataBundle;
-import org.jojo.flow.model.data.DataTypeIncompatException;
 import org.jojo.flow.model.data.DataVector;
-import org.jojo.flow.model.data.IllegalUnitOperationException;
 import org.jojo.flow.model.data.RawDataSet;
 import org.jojo.flow.model.data.StringDataSet;
 import org.junit.*;

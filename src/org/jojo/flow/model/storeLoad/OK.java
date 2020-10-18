@@ -2,7 +2,8 @@ package org.jojo.flow.model.storeLoad;
 
 import java.util.function.Function;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 
 public final class OK {

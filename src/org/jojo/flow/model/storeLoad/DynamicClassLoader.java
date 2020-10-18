@@ -16,9 +16,10 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDynamicClassLoader;
 
-public class DynamicClassLoader extends ClassLoader {
+public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoader {
     private final Map<String, File> externalClassesMap;
     private final File tmpDirForJarExtraction;
     
@@ -40,6 +41,7 @@ public class DynamicClassLoader extends ClassLoader {
         return new HashMap<>(this.externalClassesMap);
     }
     
+    @Override
     public List<Class<?>> loadClasses(final File jarFile) throws ClassNotFoundException, IOException {
         final List<File> unpacked = unpack(jarFile);
         if (unpacked.size() == 0) {

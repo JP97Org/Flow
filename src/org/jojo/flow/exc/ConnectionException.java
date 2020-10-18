@@ -1,7 +1,5 @@
-package org.jojo.flow.model.flowChart.connections;
+package org.jojo.flow.exc;
 
-import org.jojo.flow.model.FlowException;
-import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 
 public class ConnectionException extends FlowException {

@@ -7,13 +7,14 @@ import java.util.Objects;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IStoreLoadFacade;
 import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class StoreLoadFacade {
+public class StoreLoadFacade implements IStoreLoadFacade {
     private final ModuleClassesList list;
     private final DynamicClassLoader loader;
     
@@ -32,6 +33,7 @@ public class StoreLoadFacade {
         this.loader = Objects.requireNonNull(loader);
     }
     
+    @Override
     public FlowChart loadFlowChart(final File xmlFile) {
         Objects.requireNonNull(xmlFile);
         if (DocumentString.isParseable(xmlFile)) {
@@ -53,6 +55,7 @@ public class StoreLoadFacade {
         return null;
     }
     
+    @Override
     public boolean storeFlowChart(final File xmlFile, final DOM flowDom) {
         Objects.requireNonNull(xmlFile);
         final DocumentString docStr = new DocumentString(flowDom.getDocument());
@@ -73,6 +76,7 @@ public class StoreLoadFacade {
         return false;
     }
     
+    @Override
     public Pair<ModuleClassesList, DynamicClassLoader> getListLoaderPair() {
         if (this.list == null) {
             return null;
@@ -80,11 +84,13 @@ public class StoreLoadFacade {
         return new Pair<>(this.list, this.loader);
     }
     
+    @Override
     public ModuleClassesList getNewModuleClassesList(final File tmpDirectory, final File... jars) {
         final var classLoader = new DynamicClassLoader(tmpDirectory);
         return new ModuleClassesList(classLoader, jars);
     }
     
+    @Override
     public DynamicClassLoader getNewDynamicClassLoader(final File tmpDirectory) {
         return new DynamicClassLoader(tmpDirectory);
     }

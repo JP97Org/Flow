@@ -2,9 +2,9 @@ package org.jojo.flow.model.api;
 
 import java.util.List;
 
+import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
-import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.flowChart.modules.ExternalConfig;
 import org.jojo.flow.model.flowChart.modules.FlowModule;

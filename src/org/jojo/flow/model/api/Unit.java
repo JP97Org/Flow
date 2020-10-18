@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.data.Fraction;
-import org.jojo.flow.model.data.IllegalUnitOperationException;
 
 public class Unit<T extends Number> implements Serializable {
     /**

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.Subject;
-import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IFlowChartElement;
 import org.jojo.flow.model.api.IInternalConfig;

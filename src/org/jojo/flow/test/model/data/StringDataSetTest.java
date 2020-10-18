@@ -1,6 +1,6 @@
 package org.jojo.flow.test.model.data;
 
-import org.jojo.flow.model.data.IllegalUnitOperationException;
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.data.StringDataSet;
 import org.junit.Test;
 import org.junit.Assert;

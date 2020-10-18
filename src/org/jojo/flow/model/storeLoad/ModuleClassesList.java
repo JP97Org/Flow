@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.model.api.IModuleClassesList;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 
-public class ModuleClassesList {
+public class ModuleClassesList implements IModuleClassesList {
     private final DynamicClassLoader loader;
     private final List<File> jarFiles;
     private final List<Class<? extends FlowModule>> moduleClassesList;
@@ -33,10 +34,12 @@ public class ModuleClassesList {
         }
     }
     
+    @Override
     public DynamicClassLoader getClassLoader() {
         return this.loader;
     }
     
+    @Override
     public ModuleClassesList addJarFile(final File jarFile) throws ClassNotFoundException, IOException {
         this.jarFiles.add(jarFile);
         if (this.isLoadingAll) {
@@ -45,12 +48,14 @@ public class ModuleClassesList {
         return this;
     }
     
+    @Override
     public ModuleClassesList loadJarFile(final File jarFile) throws ClassNotFoundException, IOException {
         this.jarFiles.add(jarFile);
         load(jarFile);
         return this;
     }
 
+    @Override
     public ModuleClassesList loadAll() throws ClassNotFoundException, IOException {
         for (final File file : this.jarFiles) {
             load(file);
@@ -66,6 +71,7 @@ public class ModuleClassesList {
                 .collect(Collectors.toList()));
     }
     
+    @Override
     public List<Class<? extends FlowModule>> getModuleClassesList() {
         return new ArrayList<Class<? extends FlowModule>>(this.moduleClassesList);
     }

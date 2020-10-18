@@ -6,16 +6,17 @@ import java.awt.Point;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.ILabelGR;
 import org.jojo.flow.model.api.IObserver;
 import org.jojo.flow.model.api.ISubject;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 
-public class LabelGR extends GraphicalRepresentation implements ISubject {
+public class LabelGR extends GraphicalRepresentation implements ISubject, ILabelGR {
     private final Subject subject;
     
     private String text;
@@ -54,19 +55,23 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
         this.subject.notifyObservers();
     }
 
+    @Override
     public String getText() {
         return text;
     }
 
+    @Override
     public void setText(final String text) {
         this.text = Objects.requireNonNull(text);
         notifyObservers(text);
     }
 
+    @Override
     public FlowChartElement getElement() {
         return element;
     }
     
+    @Override
     public void setElement(final FlowChartElement element) {
         this.element = element;
     }
@@ -75,6 +80,7 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
         return this.height;
     }
 
+    @Override
     public void setHeight(final int height) {
         this.height = height;
         notifyObservers(this.height);
@@ -84,6 +90,7 @@ public class LabelGR extends GraphicalRepresentation implements ISubject {
         return this.width;
     }
 
+    @Override
     public void setWidth(final int width) {
         this.width = width;
         notifyObservers(this.width);

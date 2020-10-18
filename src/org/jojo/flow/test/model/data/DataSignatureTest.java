@@ -1,11 +1,11 @@
 package org.jojo.flow.test.model.data;
 
+import org.jojo.flow.exc.DataTypeIncompatException;
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.data.BasicSignatureComponents;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataArray;
-import org.jojo.flow.model.data.DataTypeIncompatException;
-import org.jojo.flow.model.data.IllegalUnitOperationException;
 import org.jojo.flow.model.data.RawDataSet;
 import org.junit.*;
 

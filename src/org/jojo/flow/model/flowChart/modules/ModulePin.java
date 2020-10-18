@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.exc.ListSizeException;
+import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.api.IDOMable;
@@ -22,7 +24,6 @@ import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 
 public abstract class ModulePin extends Subject implements IDOMable, IModulePin {
     private final ModulePinImp imp;

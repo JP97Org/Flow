@@ -3,12 +3,13 @@ package org.jojo.flow.model.flowChart.connections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.ConnectionException;
+import org.jojo.flow.exc.ListSizeException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.api.IRigidConnection;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.ListSizeException;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;

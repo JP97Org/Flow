@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.api.IRigidConnectionGR;
@@ -16,7 +17,6 @@ import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 
 public class RigidConnectionGR extends ConnectionGR implements IRigidConnectionGR {
     public RigidConnectionGR(final RigidPinGR asFromPin, final RigidPinGR asToPin) {

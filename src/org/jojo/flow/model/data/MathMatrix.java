@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.IMathMatrix;
 import org.jojo.flow.model.api.Unit;

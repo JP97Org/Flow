@@ -1,7 +1,4 @@
-package org.jojo.flow.model.flowChart;
-
-import org.jojo.flow.model.FlowException;
-import org.jojo.flow.model.Warning;
+package org.jojo.flow.exc;
 
 public class ValidationException extends FlowException {
     /**

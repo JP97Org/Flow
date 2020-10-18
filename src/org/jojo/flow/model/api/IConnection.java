@@ -3,7 +3,7 @@ package org.jojo.flow.model.api;
 import java.util.List;
 import java.util.Set;
 
-import org.jojo.flow.model.flowChart.connections.ConnectionException;
+import org.jojo.flow.exc.ConnectionException;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.ModulePinImp;

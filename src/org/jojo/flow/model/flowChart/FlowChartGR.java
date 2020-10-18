@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.model.api.IFlowChartGR;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
@@ -16,12 +18,11 @@ import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
-public class FlowChartGR extends FlowChartElementGR {
+public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
     private final List<ModuleGR> modules;
     private final List<ConnectionGR> connections;
     private Point absOriginPoint;
@@ -41,19 +42,23 @@ public class FlowChartGR extends FlowChartElementGR {
         this.fc = fc;
     }
     
+    @Override
     public FlowChart getFlowChart() {
         return this.fc;
     }
     
+    @Override
     public void addModule(final ModuleGR moduleGR) {
         this.modules.add(Objects.requireNonNull(moduleGR));
         notifyObservers(moduleGR);
     }
     
+    @Override
     public void addConnection(final ConnectionGR connectionGR) {
         this.connections.add(connectionGR);
     }
     
+    @Override
     public boolean removeModule(final ModuleGR moduleGR) {
         final boolean ret = this.modules.remove(Objects.requireNonNull(moduleGR));
         if (ret) {
@@ -62,6 +67,7 @@ public class FlowChartGR extends FlowChartElementGR {
         return ret;
     }
     
+    @Override
     public boolean removeModule(final int index) {
         if (index >= this.modules.size()) {
             return false;
@@ -72,6 +78,7 @@ public class FlowChartGR extends FlowChartElementGR {
         return true;
     }
     
+    @Override
     public boolean removeConnection(final ConnectionGR connectionGR) {
         final boolean ret = this.connections.remove(Objects.requireNonNull(connectionGR));
         if (ret) {
@@ -80,6 +87,7 @@ public class FlowChartGR extends FlowChartElementGR {
         return ret;
     }
     
+    @Override
     public boolean removeConnection(final int index) {
         if (index >= this.connections.size()) {
             return false;
@@ -136,19 +144,23 @@ public class FlowChartGR extends FlowChartElementGR {
         return Math.max(modMax, conMax);
     }
 
+    @Override
     public Point getAbsOriginPoint() {
         return this.absOriginPoint;
     }
 
+    @Override
     public void setAbsOriginPoint(final Point absOriginPoint) {
         this.absOriginPoint = Objects.requireNonNull(absOriginPoint);
         notifyObservers(absOriginPoint);
     }
 
+    @Override
     public boolean isRasterEnabled() {
         return this.isRasterEnabled;
     }
 
+    @Override
     public void setRasterEnabled(boolean isRasterEnabled) {
         this.isRasterEnabled = isRasterEnabled;
         notifyObservers(isRasterEnabled);

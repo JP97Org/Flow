@@ -2,15 +2,18 @@ package org.jojo.flow.model.simulation;
 
 import java.util.Objects;
 
-import org.jojo.flow.model.FlowException;
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.FlowException;
+import org.jojo.flow.exc.ModuleRunException;
+import org.jojo.flow.exc.TimeoutException;
+import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.ISimulation;
 import org.jojo.flow.model.api.Unit;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.data.units.Time;
 import org.jojo.flow.model.flowChart.FlowChart;
 
-public class Simulation {
+public class Simulation implements ISimulation {
     private final FlowChart flowChart;
     private SimulationConfiguration config;
     private Stepper stepper;
@@ -40,6 +43,7 @@ public class Simulation {
         }
     }
     
+    @Override
     public void start() throws ModuleRunException, TimeoutException, FlowException {
         this.isRunning = true;
         this.stepper.unpause();
@@ -58,6 +62,7 @@ public class Simulation {
         this.simThread.start();
     }
 
+    @Override
     public synchronized void stepOnce() throws ModuleRunException, TimeoutException, FlowException {
         this.stepThread = new Thread(this.stepper);
         stepThread.start();
@@ -96,10 +101,12 @@ public class Simulation {
         }
     }
     
+    @Override
     public void stop() throws FlowException {
         this.stepper.reset();
     }
     
+    @Override
     public void forceStop() {
         pause();
         if (this.stepThread != null && this.stepThread.isAlive()) {
@@ -107,14 +114,17 @@ public class Simulation {
         }
     }
 
+    @Override
     public void pause() {
         this.stepper.pause();
     }
     
+    @Override
     public boolean isRunning() {
         return this.isRunning;
     }
     
+    @Override
     public SimulationConfiguration getConfig() throws IllegalStateException {
         if (this.isRunning) {
             throw new IllegalStateException("simulation must not be running when config should be changed");
@@ -122,6 +132,7 @@ public class Simulation {
         return this.config;
     }
     
+    @Override
     public void setConfig(final SimulationConfiguration config) throws IllegalStateException {
         if (this.isRunning) {
             throw new IllegalStateException("simulation must not be running when config should be changed");
@@ -130,6 +141,7 @@ public class Simulation {
         reloadStepper();
     }
     
+    @Override
     public void reloadStepper() {
         initStepper();
     }

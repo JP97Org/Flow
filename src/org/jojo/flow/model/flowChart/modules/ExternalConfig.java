@@ -5,6 +5,7 @@ import static org.jojo.flow.model.storeLoad.OK.ok;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IExternalConfig;
@@ -12,7 +13,6 @@ import org.jojo.flow.model.data.Pair;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 
 public class ExternalConfig extends Subject implements IDOMable, IExternalConfig {
     private String name;

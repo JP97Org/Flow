@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.api.IModulePinGR;
 import org.jojo.flow.model.api.PinOrientation;
@@ -13,7 +14,6 @@ import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
 public abstract class ModulePinGR extends GraphicalRepresentation implements IModulePinGR {

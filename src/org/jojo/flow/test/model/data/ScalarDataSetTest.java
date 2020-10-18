@@ -1,9 +1,9 @@
 package org.jojo.flow.test.model.data;
 
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.Unit;
 import org.jojo.flow.model.api.UnitSignature;
-import org.jojo.flow.model.data.IllegalUnitOperationException;
 import org.jojo.flow.model.data.ScalarDataSet;
 import org.junit.*;
 

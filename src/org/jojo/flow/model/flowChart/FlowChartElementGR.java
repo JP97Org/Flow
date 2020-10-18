@@ -6,12 +6,12 @@ import java.awt.Point;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.api.IFlowChartElementGR;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 
 public abstract class FlowChartElementGR extends GraphicalRepresentation implements IFlowChartElementGR {
     private LabelGR label;

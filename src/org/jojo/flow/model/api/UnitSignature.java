@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import org.jojo.flow.model.Warning;
-import org.jojo.flow.model.data.IllegalUnitOperationException;
+import org.jojo.flow.exc.IllegalUnitOperationException;
+import org.jojo.flow.exc.Warning;
 
 public final class UnitSignature implements Serializable {
     /**

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.Icon;
 
+import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.flowChart.FlowChartElementGR;
@@ -19,7 +20,6 @@ import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
 public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {

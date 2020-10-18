@@ -2,11 +2,11 @@ package org.jojo.flow.model.api;
 
 import java.util.List;
 
+import org.jojo.flow.exc.ListSizeException;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
-import org.jojo.flow.model.flowChart.modules.ListSizeException;
 import org.jojo.flow.model.flowChart.modules.ModulePinImp;
 
 public interface IModulePin extends IAPI {

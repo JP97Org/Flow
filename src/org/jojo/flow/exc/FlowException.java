@@ -1,4 +1,4 @@
-package org.jojo.flow.model;
+package org.jojo.flow.exc;
 
 import java.util.Objects;
 

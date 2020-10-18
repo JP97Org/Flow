@@ -1,6 +1,6 @@
 package org.jojo.flow.model.data.units;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.Unit;
 import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.Fraction;

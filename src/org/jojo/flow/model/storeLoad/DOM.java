@@ -10,17 +10,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDOMable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-public abstract class DOM implements IDOMable { 
+public abstract class DOM implements IDOMable, IDOM { 
     private static Document documentStatic;
-    
-    public static final String NAME_OTHERS = "Others";
     
     private final Document document;
     private final Node parent;
@@ -72,18 +71,21 @@ public abstract class DOM implements IDOMable {
         getParentNode().appendChild(elem);
     }
     
+    @Override
     public void appendString(final String name, final String content) {
         final var elem = getDocument().createElement(Objects.requireNonNull(name));
         elem.appendChild(getDocument().createTextNode(Objects.requireNonNull(content)));
         append(elem);
     }
     
+    @Override
     public void appendInt(final String name, final int content) {
         final var elem = getDocument().createElement(Objects.requireNonNull(name));
         elem.appendChild(getDocument().createTextNode("" + Objects.requireNonNull(content)));
         append(elem);
     }
     
+    @Override
     public void appendInts(final String listName, final String name, final int[] ids) {
         Objects.requireNonNull(ids);
         final var elem = getDocument().createElement(Objects.requireNonNull(listName));
@@ -96,6 +98,7 @@ public abstract class DOM implements IDOMable {
         append(elem);
     }
     
+    @Override
     public <T extends IDOMable> void appendList(final String name, final List<T> list) {
         Objects.requireNonNull(list);
         final var elem = getDocument().createElement(Objects.requireNonNull(name));
@@ -103,6 +106,7 @@ public abstract class DOM implements IDOMable {
         append(elem);
     }
     
+    @Override
     public void appendCustomDOM(final String name, final IDOMable domable) {
         Objects.requireNonNull(domable);
         final var elem = getDocument().createElement(Objects.requireNonNull(name));
@@ -110,15 +114,18 @@ public abstract class DOM implements IDOMable {
         append(elem);
     }
     
+    @Override
     public void appendCustomDOM(final IDOMable domable) {
         Objects.requireNonNull(domable);
         append(domable.getDOM().getParentNode());
     }
     
+    @Override
     public Map<String, Object> getDOMMap() {
         return getDOMMap(getParentNode());
     }
     
+    @Override
     public String elemGet() {
         if (this.parent.getChildNodes().getLength() == 0) {
             return null;

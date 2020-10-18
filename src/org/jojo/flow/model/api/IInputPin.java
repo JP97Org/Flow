@@ -1,7 +1,7 @@
 package org.jojo.flow.model.api;
 
+import org.jojo.flow.exc.ListSizeException;
 import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.modules.ListSizeException;
 
 public interface IInputPin extends IModulePin {
 

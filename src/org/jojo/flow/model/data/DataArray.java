@@ -2,6 +2,7 @@ package org.jojo.flow.model.data;
 
 import java.util.Arrays;
 
+import org.jojo.flow.exc.DataTypeIncompatException;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataArray;
 import org.jojo.flow.model.api.IDataSignature;

@@ -2,11 +2,11 @@ package org.jojo.flow.model.flowChart.modules;
 
 import java.util.Objects;
 
-import org.jojo.flow.model.FlowException;
+import org.jojo.flow.exc.DataTypeIncompatException;
+import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultPin;
 import org.jojo.flow.model.data.Data;
-import org.jojo.flow.model.data.DataTypeIncompatException;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 
 public class DefaultPin extends ModulePinImp implements IDefaultPin {

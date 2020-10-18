@@ -17,11 +17,12 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDocumentString;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class DocumentString {
+public class DocumentString implements IDocumentString {
     private final Document xml;
 
     public DocumentString(final Document xml) {
@@ -47,10 +48,12 @@ public class DocumentString {
         }
     }
     
+    @Override
     public Document getDocument() {
         return this.xml;
     }
     
+    @Override
     public boolean isTransformable() {
         try {
             transform();

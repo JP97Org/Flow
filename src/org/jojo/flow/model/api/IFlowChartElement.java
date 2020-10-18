@@ -2,7 +2,7 @@ package org.jojo.flow.model.api;
 
 import java.util.List;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;

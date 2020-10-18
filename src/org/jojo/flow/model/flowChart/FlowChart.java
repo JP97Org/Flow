@@ -13,9 +13,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.model.FlowException;
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.FlowException;
+import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.exc.ValidationException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IFlowChartElement;
 import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.data.Pair;
@@ -35,11 +38,10 @@ import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
-public class FlowChart extends FlowChartElement{
+public class FlowChart extends FlowChartElement implements IFlowChart{
     private final List<FlowModule> modules;
     private final List<Connection> connections;
     
@@ -53,6 +55,7 @@ public class FlowChart extends FlowChartElement{
         this.gr.setFlowChart(this);
     }
     
+    @Override
     public void addModule(final FlowModule module) {
         Objects.requireNonNull(module);
         this.modules.add(module);
@@ -60,6 +63,7 @@ public class FlowChart extends FlowChartElement{
         notifyObservers(module);
     }
     
+    @Override
     public boolean addConnection(final Connection connection) {
         Objects.requireNonNull(connection);
         final boolean ok = this.modules.containsAll(connection.getConnectedModules()) && connection.connect();
@@ -91,6 +95,7 @@ public class FlowChart extends FlowChartElement{
         return ret;
     }
     
+    @Override
     public boolean removeModule(final FlowModule module) {
         boolean ret = this.modules.remove(module);
         if (ret) {
@@ -101,6 +106,7 @@ public class FlowChart extends FlowChartElement{
         return ret;
     }
     
+    @Override
     public boolean removeModule(final int index) {
         if (index >= this.modules.size()) {
             return false;
@@ -113,6 +119,7 @@ public class FlowChart extends FlowChartElement{
         return true;
     }
     
+    @Override
     public boolean removeConnection(final Connection connection) {
         boolean ret = this.connections.remove(connection);
         if (ret) {
@@ -123,6 +130,7 @@ public class FlowChart extends FlowChartElement{
         return ret;
     }
     
+    @Override
     public boolean removeConnection(final int index) {
         if (index >= this.connections.size()) {
             return false;
@@ -135,18 +143,21 @@ public class FlowChart extends FlowChartElement{
         return true;
     }
     
+    @Override
     public List<FlowModule> getModules() {
         final List<FlowModule> ret = new ArrayList<>(this.modules);
         ret.sort(getIdComparator());
         return ret;
     }
     
+    @Override
     public List<Connection> getConnections() {
         final List<Connection> ret = new ArrayList<>(this.connections);
         ret.sort(getIdComparator());
         return ret;
     }
     
+    @Override
     public List<DefaultArrow> getArrows() {
         return getConnections()
                 .stream()
@@ -155,6 +166,7 @@ public class FlowChart extends FlowChartElement{
                 .collect(Collectors.toList());
     }
     
+    @Override
     public DefaultArrow validate() throws ValidationException {
         final List<DefaultArrow> arrows = getArrows();
         for (final var arrow : arrows) {

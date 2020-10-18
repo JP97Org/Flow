@@ -1,7 +1,4 @@
-package org.jojo.flow.model.simulation;
-
-import org.jojo.flow.model.FlowException;
-import org.jojo.flow.model.Warning;
+package org.jojo.flow.exc;
 
 public class TimeoutException extends FlowException {
     /**

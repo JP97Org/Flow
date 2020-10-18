@@ -6,15 +6,15 @@ import java.awt.Point;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.ModelFacade;
-import org.jojo.flow.model.Warning;
 import org.jojo.flow.model.api.IConnectionLineGR;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 import org.jojo.flow.model.storeLoad.PointDOM;
 
 public class ConnectionLineGR extends GraphicalRepresentation implements IConnectionLineGR {

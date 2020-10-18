@@ -10,7 +10,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.exc.ValidationException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IFlowModule;
@@ -21,7 +23,6 @@ import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.flowChart.FlowChartElement;
-import org.jojo.flow.model.flowChart.ValidationException;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
@@ -29,7 +30,6 @@ import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
 import org.jojo.flow.model.storeLoad.OK;
-import org.jojo.flow.model.storeLoad.ParsingException;
 
 public abstract class FlowModule extends FlowChartElement implements IObserver, IFlowModule {
     private final ExternalConfig externalConfig;

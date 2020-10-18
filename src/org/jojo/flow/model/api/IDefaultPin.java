@@ -1,6 +1,6 @@
 package org.jojo.flow.model.api;
 
-import org.jojo.flow.model.FlowException;
+import org.jojo.flow.exc.FlowException;
 
 public interface IDefaultPin extends IModulePinImp {
 

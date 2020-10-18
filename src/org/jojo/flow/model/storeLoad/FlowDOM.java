@@ -1,6 +1,6 @@
 package org.jojo.flow.model.storeLoad;
 
-import org.jojo.flow.model.Warning;
+import org.jojo.flow.exc.Warning;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
