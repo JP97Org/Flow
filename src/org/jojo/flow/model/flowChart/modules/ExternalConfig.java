@@ -9,7 +9,8 @@ import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IExternalConfig;
-import org.jojo.flow.model.data.Pair;
+import org.jojo.flow.model.api.IFlowModule;
+import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.OK;
@@ -18,7 +19,7 @@ public class ExternalConfig extends Subject implements IDOMable, IExternalConfig
     private String name;
     private int priority;
     
-    private FlowModule module;
+    private IFlowModule module;
     
     public ExternalConfig(final String name, final int priority) {
         this.name = name;
@@ -26,7 +27,7 @@ public class ExternalConfig extends Subject implements IDOMable, IExternalConfig
     }
     
     @Override
-    public void setModule(final FlowModule module) {
+    public void setModule(final IFlowModule module) {
         this.module = module;
     }
     

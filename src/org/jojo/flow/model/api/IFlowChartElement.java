@@ -5,13 +5,12 @@ import java.util.List;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartGR;
-import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 
-public interface IFlowChartElement extends IAPI {
+public interface IFlowChartElement extends IDOMable {
     
-    IFlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1, new FlowChartGR());
+    IFlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1, new FlowChartGR()); //TODO replace by default impl. aufruf von IFlowChart
 
-    GraphicalRepresentation getGraphicalRepresentation();
+    IGraphicalRepresentation getGraphicalRepresentation();
 
     IInternalConfig serializeInternalConfig();
 

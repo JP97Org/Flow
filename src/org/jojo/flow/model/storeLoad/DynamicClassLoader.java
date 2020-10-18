@@ -167,4 +167,9 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
         }
         bos.close();
     }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return this;
+    }
 }

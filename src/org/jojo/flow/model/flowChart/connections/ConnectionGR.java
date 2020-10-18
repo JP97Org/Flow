@@ -1,6 +1,7 @@
 package org.jojo.flow.model.flowChart.connections;
 
 import org.jojo.flow.model.api.IConnectionGR;
+import org.jojo.flow.model.api.IModulePinGR;
 import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.flowChart.FlowChartElementGR;
 
@@ -25,7 +26,7 @@ public abstract class ConnectionGR extends FlowChartElementGR implements IConnec
     }
     
     @Override
-    public abstract void addToPin(final Point diversionPoint, final ModulePinGR toPin);
+    public abstract void addToPin(final Point diversionPoint, final IModulePinGR toPin);
     
     protected boolean isAddable(final OneConnectionGR connection) {
         if (connection == null || !connection.getFromPin().equals(this.fromPin)) {
@@ -52,7 +53,7 @@ public abstract class ConnectionGR extends FlowChartElementGR implements IConnec
     }
     
     @Override
-    public boolean removeToPin(final ModulePinGR toPin) {
+    public boolean removeToPin(final IModulePinGR toPin) {
         final List<IOneConnectionGR> toRemove = this.connections
                 .stream()
                 .filter(c -> c.getToPin().equals(toPin))
@@ -73,7 +74,7 @@ public abstract class ConnectionGR extends FlowChartElementGR implements IConnec
     }
     
     @Override
-    public List<ModulePinGR> getToPins() {
+    public List<IModulePinGR> getToPins() {
         return this.connections.stream().map(c -> c.getToPin()).collect(Collectors.toList());
     }
     

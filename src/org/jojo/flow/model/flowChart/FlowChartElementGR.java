@@ -8,25 +8,26 @@ import java.util.Objects;
 
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.api.IFlowChartElementGR;
+import org.jojo.flow.model.api.ILabelGR;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 
 public abstract class FlowChartElementGR extends GraphicalRepresentation implements IFlowChartElementGR {
-    private LabelGR label;
+    private ILabelGR label;
     
     public FlowChartElementGR(final Point position) {
         super(position);
     }
 
     @Override
-    public final LabelGR getLabel() {
+    public final ILabelGR getLabel() {
         return this.label;
     }
 
     @Override
-    public final void setLabel(final LabelGR label) {
+    public final void setLabel(final ILabelGR label) {
         this.label = label;
         notifyObservers(label);
     }

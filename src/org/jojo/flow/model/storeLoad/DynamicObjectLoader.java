@@ -16,7 +16,9 @@ import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IInternalConfig;
+import org.jojo.flow.model.api.IModulePin;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
@@ -219,8 +221,8 @@ public final class DynamicObjectLoader {
         }
         
         @Override
-        public List<ModulePin> getAllModulePins() {
-            final List<ModulePin> ret = new ArrayList<>();
+        public List<IModulePin> getAllModulePins() {
+            final List<IModulePin> ret = new ArrayList<>();
             this.pinOut = this.pinOut == null ? loadPin(OutputPin.class.getName(), DefaultPin.class.getName(), this) : this.pinOut;
             this.pinIn = this.pinIn == null ? loadPin(InputPin.class.getName(), DefaultPin.class.getName(), this) : this.pinIn;
             this.pinIn.getGraphicalRepresentation().setPosition(INPOS);
@@ -248,7 +250,7 @@ public final class DynamicObjectLoader {
         }
         
         @Override
-        public DefaultArrow validate() throws ValidationException {
+        public IDefaultArrow validate() throws ValidationException {
             getAllModulePins(); // if initializing is necessary
             final IDataSignature before = 
                     ((DefaultPin)this.pinIn.getModulePinImp()).getCheckDataSignature().getCopy();
@@ -260,7 +262,7 @@ public final class DynamicObjectLoader {
                 // should not happen
                 e.printStackTrace();
             }
-            final DefaultArrow ret = super.validate();
+            final IDefaultArrow ret = super.validate();
             try {
                 ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(before);
             } catch (FlowException e) {

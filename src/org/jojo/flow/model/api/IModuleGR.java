@@ -5,7 +5,7 @@ import java.awt.Window;
 
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
 
-public interface IModuleGR {
+public interface IModuleGR extends IFlowChartElementGR {
 
     void setModuleMock(MockModule mock);
 

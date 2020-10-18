@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.Warning;
-import org.jojo.flow.model.flowChart.FlowChartElement;
+import org.jojo.flow.model.api.IFlowChartElement;
 
 public final class OK {
     public static final String ERR_MSG_WRONG_CAST = "a class cast exc would occur";
@@ -23,7 +23,7 @@ public final class OK {
         throw new ParsingException(new Warning(null, errMsg, true));
     }
     
-    public static boolean ok(final boolean isOk, final String errMsg, final FlowChartElement affectedElem) throws ParsingException {
+    public static boolean ok(final boolean isOk, final String errMsg, final IFlowChartElement affectedElem) throws ParsingException {
         if (isOk) {
             return isOk;
         }

@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.IMathMatrix;
+import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.api.Unit;
 import org.jojo.flow.model.api.UnitSignature;
 

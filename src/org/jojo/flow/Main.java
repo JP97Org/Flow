@@ -8,15 +8,20 @@ import java.util.List;
 import org.jojo.flow.exc.ConnectionException;
 import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ValidationException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.api.IAPI;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataArray;
 import org.jojo.flow.model.api.IDataBundle;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IDefaultArrow;
+import org.jojo.flow.model.api.IFlowChart;
+import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IFraction;
 import org.jojo.flow.model.api.IMathMatrix;
 import org.jojo.flow.model.api.IMatrix;
+import org.jojo.flow.model.api.IModuleClassesList;
 import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.BasicSignatureComponents;
 import org.jojo.flow.model.data.StringDataSet;
@@ -37,14 +42,13 @@ import org.jojo.flow.model.simulation.SimulationConfiguration;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.FlowDOM;
-import org.jojo.flow.model.storeLoad.ModuleClassesList;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
 
 public class Main {
     // TODO at the moment only test main class
     public static void main(String[] args) {
-        FlowChart flowChart = new FlowChart(0, new FlowChartGR());
+        IFlowChart flowChart = new FlowChart(0, new FlowChartGR());
         new ModelFacade().setMainFlowChart(flowChart);
         final MockModule mod = (MockModule)DynamicObjectLoader.loadModule(DynamicObjectLoader.MockModule.class.getName(), 100);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
@@ -116,7 +120,7 @@ public class Main {
         System.out.println(flowChart.toString().equals(original0));
         System.out.println(original0.equals(originalFcStr));
         try {
-            final DefaultArrow arrow = flowChart.validate();
+            final IDefaultArrow arrow = flowChart.validate();
             System.out.println(arrow);
             System.out.println(arrow == null);
         } catch (ValidationException e1) {
@@ -147,10 +151,10 @@ public class Main {
         
         //Class Loader Test
         try {
-            final ModuleClassesList list = new StoreLoadFacade().getNewModuleClassesList(new File("/home/jojo/tmp/flow"), new File("/home/jojo/qfpm.jar")).loadAll();
-            final List<Class<? extends FlowModule>> moduleClasses = list.getModuleClassesList();
+            final IModuleClassesList list = new StoreLoadFacade().getNewModuleClassesList(new File("/home/jojo/tmp/flow"), new File("/home/jojo/qfpm.jar")).loadAll();
+            final List<Class<? extends IFlowModule>> moduleClasses = list.getModuleClassesList();
             System.out.println(moduleClasses);
-            final FlowModule loaded = DynamicObjectLoader.loadModule(list.getClassLoader(), moduleClasses.get(0).getName(), 400);
+            final FlowModule loaded = DynamicObjectLoader.loadModule(list.getClassLoader().getClassLoader(), moduleClasses.get(0).getName(), 400);
             System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
             flowChart = new FlowChart(0, new FlowChartGR());
             new ModelFacade().setMainFlowChart(flowChart);
@@ -176,5 +180,9 @@ public class Main {
         System.out.println(mm);
         final IMatrix<Integer> m = IMatrix.getDefaultImplementation(new Integer[][] {{1}}, UnitSignature.NO_UNIT);
         System.out.println(m);
+        
+        //Warning Log empty?
+        System.out.println(Warning.getWarningLog());
+        System.out.println(Warning.getWarningLog().isEmpty());
     }
 }

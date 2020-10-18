@@ -3,7 +3,6 @@ package org.jojo.flow.model.api;
 import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ModuleRunException;
 import org.jojo.flow.exc.TimeoutException;
-import org.jojo.flow.model.simulation.SimulationConfiguration;
 
 public interface ISimulation extends IAPI {
 
@@ -19,9 +18,9 @@ public interface ISimulation extends IAPI {
 
     boolean isRunning();
 
-    SimulationConfiguration getConfig() throws IllegalStateException;
+    ISimulationConfiguration getConfig() throws IllegalStateException;
 
-    void setConfig(SimulationConfiguration config) throws IllegalStateException;
+    void setConfig(ISimulationConfiguration config) throws IllegalStateException;
 
     void reloadStepper();
 }

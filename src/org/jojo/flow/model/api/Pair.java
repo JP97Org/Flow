@@ -1,4 +1,4 @@
-package org.jojo.flow.model.data;
+package org.jojo.flow.model.api;
 
 import java.io.Serializable;
 import java.util.Arrays;

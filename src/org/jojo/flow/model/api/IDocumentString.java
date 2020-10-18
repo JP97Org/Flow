@@ -7,5 +7,4 @@ public interface IDocumentString extends IAPI {
     Document getDocument();
 
     boolean isTransformable();
-
 }

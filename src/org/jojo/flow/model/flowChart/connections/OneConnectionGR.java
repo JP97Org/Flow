@@ -13,6 +13,7 @@ import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.api.IConnectionLineGR;
+import org.jojo.flow.model.api.IModulePinGR;
 import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
@@ -26,14 +27,14 @@ import static org.jojo.flow.model.flowChart.connections.ConnectionLineGR.isLine;
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class OneConnectionGR extends GraphicalRepresentation implements IOneConnectionGR {
-    private ModulePinGR fromPin; // output pin
-    private ModulePinGR toPin; // input pin
+    private IModulePinGR fromPin; // output pin
+    private IModulePinGR toPin; // input pin
     
     private final List<ConnectionLineGR> lines;
     private final List<Point> diversionPoints;
     private Color color;
     
-    public OneConnectionGR(final ModulePinGR fromPin, final ModulePinGR toPin) { 
+    public OneConnectionGR(final ModulePinGR fromPin, final IModulePinGR toPin) { 
         super(fromPin.getPosition());
         this.fromPin = Objects.requireNonNull(fromPin);
         Objects.requireNonNull(toPin);
@@ -44,11 +45,11 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
     }
 
     @Override
-    public void setToPin(final Point diversionPoint, final ModulePinGR toPin) {
+    public void setToPin(final Point diversionPoint, final IModulePinGR iModulePinGR) {
         Objects.requireNonNull(diversionPoint);
-        Objects.requireNonNull(toPin);
+        Objects.requireNonNull(iModulePinGR);
         setColor(Color.BLACK);
-        this.toPin = toPin;
+        this.toPin = iModulePinGR;
         setPath(Arrays.asList(diversionPoint), true);
         notifyObservers();
     }
@@ -131,12 +132,12 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
     }
     
     @Override
-    public ModulePinGR getFromPin() {
+    public IModulePinGR getFromPin() {
         return this.fromPin;
     }
 
     @Override
-    public ModulePinGR getToPin() {
+    public IModulePinGR getToPin() {
         return this.toPin;
     }
 

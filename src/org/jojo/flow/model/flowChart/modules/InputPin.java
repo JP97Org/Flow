@@ -2,10 +2,10 @@ package org.jojo.flow.model.flowChart.modules;
 
 import org.jojo.flow.exc.ListSizeException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IData;
+import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IInputPin;
-import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 
 public class InputPin extends ModulePin implements IInputPin {  
     public InputPin(final ModulePinImp imp, final ModulePinGR gr) {
@@ -13,7 +13,7 @@ public class InputPin extends ModulePin implements IInputPin {
     }
     
     @Override
-    public synchronized boolean addConnection(final Connection toAdd) throws ListSizeException {
+    public synchronized boolean addConnection(final IConnection toAdd) throws ListSizeException {
         if (getConnections().isEmpty()) {
             return super.addConnection(toAdd); 
         } else {
@@ -25,7 +25,7 @@ public class InputPin extends ModulePin implements IInputPin {
     public IData getData() {
         return getConnections().isEmpty() 
                 ? getDefaultData() 
-                        : (getConnections().get(0) instanceof DefaultArrow 
-                                ? ((DefaultArrow) getConnections().get(0)).getData() : getDefaultData());
+                        : (getConnections().get(0) instanceof IDefaultArrow 
+                                ? ((IDefaultArrow) getConnections().get(0)).getData() : getDefaultData());
     }
 }

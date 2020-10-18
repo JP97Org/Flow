@@ -2,18 +2,17 @@ package org.jojo.flow.model.api;
 
 import java.util.List;
 
-import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.modules.FlowModule;
-
 public interface IModulePinImp extends IAPI {
     
-    public FlowModule getModule();
+    public IFlowModule getModule();
     
-    List<Connection> getConnections();
+    List<IConnection> getConnections();
     
-    boolean addConnection(final Connection toAdd);
+    boolean addConnection(final IConnection toAdd);
     
-    boolean removeConnection(final Connection toRemove);
+    boolean removeConnection(final IConnection toRemove);
     
     boolean removeConnection(final int index);
+    
+    IData getDefaultData();
 }

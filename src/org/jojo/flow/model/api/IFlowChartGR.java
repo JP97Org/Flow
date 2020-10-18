@@ -2,23 +2,21 @@ package org.jojo.flow.model.api;
 
 import java.awt.Point;
 
-import org.jojo.flow.model.flowChart.FlowChart;
-import org.jojo.flow.model.flowChart.connections.ConnectionGR;
-import org.jojo.flow.model.flowChart.modules.ModuleGR;
-
 public interface IFlowChartGR extends IFlowChartElementGR {
 
-    FlowChart getFlowChart();
+    IFlowChart getFlowChart();
+    
+    void setFlowChart(IFlowChart fc);
 
-    void addModule(ModuleGR moduleGR);
+    void addModule(IModuleGR moduleGR);
 
-    void addConnection(ConnectionGR connectionGR);
+    void addConnection(IConnectionGR connectionGR);
 
-    boolean removeModule(ModuleGR moduleGR);
+    boolean removeModule(IModuleGR moduleGR);
 
     boolean removeModule(int index);
 
-    boolean removeConnection(ConnectionGR connectionGR);
+    boolean removeConnection(IConnectionGR connectionGR);
 
     boolean removeConnection(int index);
 

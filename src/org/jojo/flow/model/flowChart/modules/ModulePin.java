@@ -12,12 +12,15 @@ import org.jojo.flow.exc.ListSizeException;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDOMable;
+import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IFlowChartElement;
+import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IModulePin;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
-import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -40,7 +43,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     }
     
     @Override
-    public FlowModule getModule() {
+    public IFlowModule getModule() {
         return this.imp.getModule();
     }
     
@@ -49,12 +52,12 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     }
     
     @Override
-    public synchronized List<Connection> getConnections() {
+    public synchronized List<IConnection> getConnections() {
         return this.imp.getConnections();
     }
     
     @Override
-    public synchronized boolean addConnection(final Connection toAdd) throws ListSizeException {
+    public synchronized boolean addConnection(final IConnection toAdd) throws ListSizeException {
         final boolean ret = this.imp.addConnection(toAdd);
         if (ret) {
             notifyObservers(toAdd);
@@ -63,7 +66,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     }
     
     @Override
-    public synchronized boolean removeConnection(final Connection toRemove) {
+    public synchronized boolean removeConnection(final IConnection toRemove) {
         final boolean ret = this.imp.removeConnection(toRemove);
         if (ret) {
             notifyObservers(toRemove);
@@ -73,7 +76,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     
     @Override
     public synchronized boolean removeConnection(final int index) {
-        final Connection toRemove = index >= getConnections().size() ? null : getConnections().get(index);
+        final IConnection toRemove = index >= getConnections().size() ? null : getConnections().get(index);
         final boolean ret = this.imp.removeConnection(index);
         if (ret) {
             notifyObservers(toRemove);
@@ -82,11 +85,11 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     }
     
     @Override
-    public Data getDefaultData() {
+    public IData getDefaultData() {
         return this.imp.getDefaultData();
     }
     
-    protected void setDefaultData(final Data defaultData) {
+    protected void setDefaultData(final IData defaultData) {
         this.imp.setDefaultData(defaultData);
         notifyObservers(defaultData);
     }
@@ -126,8 +129,8 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
             final Map<String, Object> domMap = dom.getDOMMap();
             final DOM modIdDom = (DOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
             final int modId = Integer.parseInt(modIdDom.elemGet());
-            final FlowChartElement fce = new ModelFacade().getElementById(modId);
-            if (fce instanceof FlowModule) {
+            final IFlowChartElement fce = new ModelFacade().getElementById(modId);
+            if (fce instanceof IFlowModule) {
                 setModule((FlowModule)fce);
             }
             final DOM conIdsDom = (DOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
@@ -207,7 +210,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                 final DOM defaultDataDom = (DOM)domMap.get("defaultData");
                 final String dataStr = defaultDataDom.elemGet();
                 ok(dataStr != null, OK.ERR_MSG_NULL);
-                final Data before = getDefaultData();
+                final IData before = getDefaultData();
                 final String nullIsOk = ok(x -> {try {
                     setDefaultData(Data.ofSerializedString(dataStr));
                     return null;
@@ -241,7 +244,8 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
         return Objects.hash(this.gr);
     }
     
-    private int fixedHashCode() {
+    @Override
+    public int fixedHashCode() {
         final int prime = 31;
         int factor = 0;
         final String className = getClass().getName();
@@ -270,10 +274,10 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                 + " | IMP= " + getModulePinImp();
     }
 
-    public static Comparator<? super ModulePin> getComparator() { // TODO doc that comparator does not always imply 0 => equals
-        return new Comparator<ModulePin>() {
+    public static Comparator<? super IModulePin> getComparator() { // TODO doc that comparator does not always imply 0 => equals
+        return new Comparator<IModulePin>() {
             @Override
-            public int compare(ModulePin o1, ModulePin o2) {
+            public int compare(IModulePin o1, IModulePin o2) {
                 return Integer.valueOf(o1.fixedHashCode()).compareTo(o2.fixedHashCode());
             }
         };

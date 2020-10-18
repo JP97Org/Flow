@@ -1,7 +1,7 @@
 package org.jojo.flow.model.storeLoad;
 
-import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.modules.FlowModule;
+import org.jojo.flow.model.api.IConnection;
+import org.jojo.flow.model.api.IFlowModule;
 import org.w3c.dom.Element;
 
 public class FlowChartDOM extends FlowChartElementDOM {
@@ -21,11 +21,11 @@ public class FlowChartDOM extends FlowChartElementDOM {
         addElement(this.connections);
     }
 
-    public void addModule(final FlowModule module) {
+    public void addModule(final IFlowModule module) {
         this.modules.appendChild(module.getDOM().getParentNode());
     }
     
-    public void addConnection(final Connection connection) {
+    public void addConnection(final IConnection connection) {
         this.connections.appendChild(connection.getDOM().getParentNode());
     }
 }

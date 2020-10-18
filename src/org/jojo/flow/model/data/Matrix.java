@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.IMatrix;
+import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.api.UnitSignature;
 
 public final class Matrix<T> extends BasicCheckable implements IMatrix<T> {

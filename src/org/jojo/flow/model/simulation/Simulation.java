@@ -6,24 +6,26 @@ import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ModuleRunException;
 import org.jojo.flow.exc.TimeoutException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.ISimulation;
+import org.jojo.flow.model.api.ISimulationConfiguration;
+import org.jojo.flow.model.api.IStepper;
 import org.jojo.flow.model.api.Unit;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.data.units.Time;
-import org.jojo.flow.model.flowChart.FlowChart;
 
 public class Simulation implements ISimulation {
-    private final FlowChart flowChart;
-    private SimulationConfiguration config;
-    private Stepper stepper;
+    private final IFlowChart flowChart;
+    private ISimulationConfiguration config;
+    private IStepper stepper;
     
     private boolean isRunning;
     
     private Thread simThread;
     private Thread stepThread;
     
-    public Simulation(final FlowChart flowChart, final SimulationConfiguration config) {
+    public Simulation(final IFlowChart flowChart, final ISimulationConfiguration config) {
         this.flowChart = Objects.requireNonNull(flowChart);
         this.config = Objects.requireNonNull(config);
         initStepper();
@@ -125,7 +127,7 @@ public class Simulation implements ISimulation {
     }
     
     @Override
-    public SimulationConfiguration getConfig() throws IllegalStateException {
+    public ISimulationConfiguration getConfig() throws IllegalStateException {
         if (this.isRunning) {
             throw new IllegalStateException("simulation must not be running when config should be changed");
         }
@@ -133,7 +135,7 @@ public class Simulation implements ISimulation {
     }
     
     @Override
-    public void setConfig(final SimulationConfiguration config) throws IllegalStateException {
+    public void setConfig(final ISimulationConfiguration config) throws IllegalStateException {
         if (this.isRunning) {
             throw new IllegalStateException("simulation must not be running when config should be changed");
         }

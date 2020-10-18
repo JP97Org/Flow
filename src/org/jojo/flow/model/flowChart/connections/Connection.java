@@ -16,13 +16,16 @@ import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IFlowModule;
+import org.jojo.flow.model.api.IInputPin;
+import org.jojo.flow.model.api.IModulePin;
+import org.jojo.flow.model.api.IModulePinImp;
+import org.jojo.flow.model.api.IOutputPin;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
-import org.jojo.flow.model.flowChart.modules.ModulePinImp;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
-import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
@@ -32,11 +35,11 @@ import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;
 
 public abstract class Connection extends FlowChartElement implements IConnection {
-    private final List<InputPin> toPins;
-    private OutputPin fromPin;
+    private final List<IInputPin> toPins;
+    private IOutputPin fromPin;
     private String name;
     
-    public Connection(final int id, final OutputPin fromPin, final String name) throws ConnectionException {
+    public Connection(final int id, final IOutputPin fromPin, final String name) throws ConnectionException {
         super(id);
         this.toPins = new ArrayList<>();
         this.fromPin = fromPin;
@@ -99,36 +102,36 @@ public abstract class Connection extends FlowChartElement implements IConnection
     public abstract String getInfo();
     
     @Override
-    public OutputPin getFromPin() {
+    public IOutputPin getFromPin() {
         return this.fromPin;
     }
     
     @Override
-    public synchronized List<InputPin> getToPins() {
-        final List<InputPin> ret = new ArrayList<>(this.toPins);
+    public synchronized List<IInputPin> getToPins() {
+        final List<IInputPin> ret = new ArrayList<>(this.toPins);
         ret.sort(ModulePin.getComparator());
-        return ret;
+        return new ArrayList<>(ret);
     }
     
     @Override
-    public final Set<FlowModule> getConnectedModules() {
-        final List<ModulePin> pins = new ArrayList<>(this.toPins);
+    public final Set<IFlowModule> getConnectedModules() {
+        final List<IModulePin> pins = new ArrayList<>(this.toPins);
         pins.add(getFromPin());
         return pins.stream().map(p -> p.getModule()).collect(Collectors.toSet());
     }
     
     @Override
-    public boolean isPinImpInConnection(final ModulePinImp modulePinImp) {
-        final List<ModulePin> allPins = getToPins()
+    public boolean isPinImpInConnection(final IModulePinImp modulePinImp) {
+        final List<IModulePin> allPins = getToPins()
                 .stream()
-                .map(x -> (ModulePin)x)
+                .map(x -> (IModulePin)x)
                 .collect(Collectors.toList());
         allPins.add(getFromPin());
         return allPins.stream().anyMatch(p -> p.getModulePinImp().equals(modulePinImp));
     }
     
     @Override
-    public synchronized boolean addToPin(final InputPin toPin) throws ConnectionException {
+    public synchronized boolean addToPin(final IInputPin toPin) throws ConnectionException {
         this.toPins.add(toPin);
         final boolean connectionMatchesPins = connectionMatchesPins();
         final boolean ok = connectionMatchesPins && checkDataTypes();
@@ -145,7 +148,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
     }
     
     @Override
-    public synchronized boolean removeToPin(final InputPin toPin) {
+    public synchronized boolean removeToPin(final IInputPin toPin) {
         final boolean ret = this.toPins.remove(toPin);
         if (ret) {
             notifyObservers(toPin);
@@ -158,15 +161,15 @@ public abstract class Connection extends FlowChartElement implements IConnection
         if (index >= this.toPins.size()) {
             return false;
         }
-        final InputPin toPin = this.toPins.get(index);
+        final IInputPin toPin = this.toPins.get(index);
         this.toPins.remove(index);
         notifyObservers(toPin);
         return true;
     }
     
     @Override
-    public synchronized boolean setFromPin(final OutputPin fromPin) throws ConnectionException {
-        final OutputPin before = this.fromPin;
+    public synchronized boolean setFromPin(final IOutputPin fromPin) throws ConnectionException {
+        final IOutputPin before = this.fromPin;
         this.fromPin = fromPin;
         final boolean connectionMatchesPins = connectionMatchesPins();
         final boolean ok = connectionMatchesPins && checkDataTypes();

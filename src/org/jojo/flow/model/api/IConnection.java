@@ -4,10 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.jojo.flow.exc.ConnectionException;
-import org.jojo.flow.model.flowChart.modules.FlowModule;
-import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.ModulePinImp;
-import org.jojo.flow.model.flowChart.modules.OutputPin;
 
 public interface IConnection extends IFlowChartElement {
 
@@ -23,19 +19,19 @@ public interface IConnection extends IFlowChartElement {
 
     String getInfo();
 
-    OutputPin getFromPin();
+    IOutputPin getFromPin();
 
-    List<InputPin> getToPins();
+    List<IInputPin> getToPins();
 
-    Set<FlowModule> getConnectedModules();
+    Set<IFlowModule> getConnectedModules();
 
-    boolean isPinImpInConnection(ModulePinImp modulePinImp);
+    boolean isPinImpInConnection(IModulePinImp modulePinImp);
 
-    boolean addToPin(InputPin toPin) throws ConnectionException;
+    boolean addToPin(IInputPin toPin) throws ConnectionException;
 
-    boolean removeToPin(InputPin toPin);
+    boolean removeToPin(IInputPin toPin);
 
     boolean removeToPin(int index);
 
-    boolean setFromPin(OutputPin fromPin) throws ConnectionException;
+    boolean setFromPin(IOutputPin fromPin) throws ConnectionException;
 }

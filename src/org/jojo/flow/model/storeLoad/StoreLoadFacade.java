@@ -8,27 +8,29 @@ import java.util.Objects;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDynamicClassLoader;
+import org.jojo.flow.model.api.IModuleClassesList;
 import org.jojo.flow.model.api.IStoreLoadFacade;
-import org.jojo.flow.model.data.Pair;
+import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class StoreLoadFacade implements IStoreLoadFacade {
-    private final ModuleClassesList list;
-    private final DynamicClassLoader loader;
+    private final IModuleClassesList list;
+    private final IDynamicClassLoader loader;
     
     public StoreLoadFacade() {
         this.list = null;
         this.loader = null;
     }
     
-    public StoreLoadFacade(final ModuleClassesList list) {
+    public StoreLoadFacade(final IModuleClassesList list) {
         this.list = Objects.requireNonNull(list);
         this.loader = list.getClassLoader();
     }
     
-    public StoreLoadFacade(final ModuleClassesList list, DynamicClassLoader loader) {
+    public StoreLoadFacade(final IModuleClassesList list, IDynamicClassLoader loader) {
         this.list = Objects.requireNonNull(list);
         this.loader = Objects.requireNonNull(loader);
     }
@@ -77,7 +79,7 @@ public class StoreLoadFacade implements IStoreLoadFacade {
     }
     
     @Override
-    public Pair<ModuleClassesList, DynamicClassLoader> getListLoaderPair() {
+    public Pair<IModuleClassesList, IDynamicClassLoader> getListLoaderPair() {
         if (this.list == null) {
             return null;
         }

@@ -9,9 +9,9 @@ import java.util.Objects;
 
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.api.IModulePinGR;
 import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.api.IRigidConnectionGR;
-import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
@@ -24,7 +24,7 @@ public class RigidConnectionGR extends ConnectionGR implements IRigidConnectionG
     }
 
     @Override
-    public void addToPin(final Point diversionPoint, final ModulePinGR toPin) {
+    public void addToPin(final Point diversionPoint, final IModulePinGR toPin) {
         Objects.requireNonNull(diversionPoint);
         Objects.requireNonNull(toPin);
         if (!(toPin instanceof RigidPinGR)) {

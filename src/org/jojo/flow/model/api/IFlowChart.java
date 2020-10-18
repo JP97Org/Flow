@@ -3,29 +3,26 @@ package org.jojo.flow.model.api;
 import java.util.List;
 
 import org.jojo.flow.exc.ValidationException;
-import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.connections.DefaultArrow;
-import org.jojo.flow.model.flowChart.modules.FlowModule;
 
 public interface IFlowChart extends IFlowChartElement {
 
-    void addModule(FlowModule module);
+    void addModule(IFlowModule module);
 
-    boolean addConnection(Connection connection);
+    boolean addConnection(IConnection connection);
 
-    boolean removeModule(FlowModule module);
+    boolean removeModule(IFlowModule module);
 
     boolean removeModule(int index);
 
-    boolean removeConnection(Connection connection);
+    boolean removeConnection(IConnection connection);
 
     boolean removeConnection(int index);
 
-    List<FlowModule> getModules();
+    List<IFlowModule> getModules();
 
-    List<Connection> getConnections();
+    List<IConnection> getConnections();
 
-    List<DefaultArrow> getArrows();
+    List<IDefaultArrow> getArrows();
 
-    DefaultArrow validate() throws ValidationException;
+    IDefaultArrow validate() throws ValidationException;
 }

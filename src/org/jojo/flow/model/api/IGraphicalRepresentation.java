@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import javax.swing.Icon;
 
-public interface IGraphicalRepresentation extends IAPI {
+public interface IGraphicalRepresentation extends IDOMable {
 
     Point getPosition();
 

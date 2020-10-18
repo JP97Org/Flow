@@ -1,6 +1,6 @@
 package org.jojo.flow.model.storeLoad;
 
-import org.jojo.flow.model.flowChart.GraphicalRepresentation;
+import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -11,7 +11,7 @@ public abstract class FlowChartElementDOM extends DOM {
         super(document, parent);
     }
     
-    public void setGraphicalRepresentation(final GraphicalRepresentation gr) {
+    public void setGraphicalRepresentation(final IGraphicalRepresentation gr) {
         appendCustomDOM(gr);
     }
 

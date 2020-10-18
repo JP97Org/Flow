@@ -4,17 +4,15 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.List;
 
-import org.jojo.flow.model.flowChart.modules.ModulePinGR;
-
 public interface IConnectionGR extends IFlowChartElementGR {
 
-    void addToPin(Point diversionPoint, ModulePinGR toPin);
+    void addToPin(Point diversionPoint, IModulePinGR toPin);
 
-    boolean removeToPin(ModulePinGR toPin);
+    boolean removeToPin(IModulePinGR toPin);
 
-    ModulePinGR getFromPin();
+    IModulePinGR getFromPin();
 
-    List<ModulePinGR> getToPins();
+    List<IModulePinGR> getToPins();
 
     List<IOneConnectionGR> getSingleConnections();
 

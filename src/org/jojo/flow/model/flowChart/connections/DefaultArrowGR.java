@@ -10,7 +10,7 @@ import java.util.Objects;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.api.IDefaultArrowGR;
-import org.jojo.flow.model.flowChart.modules.ModulePinGR;
+import org.jojo.flow.model.api.IModulePinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -28,7 +28,7 @@ public class DefaultArrowGR extends ConnectionGR implements IDefaultArrowGR {
     }
 
     @Override
-    public void addToPin(final Point diversionPoint, final ModulePinGR toPin) {
+    public void addToPin(final Point diversionPoint, final IModulePinGR toPin) {
         Objects.requireNonNull(diversionPoint);
         Objects.requireNonNull(toPin);
         if (!(toPin instanceof DefaultInputPinGR)) {

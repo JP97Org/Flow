@@ -3,8 +3,8 @@ package org.jojo.flow.model.storeLoad;
 import java.util.List;
 import java.util.Objects;
 
-import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.OutputPin;
+import org.jojo.flow.model.api.IInputPin;
+import org.jojo.flow.model.api.IOutputPin;
 import org.w3c.dom.Element;
 
 public class ConnectionDOM extends FlowChartElementDOM {
@@ -26,11 +26,11 @@ public class ConnectionDOM extends FlowChartElementDOM {
         appendString(NAME_CLASSNAME, className);
     }
     
-    public void setFromPin(final OutputPin fromPin) {
-        appendCustomDOM(NAME_FROM_PIN, fromPin);
+    public void setFromPin(final IOutputPin iOutputPin) {
+        appendCustomDOM(NAME_FROM_PIN, iOutputPin);
     }
     
-    public void setToPins(final List<InputPin> toPins) {
+    public void setToPins(final List<IInputPin> toPins) {
         appendList(NAME_TO_PINS, toPins);
     }
 }

@@ -13,17 +13,21 @@ import java.util.stream.Collectors;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IDefaultArrow;
+import org.jojo.flow.model.api.IDefaultPin;
 import org.jojo.flow.model.api.IFlowModule;
+import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IObserver;
+import org.jojo.flow.model.api.IOutputPin;
 import org.jojo.flow.model.api.ISubject;
 import org.jojo.flow.model.api.IInternalConfig;
-import org.jojo.flow.model.data.Data;
+import org.jojo.flow.model.api.IModulePin;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.flowChart.FlowChartElement;
-import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.DOM;
@@ -52,7 +56,7 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     }
     
     @Override
-    public abstract List<ModulePin> getAllModulePins();
+    public abstract List<IModulePin> getAllModulePins();
     protected abstract void setAllModulePins(DOM pinsDom);
     protected abstract boolean isPinsDOMValid(DOM pinsDom);
     
@@ -62,8 +66,8 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     public abstract void run() throws Exception;
     
     @Override
-    public DefaultArrow validate() throws ValidationException {
-        DefaultArrow ret = checkInputDataTypes();
+    public IDefaultArrow validate() throws ValidationException {
+        IDefaultArrow ret = checkInputDataTypes();
         if (ret == null) { // input data types ok
             ret = putDefaultDataOnOutgoingConnections();
         }
@@ -107,16 +111,16 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
         return null;
     }
     
-    private DefaultArrow putDefaultDataOnOutgoingConnections() throws ValidationException {
-        final List<OutputPin> allOutputPins = getDefaultOutputs();
+    private IDefaultArrow putDefaultDataOnOutgoingConnections() throws ValidationException {
+        final List<IOutputPin> allOutputPins = getDefaultOutputs();
         if (allOutputPins.stream().anyMatch(x -> !(x.getModulePinImp() instanceof DefaultPin))) {
             throw new ValidationException(new Warning(this, "an output module pin-imp is not default", true));
         }
         
-        for (final OutputPin pin : allOutputPins) {
-            for (final Connection connection : pin.getConnections()) {
-                final DefaultArrow arrow = (DefaultArrow)connection;
-                final Data data = pin.getModulePinImp().getDefaultData();
+        for (final IOutputPin pin : allOutputPins) {
+            for (final IConnection connection : pin.getConnections()) {
+                final IDefaultArrow arrow = (IDefaultArrow)connection;
+                final IData data = pin.getModulePinImp().getDefaultData();
                 if (data == null) {
                     throw new ValidationException(new Warning(this, "an output pin of this module has not specified default data", true));
                 }
@@ -146,42 +150,42 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     }
     
     @Override
-    public final List<InputPin> getDefaultInputs() {
+    public final List<IInputPin> getDefaultInputs() {
         return getAllInputs()
                 .stream()
-                .filter(p -> p.getModulePinImp() instanceof DefaultPin)
+                .filter(p -> p.getModulePinImp() instanceof IDefaultPin)
                 .collect(Collectors.toList());
     }
     
     @Override
-    public final List<OutputPin> getDefaultOutputs() {
+    public final List<IOutputPin> getDefaultOutputs() {
         return getAllOutputs()
                 .stream()
-                .filter(p -> p.getModulePinImp() instanceof DefaultPin)
+                .filter(p -> p.getModulePinImp() instanceof IDefaultPin)
                 .collect(Collectors.toList());
     }
     
     @Override
-    public final List<InputPin> getAllInputs() {
+    public final List<IInputPin> getAllInputs() {
         return this.getAllModulePins()
                 .stream()
-                .filter(x -> x instanceof InputPin)
+                .filter(x -> x instanceof IInputPin)
                 .map(x -> (InputPin)x)
                 .collect(Collectors.toList());
     }
     
     @Override
-    public final List<OutputPin> getAllOutputs() {
+    public final List<IOutputPin> getAllOutputs() {
         return this.getAllModulePins()
                 .stream()
-                .filter(x -> x instanceof OutputPin)
+                .filter(x -> x instanceof IOutputPin)
                 .map(x -> (OutputPin)x)
                 .collect(Collectors.toList());
     }
     
     @Override
-    public final List<FlowModule> getDefaultDependencyList() {
-        final Set<FlowModule> retSet = new HashSet<>();
+    public final List<IFlowModule> getDefaultDependencyList() {
+        final Set<IFlowModule> retSet = new HashSet<>();
         retSet.addAll(getDefaultInputs()
                 .stream()
                 .map(x -> x.getConnections())
@@ -193,8 +197,8 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     }
     
     @Override
-    public final List<FlowModule> getDefaultAdjacencyList() {
-        final Set<FlowModule> retSet = new HashSet<>();
+    public final List<IFlowModule> getDefaultAdjacencyList() {
+        final Set<IFlowModule> retSet = new HashSet<>();
         retSet.addAll(getDefaultOutputs()
                 .stream()
                 .map(x -> x.getConnections())
@@ -294,7 +298,7 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     
     @Override
     public String toString() {
-        final List<ModulePin> allPins = new ArrayList<>(this.getAllModulePins());
+        final List<IModulePin> allPins = new ArrayList<>(this.getAllModulePins());
         allPins.sort(ModulePin.getComparator());
         return "ID= " + this.getId() + " | " + this.externalConfig.toString() 
                     + " | allPins= " + allPins

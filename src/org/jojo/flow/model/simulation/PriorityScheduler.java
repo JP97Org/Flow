@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.jojo.flow.model.flowChart.modules.FlowModule;
+import org.jojo.flow.model.api.IFlowModule;
 
 public class PriorityScheduler extends Scheduler {
     @Override
-    public List<FlowModule> getSchedule(final List<FlowModule> modules) {
-        final List<FlowModule> ret = new ArrayList<>(modules);
+    public List<IFlowModule> getSchedule(final List<IFlowModule> modules) {
+        final List<IFlowModule> ret = new ArrayList<>(modules);
         Collections.sort(ret); // ascending order of priorities -> lowest priority first
         Collections.reverse(ret); // descending order of priorities -> highest priority first
         return ret;

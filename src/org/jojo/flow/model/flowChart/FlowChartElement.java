@@ -8,6 +8,7 @@ import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IFlowChartElement;
+import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.api.IInternalConfig;
 
 public abstract class FlowChartElement extends Subject implements IDOMable, IFlowChartElement {
@@ -20,7 +21,7 @@ public abstract class FlowChartElement extends Subject implements IDOMable, IFlo
     }
     
     @Override
-    public abstract GraphicalRepresentation getGraphicalRepresentation();
+    public abstract IGraphicalRepresentation getGraphicalRepresentation();
     @Override
     public abstract IInternalConfig serializeInternalConfig();
     @Override
@@ -64,10 +65,10 @@ public abstract class FlowChartElement extends Subject implements IDOMable, IFlo
         return this.warnings.get(this.warnings.size() - 1);
     }
     
-    public static Comparator<FlowChartElement> getIdComparator() {
-        return new Comparator<FlowChartElement>() {
+    public static Comparator<? super IFlowChartElement> getIdComparator() {
+        return new Comparator<IFlowChartElement>() {
             @Override
-            public int compare(FlowChartElement o1, FlowChartElement o2) {
+            public int compare(IFlowChartElement o1, IFlowChartElement o2) {
                 return Integer.valueOf(o1.getId()).compareTo(o2.getId());
             }
         };

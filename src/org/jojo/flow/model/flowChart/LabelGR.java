@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.IFlowChartElement;
 import org.jojo.flow.model.api.ILabelGR;
 import org.jojo.flow.model.api.IObserver;
 import org.jojo.flow.model.api.ISubject;
@@ -20,12 +21,12 @@ public class LabelGR extends GraphicalRepresentation implements ISubject, ILabel
     private final Subject subject;
     
     private String text;
-    private FlowChartElement element;
+    private IFlowChartElement element;
     
     private int height;
     private int width;
     
-    public LabelGR(final FlowChartElement element, final String text, 
+    public LabelGR(final IFlowChartElement element, final String text, 
             final Point position, final int height, final int width) {
         super(position);
         this.subject = Subject.getSubject(this);
@@ -67,12 +68,12 @@ public class LabelGR extends GraphicalRepresentation implements ISubject, ILabel
     }
 
     @Override
-    public FlowChartElement getElement() {
+    public IFlowChartElement getElement() {
         return element;
     }
     
     @Override
-    public void setElement(final FlowChartElement element) {
+    public void setElement(final IFlowChartElement element) {
         this.element = element;
     }
 
@@ -146,7 +147,7 @@ public class LabelGR extends GraphicalRepresentation implements ISubject, ILabel
             final String elemIdStr = elemDom.elemGet();
             ok(elemIdStr != null, OK.ERR_MSG_NULL);
             final int elemId = ok(s -> Integer.parseInt(s), elemIdStr);
-            FlowChartElement element = (new ModelFacade()).getElementById(elemId);
+            IFlowChartElement element = (new ModelFacade()).getElementById(elemId);
             ok(element != null, OK.ERR_MSG_NULL);
             ok(domMap.get("text") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
             final DOM strDom = (DOM)domMap.get("text");

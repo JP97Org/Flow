@@ -8,7 +8,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.model.api.IConnectionGR;
+import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IFlowChartGR;
+import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
@@ -23,12 +26,12 @@ import org.jojo.flow.model.storeLoad.PointDOM;
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
-    private final List<ModuleGR> modules;
-    private final List<ConnectionGR> connections;
+    private final List<IModuleGR> modules;
+    private final List<IConnectionGR> connections;
     private Point absOriginPoint;
     private boolean isRasterEnabled;
     
-    private FlowChart fc;
+    private IFlowChart fc;
     
     public FlowChartGR() {
         super(new Point(0, 0));
@@ -38,28 +41,28 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
         this.isRasterEnabled = true;
     }
     
-    protected void setFlowChart(final FlowChart fc) {
+    public void setFlowChart(final IFlowChart fc) {
         this.fc = fc;
     }
     
     @Override
-    public FlowChart getFlowChart() {
+    public IFlowChart getFlowChart() {
         return this.fc;
     }
     
     @Override
-    public void addModule(final ModuleGR moduleGR) {
+    public void addModule(final IModuleGR moduleGR) {
         this.modules.add(Objects.requireNonNull(moduleGR));
         notifyObservers(moduleGR);
     }
     
     @Override
-    public void addConnection(final ConnectionGR connectionGR) {
+    public void addConnection(final IConnectionGR connectionGR) {
         this.connections.add(connectionGR);
     }
     
     @Override
-    public boolean removeModule(final ModuleGR moduleGR) {
+    public boolean removeModule(final IModuleGR moduleGR) {
         final boolean ret = this.modules.remove(Objects.requireNonNull(moduleGR));
         if (ret) {
             notifyObservers(moduleGR);
@@ -72,14 +75,14 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
         if (index >= this.modules.size()) {
             return false;
         }
-        final ModuleGR module = this.modules.get(index);
+        final IModuleGR module = this.modules.get(index);
         this.modules.remove(index);
         notifyObservers(module);
         return true;
     }
     
     @Override
-    public boolean removeConnection(final ConnectionGR connectionGR) {
+    public boolean removeConnection(final IConnectionGR connectionGR) {
         final boolean ret = this.connections.remove(Objects.requireNonNull(connectionGR));
         if (ret) {
             notifyObservers(connectionGR);
@@ -92,7 +95,7 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
         if (index >= this.connections.size()) {
             return false;
         }
-        final ConnectionGR con = this.connections.get(index);
+        final IConnectionGR con = this.connections.get(index);
         this.connections.remove(index);
         notifyObservers(con);
         return true;

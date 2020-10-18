@@ -17,11 +17,17 @@ import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IFlowChartElement;
+import org.jojo.flow.model.api.IFlowChartGR;
+import org.jojo.flow.model.api.IFlowModule;
+import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.api.IInternalConfig;
-import org.jojo.flow.model.data.Pair;
+import org.jojo.flow.model.api.IModulePin;
+import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
@@ -42,12 +48,12 @@ import org.jojo.flow.model.storeLoad.OK;
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class FlowChart extends FlowChartElement implements IFlowChart{
-    private final List<FlowModule> modules;
-    private final List<Connection> connections;
+    private final List<IFlowModule> modules;
+    private final List<IConnection> connections;
     
-    private final FlowChartGR gr;
+    private final IFlowChartGR gr;
     
-    public FlowChart(final int id, final FlowChartGR gr) {
+    public FlowChart(final int id, final IFlowChartGR gr) {
         super(id);
         this.modules = new ArrayList<>();
         this.connections = new ArrayList<>();
@@ -56,7 +62,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
     
     @Override
-    public void addModule(final FlowModule module) {
+    public void addModule(final IFlowModule module) {
         Objects.requireNonNull(module);
         this.modules.add(module);
         this.gr.addModule((ModuleGR) module.getGraphicalRepresentation());
@@ -64,7 +70,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
     
     @Override
-    public boolean addConnection(final Connection connection) {
+    public boolean addConnection(final IConnection connection) {
         Objects.requireNonNull(connection);
         final boolean ok = this.modules.containsAll(connection.getConnectedModules()) && connection.connect();
         if (ok) {
@@ -96,7 +102,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
     
     @Override
-    public boolean removeModule(final FlowModule module) {
+    public boolean removeModule(final IFlowModule module) {
         boolean ret = this.modules.remove(module);
         if (ret) {
             ret = this.gr.removeModule((ModuleGR) module.getGraphicalRepresentation());
@@ -111,7 +117,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
         if (index >= this.modules.size()) {
             return false;
         }
-        final FlowModule module = this.modules.get(index);
+        final IFlowModule module = this.modules.get(index);
         this.modules.remove(index);
         boolean ok = this.gr.removeModule(index);
         assert ok;
@@ -120,7 +126,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
     
     @Override
-    public boolean removeConnection(final Connection connection) {
+    public boolean removeConnection(final IConnection connection) {
         boolean ret = this.connections.remove(connection);
         if (ret) {
             ret = this.gr.removeConnection((ConnectionGR) connection.getGraphicalRepresentation());
@@ -135,7 +141,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
         if (index >= this.connections.size()) {
             return false;
         }
-        final Connection con = this.connections.get(index);
+        final IConnection con = this.connections.get(index);
         this.connections.remove(index);
         boolean ok = this.gr.removeConnection(index);
         assert ok;
@@ -144,21 +150,21 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
     
     @Override
-    public List<FlowModule> getModules() {
-        final List<FlowModule> ret = new ArrayList<>(this.modules);
+    public List<IFlowModule> getModules() {
+        final List<IFlowModule> ret = new ArrayList<>(this.modules);
         ret.sort(getIdComparator());
         return ret;
     }
     
     @Override
-    public List<Connection> getConnections() {
-        final List<Connection> ret = new ArrayList<>(this.connections);
+    public List<IConnection> getConnections() {
+        final List<IConnection> ret = new ArrayList<>(this.connections);
         ret.sort(getIdComparator());
         return ret;
     }
     
     @Override
-    public List<DefaultArrow> getArrows() {
+    public List<IDefaultArrow> getArrows() {
         return getConnections()
                 .stream()
                 .filter(c -> c instanceof DefaultArrow)
@@ -167,26 +173,26 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
     
     @Override
-    public DefaultArrow validate() throws ValidationException {
-        final List<DefaultArrow> arrows = getArrows();
+    public IDefaultArrow validate() throws ValidationException {
+        final List<IDefaultArrow> arrows = getArrows();
         for (final var arrow : arrows) {
             arrow.putData(null);
         }
         
-        final List<FlowModule> moduleList = getModules().stream().sorted().collect(Collectors.toList());
+        final List<IFlowModule> moduleList = getModules().stream().sorted().collect(Collectors.toList());
         if (moduleList.isEmpty()) {
             return null; // no modules --> valid
         }
-        final Set<FlowModule> moduleSet = new HashSet<>(moduleList);
-        final FlowModule moduleZero = moduleList.get(0);
+        final Set<IFlowModule> moduleSet = new HashSet<>(moduleList);
+        final IFlowModule moduleZero = moduleList.get(0);
         
         // find all roots
-        final Set<FlowModule> visitedModules = new HashSet<>();
-        final Set<FlowModule> roots = new HashSet<>();
-        for (FlowModule module = moduleZero; visitedModules.size() < moduleList.size(); 
+        final Set<IFlowModule> visitedModules = new HashSet<>();
+        final Set<IFlowModule> roots = new HashSet<>();
+        for (IFlowModule module = moduleZero; visitedModules.size() < moduleList.size(); 
                 module = setComplement(visitedModules, moduleSet).stream().findFirst().orElse(null)
                 /* module is element of modulelList but not of visitedModules  */) {
-            final Pair<Set<FlowModule>, Set<FlowModule>> visitedModulesAndFoundRoots =
+            final Pair<Set<IFlowModule>, Set<IFlowModule>> visitedModulesAndFoundRoots =
                     bfsDependency(module);
             visitedModules.addAll(visitedModulesAndFoundRoots.first);
             roots.addAll(visitedModulesAndFoundRoots.second);
@@ -194,9 +200,9 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
         
         // Now we have found all roots, we can now begin validating from the roots on
         // foreach root an own list
-        final Map<FlowModule, List<FlowModule>> modulesInCorrectOrder = new HashMap<>();
-        for(final FlowModule module : roots) {
-            final Pair<Set<FlowModule>, List<FlowModule>> visitedModulesAndSortedModuleList =
+        final Map<IFlowModule, List<IFlowModule>> modulesInCorrectOrder = new HashMap<>();
+        for(final IFlowModule module : roots) {
+            final Pair<Set<IFlowModule>, List<IFlowModule>> visitedModulesAndSortedModuleList =
                     bfsAdjacency(module);
             modulesInCorrectOrder.put(module, visitedModulesAndSortedModuleList.second);
         }
@@ -204,10 +210,10 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
         final int maxSize = modulesInCorrectOrder.values().stream().mapToInt(x -> x.size()).max().orElse(0);
         // the for-loops must be like this, because the lists must be validated "parallely"
         for (int i = 0; i < maxSize; i++) {
-            for (final FlowModule module : roots) {
-                final List<FlowModule> list = modulesInCorrectOrder.get(module);
+            for (final IFlowModule module : roots) {
+                final List<IFlowModule> list = modulesInCorrectOrder.get(module);
                 if (i < list.size()) {
-                    final DefaultArrow arrow = list.get(i).validate();
+                    final IDefaultArrow arrow = list.get(i).validate();
                     if (arrow != null) {
                         return arrow;
                     }
@@ -218,40 +224,40 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
         return null;
     }
 
-    private SortedSet<FlowModule> setComplement(final Set<FlowModule> notOf, final Set<FlowModule> of) {
+    private SortedSet<IFlowModule> setComplement(final Set<IFlowModule> notOf, final Set<IFlowModule> of) {
         return new TreeSet<>(of.stream().filter(x -> !notOf.contains(x)).collect(Collectors.toSet()));
     }
     
     private static final boolean DEPENDENCY = true;
     private static final boolean ADJACENCY = !DEPENDENCY;
     
-    private Pair<Set<FlowModule>, Set<FlowModule>> bfsDependency(final FlowModule root) {
-        final Set<FlowModule> roots = new HashSet<>();
-        final Pair<Set<FlowModule>, List<FlowModule>> bfsResult = bfs(root, DEPENDENCY, roots);
+    private Pair<Set<IFlowModule>, Set<IFlowModule>> bfsDependency(final IFlowModule root) {
+        final Set<IFlowModule> roots = new HashSet<>();
+        final Pair<Set<IFlowModule>, List<IFlowModule>> bfsResult = bfs(root, DEPENDENCY, roots);
         return new Pair<>(bfsResult.first, roots);
     }
 
-    private Pair<Set<FlowModule>, List<FlowModule>> bfsAdjacency(final FlowModule root) {
+    private Pair<Set<IFlowModule>, List<IFlowModule>> bfsAdjacency(final IFlowModule root) {
         return bfs(root, ADJACENCY, new HashSet<>());
     }
     
-    private Pair<Set<FlowModule>, List<FlowModule>> bfs(final FlowModule root, 
-                final boolean isDependencySearch, final Set<FlowModule> highestLevelMarker) {
+    private Pair<Set<IFlowModule>, List<IFlowModule>> bfs(final IFlowModule root, 
+                final boolean isDependencySearch, final Set<IFlowModule> highestLevelMarker) {
         // BFS and setting highest level marker
-        final Map<FlowModule, FlowModule> parentMap = new HashMap<>(); // maps child -> parent
-        final Map<FlowModule, Integer> levelMap = new HashMap<>(); // maps module -> level
-        Set<FlowModule> q = new HashSet<>();
+        final Map<IFlowModule, IFlowModule> parentMap = new HashMap<>(); // maps child -> parent
+        final Map<IFlowModule, Integer> levelMap = new HashMap<>(); // maps module -> level
+        Set<IFlowModule> q = new HashSet<>();
         q.add(root);
         parentMap.put(root, root);
         levelMap.put(root, 0);
         for (int level = 0; !q.isEmpty(); level++) {
-            final Set<FlowModule> qLocal = new HashSet<>();
-            for(final FlowModule module : q) {
+            final Set<IFlowModule> qLocal = new HashSet<>();
+            for(final IFlowModule module : q) {
                 // scan module
                 int adjFoundCount = 0;
-                final List<FlowModule> adjList = isDependencySearch 
+                final List<IFlowModule> adjList = isDependencySearch 
                         ? module.getDefaultDependencyList() : module.getDefaultAdjacencyList();
-                for (final FlowModule adj : adjList) {
+                for (final IFlowModule adj : adjList) {
                     if (!parentMap.containsKey(adj)) { // unexplored
                         qLocal.add(adj);
                         levelMap.put(adj, level + 1);
@@ -268,9 +274,9 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
         
         // generating the return value
         int highestLevel = 0;
-        final Set<FlowModule> visited = parentMap.keySet();
-        final List<FlowModule> listOfModulesSorted = new ArrayList<>();
-        for (final FlowModule module : levelMap.keySet()) {
+        final Set<IFlowModule> visited = parentMap.keySet();
+        final List<IFlowModule> listOfModulesSorted = new ArrayList<>();
+        for (final IFlowModule module : levelMap.keySet()) {
             final int level = levelMap.get(module);
             listOfModulesSorted.add(module);
             highestLevel = level > highestLevel ? level : highestLevel;
@@ -280,14 +286,14 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
 
     // sort by level and id
-    private void sort(final List<FlowModule> listOfModules, final Map<FlowModule, Integer> levelMap) {
-        List<Pair<FlowModule, Integer>> pairList = new ArrayList<>();
-        for (final FlowModule module : listOfModules) {
+    private void sort(final List<IFlowModule> listOfModules, final Map<IFlowModule, Integer> levelMap) {
+        List<Pair<IFlowModule, Integer>> pairList = new ArrayList<>();
+        for (final IFlowModule module : listOfModules) {
             pairList.add(new Pair<>(module, levelMap.get(module)));
         }
-        pairList.sort(new Comparator<Pair<FlowModule, Integer>>() {
+        pairList.sort(new Comparator<Pair<IFlowModule, Integer>>() {
             @Override
-            public int compare(final Pair<FlowModule, Integer> p1, final Pair<FlowModule, Integer> p2) {
+            public int compare(final Pair<IFlowModule, Integer> p1, final Pair<IFlowModule, Integer> p2) {
                 int ret = p1.second.compareTo(p2.second);
                 if (ret == 0) {
                     ret = Integer.valueOf(p1.first.getId()).compareTo(p2.first.getId());
@@ -300,7 +306,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
 
     @Override
-    public GraphicalRepresentation getGraphicalRepresentation() {
+    public IGraphicalRepresentation getGraphicalRepresentation() {
         return this.gr;
     }
 
@@ -336,14 +342,14 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
 
     private boolean removeDuplicatePins() {
-        final Map<ModulePin, FlowModule> modulePins = new HashMap<>();
+        final Map<IModulePin, IFlowModule> modulePins = new HashMap<>();
         this.modules.stream()
             .map(m -> m.getAllModulePins())
             .flatMap(l -> l.stream())
             .collect(Collectors.toList())
             .forEach(p -> modulePins.put(p, p.getModule()));
-        final Map<ModulePin, List<Connection>> connectionPins = new HashMap<>();
-        final List<ModulePin> list = new ArrayList<>(Arrays.asList(this.connections.stream()
+        final Map<IModulePin, List<IConnection>> connectionPins = new HashMap<>();
+        final List<IModulePin> list = new ArrayList<>(Arrays.asList(this.connections.stream()
                                         .map(c -> c.getToPins())
                                         .flatMap(l -> l.stream())
                                         .toArray(ModulePin[]::new)));
@@ -352,12 +358,12 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
                     .collect(Collectors.toList()));
         list.forEach(p -> connectionPins.put(p, p.getConnections()));
         
-        for (final ModulePin pin : modulePins.keySet()) {
-            final FlowModule module = modulePins.get(pin);
+        for (final IModulePin pin : modulePins.keySet()) {
+            final IFlowModule module = modulePins.get(pin);
             assert module != null;
             if (connectionPins.containsKey(pin)) {
-                final List<Connection> connections = connectionPins.get(pin);
-                for (final Connection connection : connections) {
+                final List<IConnection> connections = connectionPins.get(pin);
+                for (final IConnection connection : connections) {
                     if (pin instanceof InputPin) {
                         final InputPin inPin = (InputPin)pin;
                         connection.removeToPin(inPin);

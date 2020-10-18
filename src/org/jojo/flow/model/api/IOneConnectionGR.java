@@ -4,11 +4,9 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.List;
 
-import org.jojo.flow.model.flowChart.modules.ModulePinGR;
-
 public interface IOneConnectionGR extends IGraphicalRepresentation, IDOMable {
 
-    void setToPin(Point diversionPoint, ModulePinGR toPin);
+    void setToPin(Point diversionPoint, IModulePinGR toPin);
 
     List<IConnectionLineGR> getLines();
 
@@ -20,8 +18,8 @@ public interface IOneConnectionGR extends IGraphicalRepresentation, IDOMable {
 
     void setColor(Color color);
 
-    ModulePinGR getFromPin();
+    IModulePinGR getFromPin();
 
-    ModulePinGR getToPin();
+    IModulePinGR getToPin();
 
 }

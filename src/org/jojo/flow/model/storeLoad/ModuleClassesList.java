@@ -8,23 +8,25 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.model.api.IDynamicClassLoader;
+import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IModuleClassesList;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 
 public class ModuleClassesList implements IModuleClassesList {
-    private final DynamicClassLoader loader;
+    private final IDynamicClassLoader loader;
     private final List<File> jarFiles;
-    private final List<Class<? extends FlowModule>> moduleClassesList;
+    private final List<Class<? extends IFlowModule>> moduleClassesList;
     private final boolean isLoadingAll;
     
-    public ModuleClassesList(final DynamicClassLoader loader, final File... jarFiles) {
+    public ModuleClassesList(final IDynamicClassLoader loader, final File... jarFiles) {
         this.loader = Objects.requireNonNull(loader);
         this.jarFiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(jarFiles)));
         this.moduleClassesList = new ArrayList<>();
         this.isLoadingAll = false;
     }
     
-    public ModuleClassesList(final DynamicClassLoader loader, final boolean isLoadingAll, final File... jarFiles) throws ClassNotFoundException, IOException {
+    public ModuleClassesList(final IDynamicClassLoader loader, final boolean isLoadingAll, final File... jarFiles) throws ClassNotFoundException, IOException {
         this.loader = Objects.requireNonNull(loader);
         this.jarFiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(jarFiles)));
         this.moduleClassesList = new ArrayList<>();
@@ -35,12 +37,12 @@ public class ModuleClassesList implements IModuleClassesList {
     }
     
     @Override
-    public DynamicClassLoader getClassLoader() {
+    public IDynamicClassLoader getClassLoader() {
         return this.loader;
     }
     
     @Override
-    public ModuleClassesList addJarFile(final File jarFile) throws ClassNotFoundException, IOException {
+    public IModuleClassesList addJarFile(final File jarFile) throws ClassNotFoundException, IOException {
         this.jarFiles.add(jarFile);
         if (this.isLoadingAll) {
             load(jarFile);
@@ -49,14 +51,14 @@ public class ModuleClassesList implements IModuleClassesList {
     }
     
     @Override
-    public ModuleClassesList loadJarFile(final File jarFile) throws ClassNotFoundException, IOException {
+    public IModuleClassesList loadJarFile(final File jarFile) throws ClassNotFoundException, IOException {
         this.jarFiles.add(jarFile);
         load(jarFile);
         return this;
     }
 
     @Override
-    public ModuleClassesList loadAll() throws ClassNotFoundException, IOException {
+    public IModuleClassesList loadAll() throws ClassNotFoundException, IOException {
         for (final File file : this.jarFiles) {
             load(file);
         }
@@ -72,7 +74,7 @@ public class ModuleClassesList implements IModuleClassesList {
     }
     
     @Override
-    public List<Class<? extends FlowModule>> getModuleClassesList() {
-        return new ArrayList<Class<? extends FlowModule>>(this.moduleClassesList);
+    public List<Class<? extends IFlowModule>> getModuleClassesList() {
+        return new ArrayList<Class<? extends IFlowModule>>(this.moduleClassesList);
     }
 }

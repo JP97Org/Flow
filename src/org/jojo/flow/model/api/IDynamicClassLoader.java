@@ -9,4 +9,6 @@ public interface IDynamicClassLoader extends IAPI {
     List<Class<?>> loadClasses(File jarFile) throws ClassNotFoundException, IOException;
 
     Class<?> loadClass(String name) throws ClassNotFoundException;
+    
+    ClassLoader getClassLoader();
 }

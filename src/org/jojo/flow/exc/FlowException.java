@@ -2,7 +2,7 @@ package org.jojo.flow.exc;
 
 import java.util.Objects;
 
-import org.jojo.flow.model.flowChart.FlowChartElement;
+import org.jojo.flow.model.api.IFlowChartElement;
 
 public class FlowException extends Exception {
     /**
@@ -14,18 +14,14 @@ public class FlowException extends Exception {
     public FlowException(final Warning errorWarning) {
         super((!Objects.requireNonNull(errorWarning).hasAffectedElement() ? "an unknown source" : errorWarning.getAffectedElement()) + " reports this error: " +  errorWarning.getDescription());
         this.errorWarning = errorWarning;
-        if (errorWarning.hasAffectedElement()) {
-            errorWarning.getAffectedElement().reportWarning(errorWarning);
-        } else {
-            FlowChartElement.GENERIC_ERROR_ELEMENT.reportWarning(errorWarning);
-        }
+        errorWarning.reportWarning();
     }
     
-    public FlowException(final FlowException toWrap, final FlowChartElement affectedElement) {
+    public FlowException(final FlowException toWrap, final IFlowChartElement affectedElement) {
         this(toWrap.getWarning().setAffectedElement(affectedElement));
     }
     
-    public FlowException(final Exception toWrap, final FlowChartElement affectedElement) {
+    public FlowException(final Exception toWrap, final IFlowChartElement affectedElement) {
         this(new FlowException(toWrap), affectedElement);
     }
     

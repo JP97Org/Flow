@@ -1,7 +1,5 @@
 package org.jojo.flow.model.api;
 
-import org.jojo.flow.model.data.Pair;
-
 public interface ITensor<T> extends IBasicCheckable {
     public static <K> ITensor<K> getDefaultImplementation(final K[][][] tensor, final UnitSignature unit) {
         @SuppressWarnings("unchecked")

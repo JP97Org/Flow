@@ -1,16 +1,14 @@
 package org.jojo.flow.model.api;
 
-import org.jojo.flow.model.flowChart.FlowChartElement;
-
 public interface ILabelGR extends IGraphicalRepresentation {
 
     String getText();
 
     void setText(String text);
 
-    FlowChartElement getElement();
+    IFlowChartElement getElement();
 
-    void setElement(FlowChartElement element);
+    void setElement(IFlowChartElement element);
 
     void setHeight(int height);
 

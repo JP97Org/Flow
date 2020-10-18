@@ -10,17 +10,18 @@ import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.exc.ModuleRunException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IFlowChart;
+import org.jojo.flow.model.api.IFlowModule;
+import org.jojo.flow.model.api.IScheduler;
 import org.jojo.flow.model.api.Unit;
 import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.data.units.Time;
-import org.jojo.flow.model.flowChart.FlowChart;
-import org.jojo.flow.model.flowChart.modules.FlowModule;
 
 public class SchedulingStepper extends Stepper {
     private static final long OVERHEAD_TIME = 5;
-    private final FlowChart flowChart;
+    private final IFlowChart flowChart;
     private final Time<Fraction> explicitTimeStep;
 
     private boolean paused;
@@ -30,7 +31,7 @@ public class SchedulingStepper extends Stepper {
     
     private final boolean isRealtime; //TODO do not use realtime if time step < 100ms
 
-    public SchedulingStepper(final FlowChart flowChart, final Scheduler scheduler, final Time<Fraction> explicitTimeStep, final boolean isRealtime) throws FlowException {
+    public SchedulingStepper(final IFlowChart flowChart, final IScheduler scheduler, final Time<Fraction> explicitTimeStep, final boolean isRealtime) throws FlowException {
         super(scheduler);
         this.flowChart = Objects.requireNonNull(flowChart);
         this.explicitTimeStep = explicitTimeStep;
@@ -110,14 +111,14 @@ public class SchedulingStepper extends Stepper {
     @Override
     public void stepOnce() throws ModuleRunException {
         final long baseTime = System.currentTimeMillis();
-        final List<FlowModule> allModules = this.flowChart.getModules();
-        final List<FlowModule> modulesToStep = allModules
+        final List<IFlowModule> allModules = this.flowChart.getModules();
+        final List<IFlowModule> modulesToStep = allModules
                 .stream()
                 .filter(x -> ((this.stepCount % getStep(x)) == 0))
                 .collect(Collectors.toList());
         
-        final List<FlowModule> schedule = getScheduler().getSchedule(modulesToStep);
-        for (final FlowModule module : schedule) {
+        final List<IFlowModule> schedule = getScheduler().getSchedule(modulesToStep);
+        for (final IFlowModule module : schedule) {
             if (Thread.interrupted()) {
                 throw new ModuleRunException(new Warning(module, ModuleRunException.MOD_RUN_EXC_STR + "interrupted", true));
             }
@@ -176,7 +177,7 @@ public class SchedulingStepper extends Stepper {
         }
     }
 
-    private int getStep(final FlowModule x) {
+    private int getStep(final IFlowModule x) {
         try {
             final Time<Fraction> moduleStep = Time.of(Unit.getFractionConstant(new Fraction(1)).divide(x.getFrequency()));
             final Fraction frac = moduleStep.divide(this.timeStep).value;

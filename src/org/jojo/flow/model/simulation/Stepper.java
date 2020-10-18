@@ -4,15 +4,16 @@ import java.util.Objects;
 
 import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ModuleRunException;
+import org.jojo.flow.model.api.IScheduler;
 import org.jojo.flow.model.api.IStepper;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.data.units.Time;
 
 public abstract class Stepper implements IStepper {
-    private final Scheduler scheduler;
+    private final IScheduler scheduler;
     
-    public Stepper(final Scheduler scheduler) {
+    public Stepper(final IScheduler scheduler) {
         this.scheduler = Objects.requireNonNull(scheduler);
     }
     
@@ -45,7 +46,7 @@ public abstract class Stepper implements IStepper {
     @Override
     public abstract Time<Fraction> getTimePassed();
     
-    protected Scheduler getScheduler() {
+    protected IScheduler getScheduler() {
         return this.scheduler;
     }
 }

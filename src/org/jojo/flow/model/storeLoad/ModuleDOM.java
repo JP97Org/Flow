@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Objects;
 
 import org.jojo.flow.model.api.IInternalConfig;
+import org.jojo.flow.model.api.IModulePin;
 import org.jojo.flow.model.flowChart.modules.ExternalConfig;
-import org.jojo.flow.model.flowChart.modules.ModulePin;
 import org.w3c.dom.Element;
 
 public class ModuleDOM extends FlowChartElementDOM {
@@ -34,7 +34,7 @@ public class ModuleDOM extends FlowChartElementDOM {
         appendCustomDOM(config);
     }
     
-    public void setPins(final List<ModulePin> pins) {
-        appendList(NAME_PINS, pins);
+    public void setPins(final List<IModulePin> list) {
+        appendList(NAME_PINS, list);
     }
 }

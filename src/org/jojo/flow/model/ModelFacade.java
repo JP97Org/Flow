@@ -8,7 +8,17 @@ import java.util.Objects;
 import org.jojo.flow.exc.ConnectionException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDefaultArrow;
+import org.jojo.flow.model.api.IDynamicClassLoader;
+import org.jojo.flow.model.api.IFlowChart;
+import org.jojo.flow.model.api.IFlowChartElement;
+import org.jojo.flow.model.api.IFlowModule;
+import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IModelFacade;
+import org.jojo.flow.model.api.IOutputPin;
+import org.jojo.flow.model.api.ISimulation;
+import org.jojo.flow.model.api.ISimulationConfiguration;
+import org.jojo.flow.model.api.IStoreLoadFacade;
 import org.jojo.flow.model.data.units.Time;
 import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.flowChart.FlowChartElement;
@@ -17,26 +27,23 @@ import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.flowChart.connections.RigidConnection;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
-import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.simulation.Simulation;
 import org.jojo.flow.model.simulation.SimulationConfiguration;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
 import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 
 public class ModelFacade implements IModelFacade {
     private static int idCounter = 0;
     
-    private static FlowChart mainFlowChart = (FlowChart) FlowChartElement.GENERIC_ERROR_ELEMENT; // ussually set to one with id 0
+    private static IFlowChart mainFlowChart = (IFlowChart) IFlowChartElement.GENERIC_ERROR_ELEMENT; // ussually set to one with id 0
     
     private final boolean isUsingOwnDynamicIdNameSpace;
     private int dynamicIdCounter;
     
-    private FlowChart dynamicMainFlowChart;
-    private static final List<FlowChart> otherFlowCharts = new ArrayList<>();
+    private IFlowChart dynamicMainFlowChart;
+    private static final List<IFlowChart> otherFlowCharts = new ArrayList<>();
 
-    private final List<FlowChart> dynamicOtherFlowCharts;
+    private final List<IFlowChart> dynamicOtherFlowCharts;
     
     private static final Time<Double> DEFAULT_TIMEOUT = Time.getDoubleConstant(60.);
     
@@ -52,7 +59,7 @@ public class ModelFacade implements IModelFacade {
     }
     
     @Override
-    public synchronized FlowChartElement getFlowChartById(final int id) {
+    public synchronized IFlowChartElement getFlowChartById(final int id) {
         if (id == getMainFlowChart().getId()) {
             return getMainFlowChart();
         }
@@ -60,12 +67,12 @@ public class ModelFacade implements IModelFacade {
     }
     
     @Override
-    public synchronized FlowChartElement getElementById(final int id) {
+    public synchronized IFlowChartElement getElementById(final int id) {
         return getElementById(getMainFlowChart(), id);
     }
     
     @Override
-    public synchronized FlowChartElement getElementById(final FlowChart flowChart, final int id) {
+    public synchronized IFlowChartElement getElementById(final IFlowChart flowChart, final int id) {
         Objects.requireNonNull(flowChart);
         if (flowChart.getConnections().stream().anyMatch(x -> x.getId() == id)) {
             return flowChart.getConnections()
@@ -83,7 +90,7 @@ public class ModelFacade implements IModelFacade {
     }
 
     @Override
-    public synchronized FlowChart getMainFlowChart() {
+    public synchronized IFlowChart getMainFlowChart() {
         if (!this.isUsingOwnDynamicIdNameSpace) {
             this.dynamicMainFlowChart = mainFlowChart;
         }
@@ -91,12 +98,12 @@ public class ModelFacade implements IModelFacade {
     }
     
     @Override
-    public synchronized List<FlowChart> getOtherFlowCharts() {
+    public synchronized List<IFlowChart> getOtherFlowCharts() {
         return this.dynamicOtherFlowCharts;
     }
     
     @Override
-    public synchronized boolean addFlowChart(final FlowChart flowChart) {
+    public synchronized boolean addFlowChart(final IFlowChart flowChart) {
         Objects.requireNonNull(flowChart);
         if (this.dynamicOtherFlowCharts.contains(flowChart)) {
             return false;
@@ -106,7 +113,7 @@ public class ModelFacade implements IModelFacade {
     }
     
     @Override
-    public synchronized void setMainFlowChart(final FlowChart flowChart) {
+    public synchronized void setMainFlowChart(final IFlowChart flowChart) {
         if (this.isUsingOwnDynamicIdNameSpace) {
             this.dynamicMainFlowChart = Objects.requireNonNull(flowChart);
         } else {
@@ -131,38 +138,38 @@ public class ModelFacade implements IModelFacade {
     }
     
     @Override
-    public synchronized StoreLoadFacade getStoreLoad() {
+    public synchronized IStoreLoadFacade getStoreLoad() {
         return new StoreLoadFacade();
     }
     
     @Override
-    public synchronized Simulation getSimulation() {
+    public synchronized ISimulation getSimulation() {
         return getSimulation(getMainFlowChart());
     }
     
     @Override
-    public synchronized Simulation getSimulation(final FlowChart flowChart) {
+    public synchronized ISimulation getSimulation(final IFlowChart flowChart) {
         return getSimulation(flowChart, new SimulationConfiguration(DEFAULT_TIMEOUT));
     }
     
     @Override
-    public synchronized Simulation getSimulation(final FlowChart flowChart, final SimulationConfiguration config) {
+    public synchronized ISimulation getSimulation(final IFlowChart flowChart, final ISimulationConfiguration config) {
         return new Simulation(flowChart, config);
     }
     
     @Override
-    public synchronized boolean addModule(final DynamicClassLoader loader, final String className, final Point position) {
+    public synchronized boolean addModule(final IDynamicClassLoader loader, final String className, final Point position) {
         return addModule(getMainFlowChart(), loader, className, position);
     }
     
     @Override
-    public synchronized boolean addModule(final FlowChart fc, final DynamicClassLoader loader, final String className, final Point position) {
+    public synchronized boolean addModule(final IFlowChart fc, final IDynamicClassLoader loader, final String className, final Point position) {
         Objects.requireNonNull(fc);
         Objects.requireNonNull(loader);
         Objects.requireNonNull(className);
         Objects.requireNonNull(position);
         final int id = nextFreeId();
-        final FlowModule toAdd = DynamicObjectLoader.loadModule(loader, className, id);
+        final IFlowModule toAdd = DynamicObjectLoader.loadModule(loader.getClassLoader(), className, id);
         final boolean checked = checkModuleCorrectness(fc, toAdd, position);
         if (checked) {
             toAdd.getGraphicalRepresentation().setPosition(position);
@@ -171,7 +178,7 @@ public class ModelFacade implements IModelFacade {
         return checked; 
     }
     
-    private boolean checkModuleCorrectness(final FlowChart fc, final FlowModule toAdd, final Point position) {
+    private boolean checkModuleCorrectness(final IFlowChart fc, final IFlowModule toAdd, final Point position) {
         if (toAdd == null) {
             return false;
         }
@@ -184,20 +191,20 @@ public class ModelFacade implements IModelFacade {
     }
     
     @Override
-    public synchronized boolean removeModule(final FlowChart fc, final int id) {
+    public synchronized boolean removeModule(final IFlowChart fc, final int id) {
         Objects.requireNonNull(fc);
-        final FlowChartElement elem = getElementById(fc, id);
+        final IFlowChartElement elem = getElementById(fc, id);
         final FlowModule mod = elem instanceof FlowModule ? (FlowModule)elem : null;
         return fc.removeModule(mod);
     }
     
     @Override
-    public synchronized boolean connect(final OutputPin from, final InputPin to) {
+    public synchronized boolean connect(final IOutputPin from, final IInputPin to) {
         return connect(getMainFlowChart(), from, to);
     }
     
     @Override
-    public synchronized boolean connect(final FlowChart fc, final OutputPin from, final InputPin to) {
+    public synchronized boolean connect(final IFlowChart fc, final IOutputPin from, final IInputPin to) {
         Objects.requireNonNull(fc);
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
@@ -221,20 +228,20 @@ public class ModelFacade implements IModelFacade {
     }
     
     @Override
-    public synchronized boolean removeConnection(final FlowChart fc, final int id) {
+    public synchronized boolean removeConnection(final IFlowChart fc, final int id) {
         Objects.requireNonNull(fc);
-        final FlowChartElement elem = getElementById(fc, id);
+        final IFlowChartElement elem = getElementById(fc, id);
         final Connection con = elem instanceof Connection ? (Connection)elem : null;
         return fc.removeConnection(con);
     }
     
     @Override
-    public synchronized DefaultArrow validateFlowChart() throws ValidationException {
+    public synchronized IDefaultArrow validateFlowChart() throws ValidationException {
         return validateFlowChart(getMainFlowChart());
     }
     
     @Override
-    public synchronized DefaultArrow validateFlowChart(final FlowChart fc) throws ValidationException {
+    public synchronized IDefaultArrow validateFlowChart(final IFlowChart fc) throws ValidationException {
         Objects.requireNonNull(fc);
         return fc.validate();
     }

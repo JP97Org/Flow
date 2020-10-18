@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.ITensor;
+import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.api.UnitSignature;
 
 public final class Tensor<T> extends BasicCheckable implements ITensor<T> {

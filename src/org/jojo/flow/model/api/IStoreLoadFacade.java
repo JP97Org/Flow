@@ -2,21 +2,17 @@ package org.jojo.flow.model.api;
 
 import java.io.File;
 
-import org.jojo.flow.model.data.Pair;
-import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
-import org.jojo.flow.model.storeLoad.ModuleClassesList;
 
 public interface IStoreLoadFacade extends IAPI {
 
-    FlowChart loadFlowChart(File xmlFile);
+    IFlowChart loadFlowChart(File xmlFile);
 
     boolean storeFlowChart(File xmlFile, DOM flowDom);
 
-    Pair<ModuleClassesList, DynamicClassLoader> getListLoaderPair();
+    Pair<IModuleClassesList, IDynamicClassLoader> getListLoaderPair();
 
-    ModuleClassesList getNewModuleClassesList(File tmpDirectory, File... jars);
+    IModuleClassesList getNewModuleClassesList(File tmpDirectory, File... jars);
 
-    DynamicClassLoader getNewDynamicClassLoader(File tmpDirectory);
+    IDynamicClassLoader getNewDynamicClassLoader(File tmpDirectory);
 }

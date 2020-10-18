@@ -4,60 +4,51 @@ import java.awt.Point;
 import java.util.List;
 
 import org.jojo.flow.exc.ValidationException;
-import org.jojo.flow.model.flowChart.FlowChart;
-import org.jojo.flow.model.flowChart.FlowChartElement;
-import org.jojo.flow.model.flowChart.connections.DefaultArrow;
-import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.OutputPin;
-import org.jojo.flow.model.simulation.Simulation;
-import org.jojo.flow.model.simulation.SimulationConfiguration;
-import org.jojo.flow.model.storeLoad.DynamicClassLoader;
-import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 
 public interface IModelFacade extends IAPI {
 
-    FlowChartElement getFlowChartById(int id);
+    IFlowChartElement getFlowChartById(int id);
 
-    FlowChartElement getElementById(int id);
+    IFlowChartElement getElementById(int id);
 
-    FlowChartElement getElementById(FlowChart flowChart, int id);
+    IFlowChartElement getElementById(IFlowChart flowChart, int id);
 
-    FlowChart getMainFlowChart();
+    IFlowChart getMainFlowChart();
 
-    List<FlowChart> getOtherFlowCharts();
+    List<IFlowChart> getOtherFlowCharts();
 
-    boolean addFlowChart(FlowChart flowChart);
+    boolean addFlowChart(IFlowChart flowChart);
 
-    void setMainFlowChart(FlowChart flowChart);
+    void setMainFlowChart(IFlowChart flowChart);
 
     int nextFreeId();
 
-    StoreLoadFacade getStoreLoad();
+    IStoreLoadFacade getStoreLoad();
 
-    Simulation getSimulation();
+    ISimulation getSimulation();
 
-    Simulation getSimulation(FlowChart flowChart);
+    ISimulation getSimulation(IFlowChart flowChart);
 
-    Simulation getSimulation(FlowChart flowChart, SimulationConfiguration config);
+    ISimulation getSimulation(IFlowChart flowChart, ISimulationConfiguration config);
 
-    boolean addModule(DynamicClassLoader loader, String className, Point position);
+    boolean addModule(IDynamicClassLoader loader, String className, Point position);
 
-    boolean addModule(FlowChart fc, DynamicClassLoader loader, String className, Point position);
+    boolean addModule(IFlowChart fc, IDynamicClassLoader loader, String className, Point position);
 
     boolean removeModule(int id);
 
-    boolean removeModule(FlowChart fc, int id);
+    boolean removeModule(IFlowChart fc, int id);
 
-    boolean connect(OutputPin from, InputPin to);
+    boolean connect(IOutputPin from, IInputPin to);
 
-    boolean connect(FlowChart fc, OutputPin from, InputPin to);
+    boolean connect(IFlowChart fc, IOutputPin from, IInputPin to);
 
     boolean removeConnection(int id);
 
-    boolean removeConnection(FlowChart fc, int id);
+    boolean removeConnection(IFlowChart fc, int id);
 
-    DefaultArrow validateFlowChart() throws ValidationException;
+    IDefaultArrow validateFlowChart() throws ValidationException;
 
-    DefaultArrow validateFlowChart(FlowChart fc) throws ValidationException;
+    IDefaultArrow validateFlowChart(IFlowChart fc) throws ValidationException;
 
 }

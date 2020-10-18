@@ -3,28 +3,24 @@ package org.jojo.flow.model.api;
 import java.util.List;
 
 import org.jojo.flow.exc.ListSizeException;
-import org.jojo.flow.model.data.Data;
-import org.jojo.flow.model.flowChart.GraphicalRepresentation;
-import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.flowChart.modules.FlowModule;
-import org.jojo.flow.model.flowChart.modules.ModulePinImp;
 
-public interface IModulePin extends IAPI {
+public interface IModulePin extends IDOMable {
 
-    GraphicalRepresentation getGraphicalRepresentation();
+    IGraphicalRepresentation getGraphicalRepresentation();
 
-    FlowModule getModule();
+    IFlowModule getModule();
 
-    List<Connection> getConnections();
+    List<IConnection> getConnections();
 
-    boolean addConnection(Connection toAdd) throws ListSizeException;
+    boolean addConnection(IConnection toAdd) throws ListSizeException;
 
-    boolean removeConnection(Connection toRemove);
+    boolean removeConnection(IConnection toRemove);
 
     boolean removeConnection(int index);
 
-    Data getDefaultData();
+    IData getDefaultData();
 
-    ModulePinImp getModulePinImp();
+    IModulePinImp getModulePinImp();
 
+    int fixedHashCode();
 }

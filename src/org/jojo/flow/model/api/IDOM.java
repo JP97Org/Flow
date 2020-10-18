@@ -22,5 +22,4 @@ public interface IDOM extends IAPI {
     Map<String, Object> getDOMMap();
 
     String elemGet();
-
 }
