@@ -1,6 +1,12 @@
 package org.jojo.flow.model.api;
 
+import org.jojo.flow.model.util.DynamicObjectLoader;
+
 public interface IDefaultArrow extends IConnection {
+    public static IDefaultArrow getDefaultImplementation(final IOutputPin from, final IInputPin to, final String name) {
+        return (IDefaultArrow) DynamicObjectLoader.loadConnection(
+                IModelFacade.getDefaultImplementation().nextFreeId(), from, to, name);
+    }
 
     IData getData();
 

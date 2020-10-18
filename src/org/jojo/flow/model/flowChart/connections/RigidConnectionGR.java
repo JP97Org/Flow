@@ -14,9 +14,9 @@ import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.api.IRigidConnectionGR;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.util.DynamicObjectLoader;
 
 public class RigidConnectionGR extends ConnectionGR implements IRigidConnectionGR {
     public RigidConnectionGR(final RigidPinGR asFromPin, final RigidPinGR asToPin) {

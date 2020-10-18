@@ -5,6 +5,10 @@ import org.jojo.flow.exc.ModuleRunException;
 import org.jojo.flow.exc.TimeoutException;
 
 public interface ISimulation extends IAPI {
+    public static ISimulation getDefaultImplementation(final IFlowChart flowChart, final ISimulationConfiguration config) {
+        return (ISimulation) IAPI.defaultImplementationOfThisApi(
+                new Class<?>[] {IFlowChart.class, ISimulationConfiguration.class}, flowChart, config);
+    }
 
     void start() throws ModuleRunException, TimeoutException, FlowException;
 

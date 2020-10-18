@@ -1,4 +1,4 @@
-package org.jojo.flow.model.storeLoad;
+package org.jojo.flow.model.util;
 
 import static org.jojo.flow.model.storeLoad.OK.ok;
 
@@ -17,8 +17,13 @@ import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultArrow;
+import org.jojo.flow.model.api.IExternalConfig;
+import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.api.IModulePin;
+import org.jojo.flow.model.api.IOutputPin;
+import org.jojo.flow.model.api.IRigidConnection;
+import org.jojo.flow.model.api.IRigidPin;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.Fraction;
 import org.jojo.flow.model.data.StringDataSet;
@@ -43,6 +48,11 @@ import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
+import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
+import org.jojo.flow.model.storeLoad.ModulePinDOM;
+import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.storeLoad.PointDOM;
 import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
@@ -106,6 +116,30 @@ public final class DynamicObjectLoader {
             // should not happen
             new Warning(null, e.toString(), true).reportWarning();
             return null;
+        }
+    }
+    
+    public static IDefaultArrow loadConnection(final int id, final IOutputPin from, final IInputPin to, final String name) {
+        Objects.requireNonNull(from);
+        Objects.requireNonNull(to);
+        try {
+            return (IDefaultArrow) load(DynamicObjectLoader.class.getClassLoader(), DefaultArrow.class.getName(),
+                        new Class<?>[] {int.class, IOutputPin.class, IInputPin.class, String.class}, id, from, to, name);
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+                    | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new IllegalArgumentException("an exception occured: " + e.toString());
+        }
+    }
+    
+    public static IRigidConnection loadConnection(final int id, final IRigidPin asFrom, final IRigidPin asTo, final String name) {
+        Objects.requireNonNull(asFrom);
+        Objects.requireNonNull(asTo);
+        try {
+            return (IRigidConnection) load(DynamicObjectLoader.class.getClassLoader(), RigidConnection.class.getName(),
+                        new Class<?>[] {int.class, IRigidPin.class, IRigidPin.class, String.class}, id, asFrom, asTo, name);
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+                    | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new IllegalArgumentException("an exception occured: " + e.toString());
         }
     }
     
@@ -188,9 +222,16 @@ public final class DynamicObjectLoader {
     }
     
     public static FlowModule loadModule(final ClassLoader classLoader, final String className, final int id) {
+        final IExternalConfig config = getNewMockExternalConfig();
+        return loadModule(classLoader, className, id, config.getName(), config.getPriority());
+    }
+    
+    public static FlowModule loadModule(final ClassLoader classLoader, final String className, final int id,
+            final String name, final int priority) {
         try {
+            final IExternalConfig config = new ExternalConfig(name, priority);
             final Object modObj = load(classLoader, className, 
-                    new Class<?>[] {int.class, ExternalConfig.class}, id, new ExternalConfig("NAME", 0));
+                    new Class<?>[] {int.class, ExternalConfig.class}, id, config);
             final FlowModule ret = (FlowModule)modObj;
             
             return ret;
@@ -208,6 +249,10 @@ public final class DynamicObjectLoader {
         return constr.newInstance(initArgs);
     }
     
+    public static IExternalConfig getNewMockExternalConfig() {
+        return new ExternalConfig("NAME", 0);
+    }
+    
     public static class MockModule extends FlowModule {
         private final MockModuleGR gr;
         private ModulePin pinOut;
@@ -218,6 +263,7 @@ public final class DynamicObjectLoader {
             super(id, externalConfig);
             this.gr = (MockModuleGR) loadGR(MockModuleGR.class.getName());
             this.gr.setModuleMock(this);
+            this.getExternalConfig().setModule(this);
         }
         
         @Override

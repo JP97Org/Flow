@@ -1,6 +1,12 @@
 package org.jojo.flow.model.api;
 
+import org.jojo.flow.model.flowChart.LabelGR;
+import org.jojo.flow.model.util.DynamicObjectLoader;
+
 public interface ILabelGR extends IGraphicalRepresentation {
+    public static ILabelGR getDefaultImplementation() {
+        return (ILabelGR) DynamicObjectLoader.loadGR(LabelGR.class.getName());
+    }
 
     String getText();
 

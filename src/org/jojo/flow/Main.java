@@ -40,10 +40,10 @@ import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.simulation.Simulation;
 import org.jojo.flow.model.simulation.SimulationConfiguration;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.FlowDOM;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
-import org.jojo.flow.model.storeLoad.DynamicObjectLoader.MockModule;
+import org.jojo.flow.model.util.DynamicObjectLoader;
+import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
 
 public class Main {
     // TODO at the moment only test main class

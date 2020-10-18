@@ -3,8 +3,16 @@ package org.jojo.flow.model.api;
 import java.util.List;
 
 import org.jojo.flow.exc.ValidationException;
+import org.jojo.flow.model.flowChart.FlowChartGR;
+import org.jojo.flow.model.util.DynamicObjectLoader;
 
 public interface IFlowChart extends IFlowChartElement {
+    public static IFlowChart getDefaultImplementation() {
+        return (IFlowChart) IAPI.defaultImplementationOfThisApi(
+                new Class<?>[] {int.class, IFlowChartGR.class}, 
+                IModelFacade.getDefaultImplementation().nextFreeId(), 
+                DynamicObjectLoader.loadGR(FlowChartGR.class.getName()));
+    }
 
     void addModule(IFlowModule module);
 

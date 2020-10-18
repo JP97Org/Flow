@@ -47,7 +47,7 @@ public abstract class DOM implements IDOMable, IDOM {
         return documentStatic;
     }
     
-    protected static void resetDocument() {
+    public static void resetDocument() {
         documentStatic = null;
     }
     

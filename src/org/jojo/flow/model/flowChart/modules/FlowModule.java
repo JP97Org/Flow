@@ -18,6 +18,7 @@ import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IDefaultPin;
+import org.jojo.flow.model.api.IExternalConfig;
 import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IObserver;
@@ -36,9 +37,9 @@ import org.jojo.flow.model.storeLoad.ModuleDOM;
 import org.jojo.flow.model.storeLoad.OK;
 
 public abstract class FlowModule extends FlowChartElement implements IObserver, IFlowModule {
-    private final ExternalConfig externalConfig;
+    private final IExternalConfig externalConfig;
     
-    public FlowModule(final int id, final ExternalConfig externalConfig) {
+    public FlowModule(final int id, final IExternalConfig externalConfig) {
         super(id);
         this.externalConfig = Objects.requireNonNull(externalConfig);
         this.externalConfig.setModule(this);
@@ -145,7 +146,7 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     }
     
     @Override
-    public final ExternalConfig getExternalConfig() {
+    public final IExternalConfig getExternalConfig() {
         return this.externalConfig;
     }
     

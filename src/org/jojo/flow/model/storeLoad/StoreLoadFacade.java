@@ -13,6 +13,7 @@ import org.jojo.flow.model.api.IModuleClassesList;
 import org.jojo.flow.model.api.IStoreLoadFacade;
 import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.flowChart.FlowChart;
+import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

@@ -31,7 +31,8 @@ public class SchedulingStepper extends Stepper {
     
     private final boolean isRealtime; //TODO do not use realtime if time step < 100ms
 
-    public SchedulingStepper(final IFlowChart flowChart, final IScheduler scheduler, final Time<Fraction> explicitTimeStep, final boolean isRealtime) throws FlowException {
+    public SchedulingStepper(final IFlowChart flowChart, final IScheduler scheduler, 
+            final Time<Fraction> explicitTimeStep, final boolean isRealtime) throws FlowException {
         super(scheduler);
         this.flowChart = Objects.requireNonNull(flowChart);
         this.explicitTimeStep = explicitTimeStep;

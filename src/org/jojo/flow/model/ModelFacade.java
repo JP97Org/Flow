@@ -29,8 +29,8 @@ import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.simulation.Simulation;
 import org.jojo.flow.model.simulation.SimulationConfiguration;
-import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
+import org.jojo.flow.model.util.DynamicObjectLoader;
 
 public class ModelFacade implements IModelFacade {
     private static int idCounter = 0;

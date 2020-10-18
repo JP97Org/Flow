@@ -7,6 +7,10 @@ import java.util.List;
 import org.jojo.flow.model.api.IFlowModule;
 
 public class PriorityScheduler extends Scheduler {
+    public PriorityScheduler() {
+        
+    }
+    
     @Override
     public List<IFlowModule> getSchedule(final List<IFlowModule> modules) {
         final List<IFlowModule> ret = new ArrayList<>(modules);

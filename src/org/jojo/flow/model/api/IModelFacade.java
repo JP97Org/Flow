@@ -6,6 +6,13 @@ import java.util.List;
 import org.jojo.flow.exc.ValidationException;
 
 public interface IModelFacade extends IAPI {
+    public static IModelFacade getDefaultImplementation() {
+        return (IModelFacade) IAPI.defaultImplementationOfThisApi(new Class<?>[] {});
+    }
+    
+    public static IModelFacade getDefaultImplementation(final boolean isUsingOwnDynamicIdNameSpace) {
+        return (IModelFacade) IAPI.defaultImplementationOfThisApi(new Class<?>[] {boolean.class}, isUsingOwnDynamicIdNameSpace);
+    }
 
     IFlowChartElement getFlowChartById(int id);
 

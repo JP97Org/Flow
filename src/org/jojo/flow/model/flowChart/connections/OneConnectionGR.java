@@ -18,10 +18,10 @@ import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.PointDOM;
+import org.jojo.flow.model.util.DynamicObjectLoader;
 
 import static org.jojo.flow.model.flowChart.connections.ConnectionLineGR.isLine;
 import static org.jojo.flow.model.storeLoad.OK.ok;

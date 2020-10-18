@@ -10,9 +10,9 @@ import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.api.IFlowChartElementGR;
 import org.jojo.flow.model.api.ILabelGR;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.util.DynamicObjectLoader;
 
 public abstract class FlowChartElementGR extends GraphicalRepresentation implements IFlowChartElementGR {
     private ILabelGR label;

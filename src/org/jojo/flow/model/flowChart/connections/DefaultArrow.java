@@ -12,12 +12,12 @@ import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultArrow;
+import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IInternalConfig;
+import org.jojo.flow.model.api.IOutputPin;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
-import org.jojo.flow.model.flowChart.modules.InputPin;
-import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.OK;
@@ -31,7 +31,7 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
     private IData data;
     private GraphicalRepresentation gr;
     
-    public DefaultArrow(final int id, final OutputPin fromPin, final InputPin toPin, final String name) throws ConnectionException {
+    public DefaultArrow(final int id, final IOutputPin fromPin, final IInputPin toPin, final String name) throws ConnectionException {
         super(id, fromPin, name);
         this.dataType = ((DefaultPin)fromPin.getModulePinImp()).getCheckDataSignature();
         this.data = null;

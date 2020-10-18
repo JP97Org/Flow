@@ -3,9 +3,9 @@ package org.jojo.flow.model.storeLoad;
 import java.util.List;
 import java.util.Objects;
 
+import org.jojo.flow.model.api.IExternalConfig;
 import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.api.IModulePin;
-import org.jojo.flow.model.flowChart.modules.ExternalConfig;
 import org.w3c.dom.Element;
 
 public class ModuleDOM extends FlowChartElementDOM {
@@ -30,8 +30,8 @@ public class ModuleDOM extends FlowChartElementDOM {
         appendCustomDOM(config);
     }
     
-    public void setExternalConfig(final ExternalConfig config) {
-        appendCustomDOM(config);
+    public void setExternalConfig(final IExternalConfig iExternalConfig) {
+        appendCustomDOM(iExternalConfig);
     }
     
     public void setPins(final List<IModulePin> list) {

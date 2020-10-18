@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.data.DataArray;
 import org.jojo.flow.model.data.DataBundle;
 import org.jojo.flow.model.data.DataSignature;
@@ -16,7 +17,17 @@ import org.jojo.flow.model.data.RawDataSet;
 import org.jojo.flow.model.data.ScalarDataSet;
 import org.jojo.flow.model.data.StringDataSet;
 import org.jojo.flow.model.data.Tensor;
-import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
+import org.jojo.flow.model.flowChart.FlowChart;
+import org.jojo.flow.model.flowChart.modules.ExternalConfig;
+import org.jojo.flow.model.simulation.Scheduler;
+import org.jojo.flow.model.simulation.SchedulingStepper;
+import org.jojo.flow.model.simulation.Simulation;
+import org.jojo.flow.model.simulation.SimulationConfiguration;
+import org.jojo.flow.model.storeLoad.DocumentString;
+import org.jojo.flow.model.storeLoad.DynamicClassLoader;
+import org.jojo.flow.model.storeLoad.ModuleClassesList;
+import org.jojo.flow.model.storeLoad.StoreLoadFacade;
+import org.jojo.flow.model.util.DynamicObjectLoader;
 
 public interface IAPI {
     static final Map<Class<?>, Class<?>> apiToDefaultImplementationMap = new HashMap<>();
@@ -38,6 +49,23 @@ public interface IAPI {
         apiToDefaultImplementationMap.put(IDataArray.class, DataArray.class);
         apiToDefaultImplementationMap.put(IDataVector.class, DataVector.class);
         apiToDefaultImplementationMap.put(IDataBundle.class, DataBundle.class);
+        // Facades
+        apiToDefaultImplementationMap.put(IModelFacade.class, ModelFacade.class);
+        apiToDefaultImplementationMap.put(IStoreLoadFacade.class, StoreLoadFacade.class);
+        apiToDefaultImplementationMap.put(ISimulation.class, Simulation.class);
+        // FlowChart: FlowChart, MockModule, ExternalConfig (Modules, ModulePins, GRs, Connections done via DynamicObjectLoader)
+        apiToDefaultImplementationMap.put(IFlowChart.class, FlowChart.class);
+        apiToDefaultImplementationMap.put(IFlowModule.class, DynamicObjectLoader.MockModule.class);
+        apiToDefaultImplementationMap.put(IExternalConfig.class, ExternalConfig.class);
+        // StoreLoad: DynamicClassLoader, ModuleClassesList, Document String
+        apiToDefaultImplementationMap.put(IDynamicClassLoader.class, DynamicClassLoader.class);
+        apiToDefaultImplementationMap.put(IModuleClassesList.class, ModuleClassesList.class);
+        apiToDefaultImplementationMap.put(IDocumentString.class, DocumentString.class);
+        // Simulation: Config, Stepper, Scheduler
+        apiToDefaultImplementationMap.put(ISimulationConfiguration.class, SimulationConfiguration.class);
+        apiToDefaultImplementationMap.put(IMinimalStepper.class, SchedulingStepper.class);
+        apiToDefaultImplementationMap.put(IStepper.class, SchedulingStepper.class);
+        apiToDefaultImplementationMap.put(IScheduler.class, Scheduler.class);
     }
     
     static IAPI defaultImplementationOfThisApi(final Class<?>[] parameterTypes, final Object... initArgs) {

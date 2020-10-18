@@ -14,9 +14,9 @@ import org.jojo.flow.model.api.IModulePinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.jojo.flow.model.storeLoad.DynamicObjectLoader;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.util.DynamicObjectLoader;
 
 public class DefaultArrowGR extends ConnectionGR implements IDefaultArrowGR {
     private Shape defaultArrow; //TODO evtl. anderer Typ jenachdem ob das so geht

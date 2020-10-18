@@ -7,6 +7,12 @@ import org.jojo.flow.model.data.units.Frequency;
 import org.jojo.flow.model.data.units.Time;
 
 public interface IStepper extends IMinimalStepper, Runnable {
+    public static IStepper getDefaultImplementation(final IFlowChart flowChart, 
+            final IScheduler scheduler, final Time<Fraction> explicitTimeStep, final boolean isRealtime) {
+        return (IStepper) IAPI.defaultImplementationOfThisApi(
+                new Class<?>[] {IFlowChart.class, IScheduler.class, Time.class, boolean.class}, 
+                flowChart, scheduler, explicitTimeStep, isRealtime);
+    }
 
     void stepForward(Time<Fraction> time) throws ModuleRunException;
 
