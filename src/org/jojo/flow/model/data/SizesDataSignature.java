@@ -3,6 +3,8 @@ package org.jojo.flow.model.data;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.jojo.flow.model.api.IDataSignature;
+
 public class SizesDataSignature extends BasicSignatureComponentSignature {
     /**
      * 
@@ -33,17 +35,6 @@ public class SizesDataSignature extends BasicSignatureComponentSignature {
     @Override
     public DataSignature getCopy() {
         return new SizesDataSignature(Arrays.stream(this.sizes).toArray());
-    }
-    
-    @Override
-    public boolean equals(final Object other) {
-        if (super.equals(other)) {
-            if (!isChecking() || !((DataSignature)other).isChecking()) {
-                return true;
-            }
-            return Arrays.equals(this.sizes, ((SizesDataSignature) other).sizes);
-        }
-        return false;
     }
     
     @Override
@@ -88,8 +79,8 @@ public class SizesDataSignature extends BasicSignatureComponentSignature {
         }
         
         @Override
-        public boolean equals(final Object other) {
-            if (super.equals(other)) {
+        public boolean matches(final IDataSignature other) {
+            if (super.matches(other)) {
                 return this.size == ((OneSizeDataSignature) other).size;
             }
             return false;

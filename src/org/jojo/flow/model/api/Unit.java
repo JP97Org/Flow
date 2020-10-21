@@ -12,15 +12,34 @@ import java.util.Objects;
 import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.data.Fraction;
 
+/**
+ * This class represents a unit scalar, i.e. a numeric value and and UnitSignature.
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ * @param <T> - the generic numeric type
+ */
 public class Unit<T extends Number> implements Serializable {
     /**
      * 
      */
     private static final long serialVersionUID = 2402866882045663314L;
 
+    /**
+     * This enum contains constants for the different allowed basic numeric types.
+     * 
+     * @author Jonathan Schenkenberger
+     * @version 1.0
+     * @see BasicType
+     */
     public enum Type {
         BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BIG_INT, BIG_DECIMAL, FRACTION;
 
+        /**
+         * Transforms the given value to the correct type defined by this enum constant.
+         * 
+         * @param value - the value
+         * @return the number with the correct type
+         */
         public Number transformToCorrectType(final int value) {
             switch (this) {
             case BIG_DECIMAL:
@@ -47,6 +66,12 @@ public class Unit<T extends Number> implements Serializable {
             }
         }
         
+        /**
+         * Transforms the given value to the correct type defined by this enum constant.
+         * 
+         * @param value - the value
+         * @return the number with the correct type
+         */
         public Number transformToCorrectType(final double value) {
             switch (this) {
             case BIG_DECIMAL:
@@ -74,6 +99,12 @@ public class Unit<T extends Number> implements Serializable {
         }
     }
     
+    /**
+     * Operation Enum for internal calculations.
+     * 
+     * @author Jonathan Schenkenberger
+     * @version 1.0
+     */
     protected enum Operation {
         ADD, SUBTRACT, MULTIPLY, DIVIDE;
     }
@@ -168,11 +199,32 @@ public class Unit<T extends Number> implements Serializable {
     public static final Unit<Integer> C = getIntegerConstant(299792458).multiply(METER_PER_SECOND);
     public static final Unit<Double> G = getDoubleConstant(9.80665).multiply(METER_PER_SQUARE_SECOND);
     
+    /**
+     * The basic numeric type of this unit.
+     * 
+     * @see Unit.Type
+     */
     public final Type type;
     
+    /**
+     * The value.
+     */
     public final T value;
+    
+    /**
+     * The unit signature.
+     * 
+     * @see UnitSignature
+     */
     public final UnitSignature unit;
     
+    /**
+     * Creates a new unit with the given type, value and unit signature.
+     * 
+     * @param type - the Unit.Type
+     * @param value - the value
+     * @param unit - the unit signature
+     */
     public Unit(final Type type, final T value, final UnitSignature unit) {
         this.type = Objects.requireNonNull(type);
         this.value = Objects.requireNonNull(value);
@@ -183,6 +235,11 @@ public class Unit<T extends Number> implements Serializable {
         }
     }
     
+    /**
+     * Copy-Constructor.
+     * 
+     * @param toCopy
+     */
     public Unit(final Unit<T> toCopy) {
         Objects.requireNonNull(toCopy);
         this.type = toCopy.type;
@@ -190,30 +247,72 @@ public class Unit<T extends Number> implements Serializable {
         this.unit = toCopy.unit;
     }
     
+    /**
+     * Gets a constant.
+     * 
+     * @param value - the constant
+     * @return the constant value as a unit
+     */
     public static Unit<Integer> getIntegerConstant(final int value) {
         return new Unit<Integer>(INT, value, NO_UNIT);
     }
     
+    /**
+     * Gets a constant.
+     * 
+     * @param value - the constant
+     * @return the constant value as a unit
+     */
     public static Unit<Long> getLongConstant(final long value) {
         return new Unit<Long>(INT, value, NO_UNIT);
     }
     
+    /**
+     * Gets a constant.
+     * 
+     * @param value - the constant
+     * @return the constant value as a unit
+     */
     public static Unit<BigInteger> getBigIntConstant(final BigInteger value) {
         return new Unit<BigInteger>(BIG_INT, value, NO_UNIT);
     }
     
+    /**
+     * Gets a constant.
+     * 
+     * @param value - the constant
+     * @return the constant value as a unit
+     */
     public static Unit<Double> getDoubleConstant(final double value) {
         return new Unit<Double>(DOUBLE, value, NO_UNIT);
     }
     
+    /**
+     * Gets a constant.
+     * 
+     * @param value - the constant
+     * @return the constant value as a unit
+     */
     public static Unit<Fraction> getFractionConstant(final Fraction value) {
         return new Unit<Fraction>(FRACTION, value, NO_UNIT);
     }
     
+    /**
+     * Gets a constant.
+     * 
+     * @param value - the constant
+     * @return the constant value as a unit
+     */
     public static Unit<BigDecimal> getBigDecimalConstant(final double value) {
         return new Unit<BigDecimal>(BIG_DECIMAL, new BigDecimal(value), NO_UNIT);
     }
     
+    /**
+     * Gets a constant.
+     * 
+     * @param value - the constant
+     * @return the constant value as a unit
+     */
     public static Unit<BigDecimal> getBigDecimalConstant(final BigDecimal value) {
         return new Unit<BigDecimal>(BIG_DECIMAL, value, NO_UNIT);
     }
@@ -234,6 +333,13 @@ public class Unit<T extends Number> implements Serializable {
         }
     }
     
+    /**
+     * Adds the other unit.
+     * 
+     * @param other - the other unit
+     * @return the sum
+     * @throws IllegalUnitOperationException if units do not fit
+     */
     public Unit<T> add(final Unit<T> other) throws IllegalUnitOperationException {
         if (this.type == other.type) {
             final Type type = this.type;
@@ -294,6 +400,13 @@ public class Unit<T extends Number> implements Serializable {
         }
     }
     
+    /**
+     * Subtracts the other unit.
+     * 
+     * @param other - the other unit
+     * @return the difference
+     * @throws IllegalUnitOperationException if units do not fit
+     */
     public Unit<T> subtract(final Unit<T> other) throws IllegalUnitOperationException {
         if (this.type == other.type) {
             final Type type = this.type;
@@ -354,6 +467,13 @@ public class Unit<T extends Number> implements Serializable {
         }
     }
     
+    /**
+     * Multiplies the other unit.
+     * 
+     * @param other - the other unit
+     * @return the product
+     * @throws IllegalUnitOperationException if units do not fit
+     */
     public Unit<T> multiply(final Unit<T> other) throws IllegalUnitOperationException {
         if (this.type == other.type) {
             final Type type = this.type;
@@ -414,10 +534,24 @@ public class Unit<T extends Number> implements Serializable {
         }
     }
     
+    /**
+     * Multiplies the given unit signature.
+     * 
+     * @param otherUnit - other unit signature
+     * @return the product of this unit and the given unit signature
+     */
     public Unit<T> multiply(final UnitSignature otherUnit) {
         return new Unit<T>(this.type, this.value, this.unit.multiply(otherUnit));
     }
     
+    /**
+     * Divides by the other unit.
+     * 
+     * @param other - the other unit (must have 0 value)
+     * @return the division result
+     * @throws IllegalUnitOperationException if units do not fit
+     * @throws ArithmeticException if division by 0 occurs
+     */
     public Unit<T> divide(final Unit<T> other) throws IllegalUnitOperationException, ArithmeticException {
         if (this.type == other.type) {
             final Type type = this.type;
@@ -478,40 +612,85 @@ public class Unit<T extends Number> implements Serializable {
         }
     }
     
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<Byte> toByteUnit() {
         return new Unit<Byte>(BYTE, this.value.byteValue(), this.unit);
     }
     
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<Short> toShortUnit() {
         return new Unit<Short>(SHORT, this.value.shortValue(), this.unit);
     }
     
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<Integer> toIntUnit() {
         return new Unit<Integer>(INT, this.value.intValue(), this.unit);
     }
     
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<Long> toLongUnit() {
         return new Unit<Long>(LONG, this.value.longValue(), this.unit);
     }
     
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<BigInteger> toBigIntUnit() {
         return new Unit<BigInteger>(BIG_INT, new BigInteger("" + this.value), this.unit);
     }
-    
+
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<Float> toFloatUnit() {
         return new Unit<Float>(FLOAT, this.value.floatValue(), this.unit);
     }
     
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<Double> toDoubleUnit() {
         return new Unit<Double>(DOUBLE, this.value.doubleValue(), this.unit);
     }
     
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<BigDecimal> toBigDecimalUnit() {
         return new Unit<BigDecimal>(BIG_DECIMAL, 
                 this.value instanceof BigDecimal ? (BigDecimal)this.value : new BigDecimal(this.value.doubleValue()),
                         this.unit);
     }
     
+    /**
+     * Gets the unit representing this unit but with the type mentioned in the name of the method.
+     * 
+     * @return the unit representing this unit but with the type mentioned in the name of the method
+     */
     public Unit<Fraction> toFractionUnit() {
         if(this.type == Type.FRACTION) {
             @SuppressWarnings("unchecked")
@@ -523,6 +702,12 @@ public class Unit<T extends Number> implements Serializable {
         return new Unit<Fraction>(FRACTION, new Fraction(this.value.doubleValue()), this.unit);
     }
     
+    /**
+     * Gets the celsius value of this temperature.
+     * 
+     * @return the celsius value of this temperature
+     * @throws UnsupportedOperationException if this unit is not a temperature
+     */
     public double toCelsius() throws UnsupportedOperationException {
         if (!this.unit.equals(UnitSignature.KELVIN)) {
             throw new UnsupportedOperationException("only temperatures can be converted to another temperature unit");
@@ -530,6 +715,12 @@ public class Unit<T extends Number> implements Serializable {
         return toDoubleUnit().operateSafely(SUBTRACT, new Unit<>(Unit.Type.DOUBLE, 273.15, this.unit)).value;
     }
     
+    /**
+     * Gets the fahrenheit value of this temperature.
+     * 
+     * @return the fahrenheit value of this temperature
+     * @throws UnsupportedOperationException if this unit is not a temperature
+     */
     public double toFahrenheit() {
         if (!this.unit.equals(UnitSignature.KELVIN)) {
             throw new UnsupportedOperationException("only temperatures can be converted to another temperature unit");
@@ -539,10 +730,22 @@ public class Unit<T extends Number> implements Serializable {
                 .operateSafely(SUBTRACT, new Unit<>(Unit.Type.DOUBLE, 459.67, this.unit)).value;
     }
     
+    /**
+     * Transforms a celsius value to a fahrenheit value.
+     * 
+     * @param celsiusValue - the celsius value
+     * @return the fahrenheit value
+     */
     public static double fromCelsiusToFahrenheit(final double celsiusValue) {
         return getDoubleConstant(celsiusValue + 273.15).multiply(UnitSignature.KELVIN).toFahrenheit();
     }
     
+    /**
+     * Transforms a fahrenheit value to a celsius value.
+     * 
+     * @param fahrenheitValue - the fahrenheit value
+     * @return the celsius value
+     */
     public static double fromFahrenheitToCelsius(final double fahrenheitValue) {
         return getDoubleConstant((fahrenheitValue + 459.67) * (5./9.)).multiply(UnitSignature.KELVIN).toCelsius();
     }
@@ -568,14 +771,33 @@ public class Unit<T extends Number> implements Serializable {
         return this.value + " " + this.unit;
     }
     
+    /**
+     * Gets a more pretty representation.
+     * 
+     * @return  a more pretty representation
+     */
     public String toPrettyString() {
         return toPrettyString(ONE, true, false);
     }
     
+    /**
+     * Gets a more pretty representation using the given prefix.
+     * 
+     * @param prefix - the given prefix
+     * @return a more pretty representation using the given prefix
+     */
     public String toPrettyString(final Unit<?> prefix) {
         return toPrettyString(prefix, true, false);
     }
     
+    /**
+     * Gets a more pretty representation using the given prefix.
+     * 
+     * @param prefix - the given prefix
+     * @param isEnergy - whether J or Nm should be printed for energy/torque values
+     * @param isRadian - whether this unit is an angle
+     * @return a more pretty representation using the given prefix
+     */
     public String toPrettyString(final Unit<?> prefix, final boolean isEnergy, final boolean isRadian) {
         String ret = toString();
         if (prefix == null || ONE.equals(prefix)) {

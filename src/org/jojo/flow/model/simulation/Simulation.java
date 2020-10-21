@@ -46,7 +46,7 @@ public class Simulation implements ISimulation {
     }
     
     @Override
-    public void start() throws ModuleRunException, TimeoutException, FlowException {
+    public void start() {
         this.isRunning = true;
         this.stepper.unpause();
         this.simThread = new Thread(new Runnable() { 
@@ -141,6 +141,11 @@ public class Simulation implements ISimulation {
         }
         this.config = Objects.requireNonNull(config);
         reloadStepper();
+    }
+    
+    @Override
+    public IStepper getStepper() {
+        return this.stepper;
     }
     
     @Override

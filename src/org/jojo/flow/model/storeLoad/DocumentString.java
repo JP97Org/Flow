@@ -35,6 +35,12 @@ public class DocumentString implements IDocumentString {
         this.xml = dBuilder.parse(Objects.requireNonNull(xmlFile));
     }
     
+    /**
+     * Determines whether the given xml file is parseable.
+     * 
+     * @param xmlFile - the given xml file (must not be {@code null})
+     * @return whether the given xml file is parseable
+     */
     public static boolean isParseable(final File xmlFile) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;

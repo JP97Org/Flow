@@ -6,6 +6,13 @@ import java.util.List;
 
 import org.jojo.flow.model.api.IFlowModule;
 
+/**
+ * This class represents an IScheduler which schedules flow modules according to their priority.
+ * Flow modules with higher priority are scheduled earlier.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class PriorityScheduler extends Scheduler {
     public PriorityScheduler() {
         

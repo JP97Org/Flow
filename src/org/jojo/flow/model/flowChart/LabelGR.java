@@ -13,7 +13,7 @@ import org.jojo.flow.model.api.IFlowChartElement;
 import org.jojo.flow.model.api.ILabelGR;
 import org.jojo.flow.model.api.IObserver;
 import org.jojo.flow.model.api.ISubject;
-import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 
@@ -98,7 +98,7 @@ public class LabelGR extends GraphicalRepresentation implements ISubject, ILabel
     }
 
     @Override
-    public DOM getDOM() {
+    public IDOM getDOM() {
         final GraphicalRepresentationDOM dom = (GraphicalRepresentationDOM) super.getDOM();
         dom.appendInt("element", getElement().getId());
         dom.appendString("text", getText());
@@ -106,51 +106,51 @@ public class LabelGR extends GraphicalRepresentation implements ISubject, ILabel
     }
 
     @Override
-    public void restoreFromDOM(final DOM dom) {
+    public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
             final Map<String, Object> domMap = dom.getDOMMap();
-            final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
+            final IDOM hDom = (IDOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
             final String hStr = hDom.elemGet();
             this.height = Integer.parseInt(hStr);
-            final DOM wDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
+            final IDOM wDom = (IDOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
             final String wStr = wDom.elemGet();
             this.width = Integer.parseInt(wStr);
-            final DOM elemDom = (DOM)domMap.get("element");
+            final IDOM elemDom = (IDOM)domMap.get("element");
             final String elemIdStr = elemDom.elemGet();
             final int elemId = Integer.parseInt(elemIdStr);
             this.element = (new ModelFacade()).getElementById(elemId);
-            final DOM strDom = (DOM)domMap.get("text");
+            final IDOM strDom = (IDOM)domMap.get("text");
             this.text = strDom.elemGet();
             notifyObservers();
         }
     }
 
     @Override
-    public boolean isDOMValid(final DOM dom) {
+    public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getMainFlowChart());
             final Map<String, Object> domMap = dom.getDOMMap();
-            ok(domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM hDom = (IDOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
             final String hStr = hDom.elemGet();
             ok(hStr != null, OK.ERR_MSG_NULL);
             ok(s -> Integer.parseInt(s), hStr);
-            ok(domMap.get(GraphicalRepresentationDOM.NAME_WIDTH) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM wDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_WIDTH) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM wDom = (IDOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
             final String wStr = wDom.elemGet();
             ok(wStr != null, OK.ERR_MSG_NULL);
             ok(s -> Integer.parseInt(s), wStr);
-            ok(domMap.get("element") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM elemDom = (DOM)domMap.get("element");
+            ok(domMap.get("element") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM elemDom = (IDOM)domMap.get("element");
             final String elemIdStr = elemDom.elemGet();
             ok(elemIdStr != null, OK.ERR_MSG_NULL);
             final int elemId = ok(s -> Integer.parseInt(s), elemIdStr);
             IFlowChartElement element = (new ModelFacade()).getElementById(elemId);
             ok(element != null, OK.ERR_MSG_NULL);
-            ok(domMap.get("text") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM strDom = (DOM)domMap.get("text");
+            ok(domMap.get("text") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM strDom = (IDOM)domMap.get("text");
             String text = strDom.elemGet();
             ok(text != null, OK.ERR_MSG_NULL);
             return true;

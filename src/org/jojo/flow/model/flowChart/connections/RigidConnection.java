@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.jojo.flow.exc.ConnectionException;
 import org.jojo.flow.exc.ListSizeException;
 import org.jojo.flow.exc.Warning;
-import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.api.IRigidConnection;
 import org.jojo.flow.model.api.IRigidPin;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
@@ -89,16 +88,6 @@ public class RigidConnection extends Connection implements IRigidConnection {
     @Override
     public GraphicalRepresentation getGraphicalRepresentation() {
         return this.gr;
-    }
-
-    @Override
-    public IInternalConfig serializeInternalConfig() {
-        return null; // no internal config exists
-    }
-
-    @Override
-    public void restoreSerializedInternalConfig(IInternalConfig internalConfig) {
-        // no internal config exists
     }
 
     @Override

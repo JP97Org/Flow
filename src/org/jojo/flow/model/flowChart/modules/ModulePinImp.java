@@ -47,15 +47,6 @@ public abstract class ModulePinImp implements IModulePinImp {
         return this.connections.remove(toRemove);
     }
     
-    public synchronized boolean removeConnection(final int index) {
-        if (index >= this.connections.size()) {
-            return false;
-        }
-        
-        this.connections.remove(index);
-        return true;
-    }
-    
     public IData getDefaultData() {
         return this.defaultData;
     }

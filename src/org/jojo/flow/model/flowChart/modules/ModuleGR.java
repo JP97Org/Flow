@@ -13,9 +13,9 @@ import javax.swing.Icon;
 
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.flowChart.FlowChartElementGR;
-import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;
@@ -113,6 +113,10 @@ public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {
     
     @Override
     public final void setScale(final double scale) {
+        if (scale <= 0) {
+            throw new IllegalArgumentException("scale must be > 0");
+        }
+        
         this.scale = scale;
         notifyObservers(scale);
     }
@@ -148,12 +152,17 @@ public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {
         notifyObservers(isIconTextAllowed);
     }
     
+    @Override
     public final String getIconText() {
         return this.iconText;
     }
     
     @Override
     public final void setIconText(final String iconText) {
+        if (iconText == null && isIconTextAllowed()) {
+            throw new IllegalArgumentException("icon text must not be null if icon text is allowed");
+        }
+        
         this.iconText = iconText;
         notifyObservers(iconText);
     }
@@ -164,7 +173,7 @@ public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {
     }
     
     @Override
-    public DOM getDOM() {
+    public IDOM getDOM() {
         final GraphicalRepresentationDOM dom = (GraphicalRepresentationDOM) super.getDOM();
         dom.appendInt(ModulePinDOM.NAME_MODULE_ID, getModule().getId());
         dom.appendString("scale", "" + getScale());
@@ -178,36 +187,36 @@ public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {
     }
     
     @Override
-    public void restoreFromDOM(final DOM dom) {
+    public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
             final Map<String, Object> domMap = dom.getDOMMap();
-            final DOM modIdDom = (DOM) domMap.get(ModulePinDOM.NAME_MODULE_ID);
+            final IDOM modIdDom = (IDOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
             final String idStr = modIdDom.elemGet();
             final int id = Integer.parseInt(idStr);
             this.module = (FlowModule) new ModelFacade().getElementById(id);
-            final DOM scaleDom = (DOM) domMap.get("scale");
+            final IDOM scaleDom = (IDOM)domMap.get("scale");
             final String scaleStr = scaleDom.elemGet();
             this.scale = Double.parseDouble(scaleStr);
-            final DOM isIconTextAllowedDom = (DOM) domMap.get("isIconTextAllowed");
+            final IDOM isIconTextAllowedDom = (IDOM)domMap.get("isIconTextAllowed");
             final String isIconTextAllowedStr = isIconTextAllowedDom.elemGet();
             this.isIconTextAllowed = Boolean.parseBoolean(isIconTextAllowedStr);
             if (this.isIconTextAllowed) {
-                final DOM iconTextDom = (DOM) domMap.get("iconText");
+                final IDOM iconTextDom = (IDOM)domMap.get("iconText");
                 this.iconText = iconTextDom.elemGet() == null ? "" : iconTextDom.elemGet();
             }
-            final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
+            final IDOM hDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
             final String hStr = hDom.elemGet();
             this.height = Integer.parseInt(hStr);
-            final DOM wDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
+            final IDOM wDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
             final String wStr = wDom.elemGet();
             this.width = Integer.parseInt(wStr);
-            final DOM cornersDom = (DOM)domMap.get("corners");
+            final IDOM cornersDom = (IDOM)domMap.get("corners");
             final Map<String, Object> cornersMap = cornersDom.getDOMMap();
             int i = 0;
             for (final var cornerObj : cornersMap.values()) {
-                if (cornerObj instanceof DOM) {
-                    final DOM cornerDom = (DOM) cornerObj;
+                if (cornerObj instanceof IDOM) {
+                    final IDOM cornerDom = (IDOM)cornerObj;
                     this.corners[i] = PointDOM.pointOf(cornerDom);
                     i++;
                 }
@@ -218,47 +227,47 @@ public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {
     }
     
     @Override
-    public boolean isDOMValid(final DOM dom) {
+    public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "FCE_GR " + OK.ERR_MSG_DOM_NOT_VALID, getModule());
             final Map<String, Object> domMap = dom.getDOMMap();
-            ok(domMap.get(ModulePinDOM.NAME_MODULE_ID) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM modIdDom = (DOM) domMap.get(ModulePinDOM.NAME_MODULE_ID);
+            ok(domMap.get(ModulePinDOM.NAME_MODULE_ID) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM modIdDom = (IDOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
             final String idStr = modIdDom.elemGet();
             ok(idStr != null, OK.ERR_MSG_NULL);
             final int id = ok(s -> Integer.parseInt(s), idStr);
             ok(i -> (FlowModule) new ModelFacade().getElementById(i), id);
-            ok(domMap.get("scale") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM scaleDom = (DOM) domMap.get("scale");
+            ok(domMap.get("scale") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM scaleDom = (IDOM)domMap.get("scale");
             final String scaleStr = scaleDom.elemGet();
             ok(scaleStr != null, OK.ERR_MSG_NULL);
             ok(s -> Double.parseDouble(s), scaleStr);
-            ok(domMap.get("isIconTextAllowed") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM isIconTextAllowedDom = (DOM) domMap.get("isIconTextAllowed");
+            ok(domMap.get("isIconTextAllowed") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM isIconTextAllowedDom = (IDOM)domMap.get("isIconTextAllowed");
             final String isIconTextAllowedStr = isIconTextAllowedDom.elemGet();
             ok(isIconTextAllowedStr != null, OK.ERR_MSG_NULL);
             final boolean isIconTextAllowed = ok(s -> Boolean.parseBoolean(s), isIconTextAllowedStr);
             if (isIconTextAllowed) {
-                ok(domMap.get("iconText") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
+                ok(domMap.get("iconText") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
             }
-            ok(domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM hDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM hDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_HEIGHT);
             final String hStr = hDom.elemGet();
             ok(hStr != null, OK.ERR_MSG_NULL);
             ok(s -> Integer.parseInt(s), hStr);
-            ok(domMap.get(GraphicalRepresentationDOM.NAME_WIDTH) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM wDom = (DOM) domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_WIDTH) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM wDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_WIDTH);
             final String wStr = wDom.elemGet();
             ok(wStr != null, OK.ERR_MSG_NULL);
             ok(s -> Integer.parseInt(s), wStr);
-            ok(domMap.get("corners") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM cornersDom = (DOM)domMap.get("corners");
+            ok(domMap.get("corners") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM cornersDom = (IDOM)domMap.get("corners");
             final Map<String, Object> cornersMap = cornersDom.getDOMMap();
             int i = 0;
             for (final var cornerObj : cornersMap.values()) {
-                if (cornerObj instanceof DOM) {
-                    final DOM cornerDom = (DOM) cornerObj;
+                if (cornerObj instanceof IDOM) {
+                    final IDOM cornerDom = (IDOM)cornerObj;
                     ok(d -> PointDOM.pointOf(d), cornerDom);
                     i++;
                 }

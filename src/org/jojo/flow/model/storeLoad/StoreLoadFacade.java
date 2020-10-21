@@ -8,6 +8,7 @@ import java.util.Objects;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDynamicClassLoader;
 import org.jojo.flow.model.api.IModuleClassesList;
 import org.jojo.flow.model.api.IStoreLoadFacade;
@@ -51,7 +52,7 @@ public class StoreLoadFacade implements IStoreLoadFacade {
             final Document document = docStr.getDocument();
             DOM.resetDocument(document);
             final FlowDOM flowDom = FlowDOM.of(document);
-            final DOM fcDom = flowDom.getFlowChartDOM();
+            final IDOM fcDom = flowDom.getFlowChartDOM();
             return DynamicObjectLoader.loadFlowChartFromDOM(fcDom);
         }
         new Warning(null, "could not load flowchart because the document is not parseable", true).reportWarning();
@@ -59,7 +60,7 @@ public class StoreLoadFacade implements IStoreLoadFacade {
     }
     
     @Override
-    public boolean storeFlowChart(final File xmlFile, final DOM flowDom) {
+    public boolean storeFlowChart(final File xmlFile, final IDOM flowDom) {
         Objects.requireNonNull(xmlFile);
         final DocumentString docStr = new DocumentString(flowDom.getDocument());
         if (docStr.isTransformable()) {

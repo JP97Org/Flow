@@ -93,7 +93,7 @@ public class Warning {
         return this.id;
     }
     
-    public boolean equals(final Object other) {
+    public boolean matches(final Object other) {
         if (other instanceof Warning) {
             return hashCode() == other.hashCode();
         }

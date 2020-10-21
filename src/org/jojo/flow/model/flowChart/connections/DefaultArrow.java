@@ -9,17 +9,16 @@ import java.io.IOException;
 import org.jojo.flow.exc.ConnectionException;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IInputPin;
-import org.jojo.flow.model.api.IInternalConfig;
 import org.jojo.flow.model.api.IOutputPin;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
-import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
@@ -61,15 +60,9 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
         return this.dataType;
     }
     
-    /**
-     * Sets a data signature to the arrow which matches the data signature at the moment,
-     * but must be completely checking.
-     * @param iDataSignature - the given data signature which must be recursively checking
-     * @return whether putting the new data signature was successful
-     */
     @Override
     public boolean putDataSignature(final IDataSignature iDataSignature) {
-        if (this.dataType.equals(Objects.requireNonNull(iDataSignature)) && iDataSignature.isCheckingRecursive()) {
+        if (this.dataType.matches(Objects.requireNonNull(iDataSignature)) && iDataSignature.isCheckingRecursive()) {
             forcePutDataSignature(iDataSignature);
             return true;
         }
@@ -100,7 +93,7 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
             return getToPins()
                     .stream()
                     .allMatch(x -> fromImp.getCheckDataSignature()
-                            .equals(((DefaultPin)x.getModulePinImp()).getCheckDataSignature()));
+                            .matches(((DefaultPin)x.getModulePinImp()).getCheckDataSignature()));
         }
         return false;
     }
@@ -108,16 +101,6 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
     @Override
     public GraphicalRepresentation getGraphicalRepresentation() {
         return this.gr;
-    }
-
-    @Override
-    public IInternalConfig serializeInternalConfig() {
-        return null; // no internal config exists
-    }
-
-    @Override
-    public void restoreSerializedInternalConfig(IInternalConfig internalConfig) {
-        // no internal config exists
     }
 
     @Override
@@ -133,8 +116,8 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
     }
 
     @Override
-    public DOM getDOM() {
-        final DOM dom = super.getDOM();
+    public IDOM getDOM() {
+        final IDOM dom = super.getDOM();
         dom.appendString("dataType", this.dataType.toString());
         try {
             dom.appendString("data", this.data == null ? "null" : this.data.toSerializedString());
@@ -147,14 +130,14 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
     }
 
     @Override
-    public void restoreFromDOM(final DOM dom) {
+    public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
             final Map<String, Object> domMap = dom.getDOMMap();
-            final DOM dataTypeDom = (DOM)domMap.get("dataType");
+            final IDOM dataTypeDom = (IDOM)domMap.get("dataType");
             final String dataTypeStr = dataTypeDom.elemGet();
             this.dataType = DataSignature.of(dataTypeStr);
-            final DOM dataDom = (DOM)domMap.get("data");
+            final IDOM dataDom = (IDOM)domMap.get("data");
             final String dataStr = dataDom.elemGet();
             try {
                 this.data = dataStr.equals("null") ? null : Data.ofSerializedString(dataStr);
@@ -167,18 +150,18 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
     }
     
     @Override
-    public boolean isDOMValid(final DOM dom) {
+    public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
             final Map<String, Object> domMap = dom.getDOMMap();
-            ok(domMap.get("dataType") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM dataTypeDom = (DOM)domMap.get("dataType");
+            ok(domMap.get("dataType") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM dataTypeDom = (IDOM)domMap.get("dataType");
             final String dataTypeStr = dataTypeDom.elemGet();
             ok(dataTypeStr != null, OK.ERR_MSG_NULL);
             ok(s -> DataSignature.of(s), dataTypeStr);
-            ok(domMap.get("data") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM dataDom = (DOM)domMap.get("data");
+            ok(domMap.get("data") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM dataDom = (IDOM)domMap.get("data");
             final String dataStr = dataDom.elemGet();
             ok(dataStr != null, OK.ERR_MSG_NULL);
             final Exception exc = ok(s -> {

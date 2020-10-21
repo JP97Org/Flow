@@ -22,7 +22,7 @@ public abstract class Data implements IData {
     public abstract IDataSignature getDataSignature();
     
     public boolean hasSameType(final IDataSignature dataType) {
-        return getDataSignature().equals(dataType);
+        return getDataSignature().matches(dataType);
     }
     
     @Override

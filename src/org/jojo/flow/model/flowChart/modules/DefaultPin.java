@@ -32,7 +32,7 @@ public class DefaultPin extends ModulePinImp implements IDefaultPin {
      */
     @Override
     public void setCheckDataSignature(final IDataSignature checkingDataSignature) throws FlowException {
-        if (this.checkDataSignature.equals(checkingDataSignature)) {
+        if (this.checkDataSignature.matches(checkingDataSignature)) {
             forceSetCheckDataSignature(checkingDataSignature);
         } else {
             throw new FlowException(new DataTypeIncompatException("data signature to be set and the already set one do not match"), getModule());

@@ -15,6 +15,7 @@ import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IExternalConfig;
@@ -48,7 +49,6 @@ import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.RigidPin;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
-import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;
@@ -77,16 +77,16 @@ public final class DynamicObjectLoader {
         return new FlowChart(id, new FlowChartGR());
     }
     
-    public static FlowChart loadFlowChartFromDOM(final DOM flowChartDOM) {
-        return restoreFlowChartFromDOM(loadEmptyFlowChart(0), flowChartDOM);
+    public static FlowChart loadFlowChartFromDOM(final IDOM fcDom) {
+        return restoreFlowChartFromDOM(loadEmptyFlowChart(0), fcDom);
     }
     
-    public static FlowChart restoreFlowChartFromDOM(final FlowChart flowChart, final DOM flowChartDOM) {
+    public static FlowChart restoreFlowChartFromDOM(final FlowChart flowChart, final IDOM flowChartDOM) {
         Objects.requireNonNull(flowChart);
         Objects.requireNonNull(flowChartDOM);
         if (flowChart.isDOMValid(flowChartDOM)) {
             Objects.requireNonNull(flowChart).restoreFromDOM(flowChartDOM);
-            DOM.resetDocument();
+            IDOM.resetDocument();
             return flowChart;
         }
         return null;
@@ -327,7 +327,7 @@ public final class DynamicObjectLoader {
         }
 
         @Override
-        protected void setAllModulePins(final DOM pinsDom) {
+        protected void setAllModulePins(final IDOM pinsDom) {
             if (isPinsDOMValid(pinsDom)) {
                 if (this.rigidPins == null) {
                     this.rigidPins = new ArrayList<>();
@@ -336,11 +336,11 @@ public final class DynamicObjectLoader {
                 final Map<String, Object> domMap = pinsDom.getDOMMap();
                 int i = 0;
                 for(var pinObj : domMap.values()) {
-                    if (pinObj instanceof DOM) {
-                        final DOM pinDom = (DOM) pinObj;
-                        final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
+                    if (pinObj instanceof IDOM) {
+                        final IDOM pinDom = (IDOM) pinObj;
+                        final IDOM pinCnDom = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
                         final String pinCn = pinCnDom.elemGet();
-                        final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
+                        final IDOM pinCnDomImp = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
                         final String pinCnImp = pinCnDomImp.elemGet();
                         if (pinCnImp.equals(DefaultPin.class.getName())) {
                             if (pinCn.equals(OutputPin.class.getName())) {
@@ -355,7 +355,7 @@ public final class DynamicObjectLoader {
                                 this.rigidPins.add(loadPin(pinCn, pinCnImp, this));
                             } else {
                                 Point lastLinePoint = null;
-                                final Point thisLinePoint = PointDOM.pointOf((DOM) ((DOM) pinDom.getDOMMap()
+                                final Point thisLinePoint = PointDOM.pointOf((IDOM) ((IDOM) pinDom.getDOMMap()
                                         .get(GraphicalRepresentationDOM.NAME)).getDOMMap()
                                         .get("linePoint"));
                                 int index = 0;
@@ -396,21 +396,21 @@ public final class DynamicObjectLoader {
         }
 
         @Override
-        protected boolean isPinsDOMValid(final DOM pinsDom) {
+        protected boolean isPinsDOMValid(final IDOM pinsDom) {
             Objects.requireNonNull(pinsDom);
             final Map<String, Object> domMap = pinsDom.getDOMMap();
             try {
                 int i = 0;
                 for(var pinObj : domMap.values()) {
-                    if (pinObj instanceof DOM) {
-                        ok(pinObj instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                        final DOM pinDom = (DOM) pinObj;
-                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                        final DOM pinCnDom = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
+                    if (pinObj instanceof IDOM) {
+                        ok(pinObj instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+                        final IDOM pinDom = (IDOM) pinObj;
+                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+                        final IDOM pinCnDom = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
                         final String pinCn = pinCnDom.elemGet();
                         ok(pinCn != null, OK.ERR_MSG_NULL);
-                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                        final DOM pinCnDomImp = (DOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
+                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+                        final IDOM pinCnDomImp = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
                         final String pinCnImp = pinCnDomImp.elemGet();
                         ok(pinCnImp != null, OK.ERR_MSG_NULL);
                         final ModulePin pin = ok(x -> loadPin(pinCn, pinCnImp, this), "");
@@ -432,28 +432,18 @@ public final class DynamicObjectLoader {
         }
         
         @Override
-        public void setInternalConfig(DOM internalConfigDOM) {
+        public void setInternalConfig(IDOM internalConfigDOM) {
             
         }
         
         @Override
-        public boolean isInternalConfigDOMValid(DOM internalConfigDOM) {
+        public boolean isInternalConfigDOMValid(IDOM internalConfigDOM) {
             return true;
         } 
 
         @Override
         public GraphicalRepresentation getGraphicalRepresentation() {
             return this.gr;
-        }
-
-        @Override
-        public IInternalConfig serializeInternalConfig() {
-            return null;
-        }
-
-        @Override
-        public void restoreSerializedInternalConfig(IInternalConfig internalConfig) {
-            
         }
 
         @Override

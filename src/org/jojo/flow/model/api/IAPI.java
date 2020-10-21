@@ -29,9 +29,23 @@ import org.jojo.flow.model.storeLoad.ModuleClassesList;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 
+/**
+ * The main interface of the Flow Model API. All interfaces of the API should extend this interface.
+ * It declares no methods but provides a static API initializer and a default implementation getter
+ * which can be used from sub-interfaces to get respective default implementations.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public interface IAPI {
+    /**
+     * A Map which maps the API interfaces to respective default implementation classes.
+     */
     static final Map<Class<?>, Class<?>> apiToDefaultImplementationMap = new HashMap<>();
     
+    /**
+     * Initializes the API, i.e. sets the mappings for the API interfaces to default implementations map.
+     */
     static void initialize() { 
         // Basic Types
         apiToDefaultImplementationMap.put(IFraction.class, Fraction.class);
@@ -68,6 +82,14 @@ public interface IAPI {
         apiToDefaultImplementationMap.put(IScheduler.class, Scheduler.class);
     }
     
+    /**
+     * Gets the default implementation of the calling sub-interface of IAPI.
+     * This method should only directly be called from a sub-interface of IAPI.
+     * 
+     * @param parameterTypes - the parameter types for the constructor to call
+     * @param initArgs - the initial arguments for the constructor to call
+     * @return a default implementation of the calling IAPI sub-interface created with the given initial arguments
+     */
     static IAPI defaultImplementationOfThisApi(final Class<?>[] parameterTypes, final Object... initArgs) {
         final String iClassName;
         try { 

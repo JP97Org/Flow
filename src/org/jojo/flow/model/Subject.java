@@ -2,6 +2,7 @@ package org.jojo.flow.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.jojo.flow.model.api.IObserver;
 import org.jojo.flow.model.api.ISubject;
@@ -22,7 +23,7 @@ public abstract class Subject implements ISubject {
     
     @Override
     public void registerObserver(final IObserver observer) {
-        this.observerList.add(observer);
+        this.observerList.add(Objects.requireNonNull(observer));
     }
     
     @Override

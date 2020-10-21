@@ -19,11 +19,14 @@ public class ModuleClassesList implements IModuleClassesList {
     private final List<Class<? extends IFlowModule>> moduleClassesList;
     private final boolean isLoadingAll;
     
+    private int loadedUntilIndex;
+    
     public ModuleClassesList(final IDynamicClassLoader loader, final File... jarFiles) {
         this.loader = Objects.requireNonNull(loader);
         this.jarFiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(jarFiles)));
         this.moduleClassesList = new ArrayList<>();
         this.isLoadingAll = false;
+        this.loadedUntilIndex = -1;
     }
     
     public ModuleClassesList(final IDynamicClassLoader loader, final boolean isLoadingAll, final File... jarFiles) throws ClassNotFoundException, IOException {
@@ -34,6 +37,7 @@ public class ModuleClassesList implements IModuleClassesList {
         if (isLoadingAll) {
             loadAll();
         }
+        this.loadedUntilIndex = this.jarFiles.size() - 1;
     }
     
     @Override
@@ -59,8 +63,12 @@ public class ModuleClassesList implements IModuleClassesList {
 
     @Override
     public IModuleClassesList loadAll() throws ClassNotFoundException, IOException {
+        int i = 0;
         for (final File file : this.jarFiles) {
-            load(file);
+            if (i > this.loadedUntilIndex) {
+                load(file);
+            }
+            i++;
         }
         return this;
     }
@@ -71,6 +79,7 @@ public class ModuleClassesList implements IModuleClassesList {
                 .filter(c -> FlowModule.class.isAssignableFrom(c))
                 .map(c -> (Class<? extends FlowModule>)c)
                 .collect(Collectors.toList()));
+        this.loadedUntilIndex++;
     }
     
     @Override

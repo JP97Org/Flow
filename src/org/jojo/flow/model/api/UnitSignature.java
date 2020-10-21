@@ -7,6 +7,12 @@ import java.util.regex.Pattern;
 import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.exc.Warning;
 
+/**
+ * This class represents a signature of a SI-based unit.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public final class UnitSignature implements Serializable {
     /**
      * 
@@ -65,6 +71,9 @@ public final class UnitSignature implements Serializable {
     public final int mole;
     public final int candela;
     
+    /**
+     * Creates a new unit signature representing the NO_UNIT.
+     */
     private UnitSignature() {
         this.meter = 0;
         this.kilogramm = 0;
@@ -75,10 +84,22 @@ public final class UnitSignature implements Serializable {
         this.candela = 0;
     }
     
+    /**
+     * Copy-Constructor.
+     * 
+     * @param toCopy
+     */
     public UnitSignature(final UnitSignature toCopy) {
         this(toCopy.getUnitSignatureArray());
     }
     
+    /**
+     * Creates a new unit signature representing the given unit signature array.
+     * 
+     * @param unitSignatureArray - the unit signature array
+     * @throws IllegalArgumentException if {@code unitSignatureArray.length != NUM_BASE_UNITS}
+     * @see #getUnitSignatureArray()
+     */
     public UnitSignature(final int... unitSignatureArray) throws IllegalArgumentException {
         if (unitSignatureArray.length != NUM_BASE_UNITS) {
             throw new IllegalArgumentException("there must be " + NUM_BASE_UNITS + " ints for a correct unit");
@@ -105,6 +126,13 @@ public final class UnitSignature implements Serializable {
         return new UnitSignature(arr);
     }
     
+    /**
+     * Adds another unit signature.
+     * 
+     * @param other - other unit signature
+     * @return the sum
+     * @throws IllegalUnitOperationException if units do not fit
+     */
     public UnitSignature add(final UnitSignature other) throws IllegalUnitOperationException {
         if (this.equals(other)) {
             return this;
@@ -113,10 +141,23 @@ public final class UnitSignature implements Serializable {
         }
     }
     
+    /**
+     * Subtracts another unit signature.
+     * 
+     * @param other - other unit signature
+     * @return the difference
+     * @throws IllegalUnitOperationException if units do not fit
+     */
     public UnitSignature subtract(final UnitSignature other) throws IllegalUnitOperationException {
         return add(other);
     }
     
+    /**
+     * Multiplies another unit signature.
+     * 
+     * @param other - other unit signature
+     * @return the product
+     */
     public UnitSignature multiply(final UnitSignature other) {
         return new UnitSignature(addEach(other.getUnitSignatureArray()));
     }
@@ -129,6 +170,12 @@ public final class UnitSignature implements Serializable {
         return ret;
     }
     
+    /**
+     * Divides by another unit signature.
+     * 
+     * @param other - other unit signature
+     * @return the division result
+     */
     public UnitSignature divide(final UnitSignature other) {
         return new UnitSignature(subtractEach(other.getUnitSignatureArray()));
     }
@@ -141,6 +188,11 @@ public final class UnitSignature implements Serializable {
         return ret;
     }
 
+    /**
+     * Gets the unit signature array, i.e. the array:  {@code  meter, kilogramm, second, ampere, kelvin, mole, candela}.
+     * 
+     * @return the unit signature array, i.e. the array:  {@code  meter, kilogramm, second, ampere, kelvin, mole, candela}
+     */
     public int[] getUnitSignatureArray() {
         return new int[] {meter, kilogramm, second, ampere, kelvin, mole, candela};
     }
@@ -182,6 +234,13 @@ public final class UnitSignature implements Serializable {
         return ret.endsWith(" * ") ? ret.substring(0, ret.length() - 3) : ret;
     }
     
+    /**
+     * Creates a unit signature of a string.
+     * 
+     * @param unitAsString - the unit as a string
+     * @return the unit signature represented by the given string
+     * @see #toString()
+     */
     public static UnitSignature ofString(final String unitAsString) {
         if (unitAsString == null || unitAsString.equals("null")) {
             return null;
@@ -224,10 +283,22 @@ public final class UnitSignature implements Serializable {
         return isErr ? null : new UnitSignature(arr);
     }
     
+    /**
+     * Gets a more pretty representation.
+     * 
+     * @return a more pretty representation
+     */
     public String toPrettyString() {
         return toPrettyString(true, false);
     }
     
+    /**
+     * Gets a more pretty representation.
+     * 
+     * @param isEnergy - whether J or Nm should be printed for energy/torque values
+     * @param isRadian - whether this unit is an angle
+     * @return a more pretty representation
+     */
     public String toPrettyString(final boolean isEnergy, final boolean isRadian) {
         String ret = toString();
         if (ret.equals(NEWTON.toString())) {

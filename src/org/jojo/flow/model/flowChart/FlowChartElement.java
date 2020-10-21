@@ -9,7 +9,6 @@ import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IFlowChartElement;
 import org.jojo.flow.model.api.IGraphicalRepresentation;
-import org.jojo.flow.model.api.IInternalConfig;
 
 public abstract class FlowChartElement extends Subject implements IDOMable, IFlowChartElement {
     private int id;
@@ -22,10 +21,6 @@ public abstract class FlowChartElement extends Subject implements IDOMable, IFlo
     
     @Override
     public abstract IGraphicalRepresentation getGraphicalRepresentation();
-    @Override
-    public abstract IInternalConfig serializeInternalConfig();
-    @Override
-    public abstract void restoreSerializedInternalConfig(IInternalConfig internalConfig);
     @Override
     public abstract String serializeSimulationState();
     @Override
@@ -53,12 +48,12 @@ public abstract class FlowChartElement extends Subject implements IDOMable, IFlo
     }
     
     @Override
-    public List<Warning> getWarnings() {
+    public synchronized List<Warning> getWarnings() {
         return new ArrayList<>(this.warnings);
     }
 
     @Override
-    public Warning getLastWarning() {
+    public synchronized Warning getLastWarning() {
         if (this.warnings.isEmpty()) {
             return null;
         }

@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IFlowChartElementGR;
 import org.jojo.flow.model.api.ILabelGR;
-import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.util.DynamicObjectLoader;
@@ -38,8 +38,8 @@ public abstract class FlowChartElementGR extends GraphicalRepresentation impleme
     }
     
     @Override
-    public DOM getDOM() {
-        final DOM dom = super.getDOM();
+    public IDOM getDOM() {
+        final IDOM dom = super.getDOM();
         if (this.label != null) {
             dom.appendCustomDOM("label", this.label);
         }
@@ -47,31 +47,31 @@ public abstract class FlowChartElementGR extends GraphicalRepresentation impleme
     }
     
     @Override
-    public void restoreFromDOM(final DOM dom) {
+    public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
             final Map<String, Object> domMap = dom.getDOMMap();
             if (domMap.containsKey("label")) {
-                final DOM labelDom = (DOM)domMap.get("label");
+                final IDOM labelDom = (IDOM)domMap.get("label");
                 this.label = (LabelGR) DynamicObjectLoader.loadGR(LabelGR.class.getName());
-                final DOM grDom = (DOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
+                final IDOM grDom = (IDOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
                 this.label.restoreFromDOM(grDom);
             }
         }
     }
     
     @Override
-    public boolean isDOMValid(final DOM dom) {
+    public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID);
             final Map<String, Object> domMap = dom.getDOMMap();
             if (domMap.containsKey("label")) {
-                ok(domMap.get("label") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM labelDom = (DOM)domMap.get("label");
+                ok(domMap.get("label") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+                final IDOM labelDom = (IDOM)domMap.get("label");
                 ok(g -> (LabelGR) DynamicObjectLoader.loadGR(g), LabelGR.class.getName());
-                ok(labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM grDom = (DOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
+                ok(labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+                final IDOM grDom = (IDOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
                 ok(this.label.isDOMValid(grDom), "Label " + OK.ERR_MSG_DOM_NOT_VALID);
             }
             

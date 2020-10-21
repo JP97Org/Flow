@@ -23,7 +23,7 @@ import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.connections.Connection;
-import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.OK;
@@ -75,16 +75,6 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     }
     
     @Override
-    public synchronized boolean removeConnection(final int index) {
-        final IConnection toRemove = index >= getConnections().size() ? null : getConnections().get(index);
-        final boolean ret = this.imp.removeConnection(index);
-        if (ret) {
-            notifyObservers(toRemove);
-        }
-        return ret;
-    }
-    
-    @Override
     public IData getDefaultData() {
         return this.imp.getDefaultData();
     }
@@ -100,7 +90,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     }
     
     @Override
-    public DOM getDOM() {
+    public IDOM getDOM() {
         final ModulePinDOM dom = new ModulePinDOM();
         dom.setClassName(getClass().getName());
         dom.setClassNameImp(getModulePinImp().getClass().getName());
@@ -123,21 +113,21 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     }
 
     @Override
-    public void restoreFromDOM(final DOM dom) {
+    public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             getConnections().forEach(c -> removeConnection(c));
             final Map<String, Object> domMap = dom.getDOMMap();
-            final DOM modIdDom = (DOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
+            final IDOM modIdDom = (IDOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
             final int modId = Integer.parseInt(modIdDom.elemGet());
             final IFlowChartElement fce = new ModelFacade().getElementById(modId);
             if (fce instanceof IFlowModule) {
                 setModule((FlowModule)fce);
             }
-            final DOM conIdsDom = (DOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
+            final IDOM conIdsDom = (IDOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
             final Map<String, Object> conIdsMap = conIdsDom.getDOMMap();
             for (Object conIdObj : conIdsMap.values()) {
-                if (conIdObj instanceof DOM) {
-                    final DOM conIdDom = (DOM)conIdObj;
+                if (conIdObj instanceof IDOM) {
+                    final IDOM conIdDom = (IDOM)conIdObj;
                     final int conId = Integer.parseInt(conIdDom.elemGet());
                     final Connection con = (Connection)new ModelFacade().getElementById(conId);
                     try {
@@ -148,7 +138,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                     }
                 }
             }
-            final DOM defaultDataDom = (DOM)domMap.get("defaultData");
+            final IDOM defaultDataDom = (IDOM)domMap.get("defaultData");
             if (defaultDataDom != null) {
                 final String dataStr = defaultDataDom.elemGet();
                 try {
@@ -158,10 +148,10 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                     e.printStackTrace();
                 }
             }
-            final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME);
             this.gr.restoreFromDOM(grDom);
             if (domMap.containsKey("checkDataSignature")) {
-                final DOM cdsDom = (DOM)domMap.get("checkDataSignature");
+                final IDOM cdsDom = (IDOM)domMap.get("checkDataSignature");
                 final String cdsString = cdsDom.elemGet();
                 final IDataSignature cds = DataSignature.of(cdsString);
                 ((DefaultPin)this.imp).forceSetCheckDataSignature(cds);
@@ -171,29 +161,29 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     }
     
     @Override
-    public boolean isDOMValid(final DOM dom) {
+    public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
         final Map<String, Object> domMap = dom.getDOMMap();
         try {
-            ok(domMap.get(ModulePinDOM.NAME_CLASSNAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM cnDom = (DOM)domMap.get(ModulePinDOM.NAME_CLASSNAME);
+            ok(domMap.get(ModulePinDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM cnDom = (IDOM)domMap.get(ModulePinDOM.NAME_CLASSNAME);
             final String cn = cnDom.elemGet();
             ok(getClass().getName().equals(cn), OK.ERR_MSG_WRONG_CAST);
-            ok(domMap.get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM cnDomImp = (DOM)domMap.get(ModulePinDOM.NAME_CLASSNAME_IMP);
+            ok(domMap.get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM cnDomImp = (IDOM)domMap.get(ModulePinDOM.NAME_CLASSNAME_IMP);
             final String cnImp = cnDomImp.elemGet();
             ok(this.imp.getClass().getName().equals(cnImp), OK.ERR_MSG_WRONG_CAST);
             
-            ok(domMap.get(ModulePinDOM.NAME_MODULE_ID) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM modIdDom = (DOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
+            ok(domMap.get(ModulePinDOM.NAME_MODULE_ID) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM modIdDom = (IDOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
             ok(x -> Integer.parseInt(modIdDom.elemGet()), "");
 
-            ok(domMap.get(ModulePinDOM.NAME_CONNECTION_IDS) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM conIdsDom = (DOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
+            ok(domMap.get(ModulePinDOM.NAME_CONNECTION_IDS) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM conIdsDom = (IDOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
             final Map<String, Object> conIdsMap = conIdsDom.getDOMMap();
             for (Object conIdObj : conIdsMap.values()) {
-                if (conIdObj instanceof DOM) {
-                    final DOM conIdDom = (DOM)conIdObj;
+                if (conIdObj instanceof IDOM) {
+                    final IDOM conIdDom = (IDOM)conIdObj;
                     final int conId = ok(x -> Integer.parseInt(conIdDom.elemGet()), "");
                     final Connection con = ok(x -> (Connection)new ModelFacade().getElementById(conId), "");
                     ok(ok(x -> {try {
@@ -206,8 +196,8 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                 }
             }
             if (domMap.containsKey("defaultData")) {
-                ok(domMap.get("defaultData") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM defaultDataDom = (DOM)domMap.get("defaultData");
+                ok(domMap.get("defaultData") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+                final IDOM defaultDataDom = (IDOM)domMap.get("defaultData");
                 final String dataStr = defaultDataDom.elemGet();
                 ok(dataStr != null, OK.ERR_MSG_NULL);
                 final IData before = getDefaultData();
@@ -221,12 +211,12 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                 ok(nullIsOk == null, "this exc would occur: " + nullIsOk);
             }
             
-            ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM grDom = (DOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME);
             ok(this.gr.isDOMValid(grDom), "ModulePinGR " + OK.ERR_MSG_DOM_NOT_VALID);
             if (domMap.containsKey("checkDataSignature")) {
-                ok(domMap.get("checkDataSignature") instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-                final DOM cdsDom = (DOM)domMap.get("checkDataSignature");
+                ok(domMap.get("checkDataSignature") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+                final IDOM cdsDom = (IDOM)domMap.get("checkDataSignature");
                 final String cdsString = cdsDom.elemGet();
                 ok(cdsString != null, OK.ERR_MSG_NULL);
                 final IDataSignature cds = DataSignature.of(cdsString);

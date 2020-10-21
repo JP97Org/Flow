@@ -39,97 +39,38 @@ public abstract class DataSignature implements IDataSignature {
     
     private int dataId;
     
-    private boolean isHashEfficient;
-    
     public DataSignature(final int dataId) {
         this.dataId = dataId;
-        this.isHashEfficient = false;
-    }
-    
-    private DataSignature(final int dataId, final boolean isHashEfficient) {
-        this(dataId);
-        this.isHashEfficient = isHashEfficient;
     }
     
     @Override
-    public int hashCode() {
-        // a constant number since ucid may be DONT_CARE,
-        // so it may be that a.equals(b) is independent of the ucid
-        return 1; 
-    }
-    
-    @Override
-    public boolean equals(final Object other) {
-        if (other != null && other instanceof IDataSignature) {
+    public synchronized boolean matches(final IDataSignature other) {
+        if (other == null && !isChecking()) {
+            return true;
+        }
+        if (other != null) {
             final IDataSignature otherSig = (IDataSignature)other;
-            return this.dataId == otherSig.getDataId() || !isChecking() || !otherSig.isChecking();
+            if (!isChecking() || !otherSig.isChecking()) {
+                return true;
+            }
+            
+            boolean componentsAllMatch = size() == otherSig.size();
+            for (int i = 0; componentsAllMatch && i < size(); i++) {
+                if (getComponent(i) == null) {
+                    if (otherSig.getComponent(i) != null) {
+                        componentsAllMatch &= !otherSig.getComponent(i).isChecking();
+                    }
+                    continue;
+                }
+                componentsAllMatch &= getComponent(i).matches(otherSig.getComponent(i));
+            }
+            return this.dataId == otherSig.getDataId() && componentsAllMatch;
         }
         return false;
     }
     
     @Override
     public abstract IDataSignature getCopy();
-    
-    @Override
-    public IDataSignature tryGetHashEfficientCopy() {
-        final IDataSignature copy = getCopy();
-        final IDataSignature ret = new DataSignature(this.dataId, copy.isCheckingRecursive()) {
-            /**
-             * 
-             */
-            private static final long serialVersionUID = -5593591045946032816L;
-
-            @Override
-            public IDataSignature getCopy() {
-                return copy.getCopy(); // loses hash efficiency
-            }
-
-            @Override
-            public IDataSignature getComponent(final int index) {
-                return copy.getComponent(index);
-            }
-
-            @Override
-            public int size() {
-                return copy.size();
-            }
-
-            @Override
-            public String toString() {
-                return copy.toString();
-            }
-
-            @Override
-            public IDataSignature ofString(final String info) {
-                return copy.ofString(info); // loses hash efficiency
-            }
-            
-            @Override
-            public int hashCode() {
-                if (isCheckingRecursive()) {
-                    final IDataSignature[] components = getComponents();
-                    return Objects.hash(getDataId(), Arrays.deepHashCode(components));
-                } else {
-                    return copy.hashCode();
-                }
-            }
-            
-            @Override
-            public boolean equals(final Object other) {
-                if (isCheckingRecursive()) {
-                    if (other != null && other instanceof IDataSignature) {
-                        final IDataSignature otherSig = (DataSignature)other;
-                        final IDataSignature[] components = getComponents();
-                        final IDataSignature[] otherComponents = otherSig.getComponents();
-                        return copy.getDataId() == otherSig.getDataId() && Arrays.deepEquals(components, otherComponents);
-                    }
-                    return false;
-                }
-                return copy.equals(other);
-            }
-        };
-        return ret;
-    }
     
     @Override
     public boolean isRecursiveSignature() {
@@ -161,11 +102,6 @@ public abstract class DataSignature implements IDataSignature {
         }
         
         return ret;
-    }
-    
-    @Override
-    public boolean isHashEfficient() {
-        return isCheckingRecursive() && this.isHashEfficient;
     }
     
     @Override
@@ -327,11 +263,36 @@ public abstract class DataSignature implements IDataSignature {
     @Override
     public abstract IDataSignature ofString(final String info);
     
+    /**
+     * Gets the IDataSignature represented by the string.
+     * 
+     * @param string - the string representation of the data signature to be created
+     * @return the IDataSignature represented by the string 
+     * or {@code null} if the string does not represent a valid signature
+     * @see #toString()
+     */
     public static IDataSignature of(final String string) {
         final String name = string.replaceFirst("\\s\\|.*", "");
         final String info = string.replaceFirst("[^|]*\\|\\s", "");
         final int id = getDataIdOfName(name);
         return createDataSignatureByIdAndInfo(id, info);
+    }
+    
+    @Override
+    public int hashCode() {
+        final IDataSignature[] components = getComponents();
+        return Objects.hash(getDataId(), Arrays.deepHashCode(components));
+    }
+    
+    @Override
+    public boolean equals(final Object other) {
+        if (other != null && other instanceof DataSignature) {
+            final DataSignature otherSig = (DataSignature)other;
+            final IDataSignature[] components = getComponents();
+            final IDataSignature[] otherComponents = otherSig.getComponents();
+            return getDataId() == otherSig.getDataId() && Arrays.deepEquals(components, otherComponents);
+        }
+        return false;
     }
 
     @Override

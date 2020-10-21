@@ -20,10 +20,12 @@ public abstract class Observer implements IObserver {
         this.otherObservedSubjects.addAll(otherObservedSubjects);
     }
     
+    @Override
     public ISubject getObserved() {
         return this.observed;
     }
     
+    @Override
     public List<ISubject> getOtherObservedSubjects() {
         return new ArrayList<>(this.otherObservedSubjects);
     }

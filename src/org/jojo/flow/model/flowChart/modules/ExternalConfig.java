@@ -7,33 +7,37 @@ import java.util.Objects;
 
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.Subject;
-import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IExternalConfig;
 import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
-import org.jojo.flow.model.storeLoad.DOM;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.OK;
 
-public class ExternalConfig extends Subject implements IDOMable, IExternalConfig {
+public class ExternalConfig extends Subject implements IExternalConfig {
     private String name;
     private int priority;
     
     private IFlowModule module;
     
     public ExternalConfig(final String name, final int priority) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         this.priority = priority;
     }
     
     @Override
     public void setModule(final IFlowModule module) {
-        this.module = module;
+        this.module = Objects.requireNonNull(module);
     }
     
     @Override
     public String getName() {
         return this.name;
+    }
+    
+    @Override
+    public void setName(final String name) {
+        this.name = Objects.requireNonNull(name);
     }
     
     @Override
@@ -79,7 +83,7 @@ public class ExternalConfig extends Subject implements IDOMable, IExternalConfig
         return this.name.compareTo(o.getName());
     }
 
-    public DOM getDOM() {
+    public IDOM getDOM() {
         final ConfigDOM dom = ConfigDOM.getExternal();
         dom.setName(getName());
         dom.setPriority(getPriority());
@@ -87,24 +91,26 @@ public class ExternalConfig extends Subject implements IDOMable, IExternalConfig
     }
 
     @Override
-    public void restoreFromDOM(final DOM dom) {
-        final Map<String, Object> domMap = dom.getDOMMap();
-        final DOM nameDom = (DOM)domMap.get(ConfigDOM.NAME_NAME);
-        this.name = nameDom.elemGet();
-        final DOM priorityDom = (DOM)domMap.get(ConfigDOM.NAME_PRIORITY);
-        this.priority = Integer.parseInt(priorityDom.elemGet());
-        notifyObservers();
+    public void restoreFromDOM(final IDOM dom) {
+        if (isDOMValid(dom)) {
+            final Map<String, Object> domMap = dom.getDOMMap();
+            final IDOM nameDom = (IDOM)domMap.get(ConfigDOM.NAME_NAME);
+            this.name = nameDom.elemGet();
+            final IDOM priorityDom = (IDOM)domMap.get(ConfigDOM.NAME_PRIORITY);
+            this.priority = Integer.parseInt(priorityDom.elemGet());
+            notifyObservers();
+        }
     }
     
     @Override
-    public boolean isDOMValid(final DOM dom) {
+    public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
         final Map<String, Object> domMap = dom.getDOMMap();
         try {
-            ok(domMap.get(ConfigDOM.NAME_NAME) instanceof DOM, OK.ERR_MSG_WRONG_CAST);
-            final DOM nameDom = (DOM)domMap.get(ConfigDOM.NAME_NAME);
+            ok(domMap.get(ConfigDOM.NAME_NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
+            final IDOM nameDom = (IDOM)domMap.get(ConfigDOM.NAME_NAME);
             ok(nameDom.elemGet() != null, OK.ERR_MSG_NULL);
-            final DOM priorityDom = (DOM)domMap.get(ConfigDOM.NAME_PRIORITY);
+            final IDOM priorityDom = (IDOM)domMap.get(ConfigDOM.NAME_PRIORITY);
             ok(x -> Integer.parseInt(priorityDom.elemGet()), "");
             return true;
         } catch (ParsingException e) {

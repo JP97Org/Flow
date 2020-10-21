@@ -29,7 +29,7 @@ public class SchedulingStepper extends Stepper {
     private int stepCount;
     private Time<Fraction> timePassed;
     
-    private final boolean isRealtime; //TODO do not use realtime if time step < 100ms
+    private final boolean isRealtime; // do not use realtime if time step < 100ms
 
     public SchedulingStepper(final IFlowChart flowChart, final IScheduler scheduler, 
             final Time<Fraction> explicitTimeStep, final boolean isRealtime) throws FlowException {
@@ -132,12 +132,7 @@ public class SchedulingStepper extends Stepper {
                     try {
                         module.run();
                     } catch (Exception e) {
-                        try {
-                            reset();
-                        } catch (FlowException e1) {
-                            // should not happen
-                            e1.printStackTrace();
-                        }
+                        resetSafely();
                         new Warning(module, ModuleRunException.MOD_RUN_EXC_STR + e.getMessage()).reportWarning();
                     }
                 }
@@ -145,11 +140,11 @@ public class SchedulingStepper extends Stepper {
             runThread.start();
             try {
                 runThread.join();
-                if (!module.getWarnings().isEmpty()) {
-                    exc = new ModuleRunException(module.getLastWarning());
-                }
             } catch (InterruptedException e) {
                 exc = exc == null ? new ModuleRunException(new Warning(module, ModuleRunException.MOD_RUN_EXC_STR + "interrupt with message: " +  e.getMessage(), true)) : exc;
+            }
+            if (!module.getWarnings().isEmpty()) {
+                exc = new ModuleRunException(module.getLastWarning());
             }
             if (exc != null) {
                 throw exc;
@@ -212,6 +207,15 @@ public class SchedulingStepper extends Stepper {
         setTimeStep();
         this.stepCount = 0;
         this.timePassed = Time.getFractionConstant(new Fraction(0));
+    }
+    
+    private void resetSafely() {
+        try {
+            reset();
+        } catch (FlowException e) {
+            // should not happen
+            e.printStackTrace();
+        }
     }
 
     @Override

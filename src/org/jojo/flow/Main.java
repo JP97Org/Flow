@@ -11,6 +11,7 @@ import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.api.IAPI;
+import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataArray;
 import org.jojo.flow.model.api.IDataBundle;
@@ -39,7 +40,6 @@ import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.simulation.Simulation;
 import org.jojo.flow.model.simulation.SimulationConfiguration;
-import org.jojo.flow.model.storeLoad.DOM;
 import org.jojo.flow.model.storeLoad.FlowDOM;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 import org.jojo.flow.model.util.DynamicObjectLoader;
@@ -64,7 +64,7 @@ public class Main {
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1) {
             e1.printStackTrace();
         }
-        con.removeToPin(0);
+        con.removeToPin(con.getToPins().get(0));
         try {
             rigidCon.setFromPin(mod.getAllOutputs().stream()
                     .filter(p -> p instanceof OutputPin)
@@ -74,7 +74,7 @@ public class Main {
         } catch (ConnectionException e1) {
             e1.printStackTrace();
         }
-        rigidCon.removeToPin(0);
+        rigidCon.removeToPin(rigidCon.getToPins().get(0));
         try {
             con.setFromPin(mod.getAllOutputs().get(0));
             ((DefaultPin)(mod.getAllInputs().get(0).getModulePinImp()))
@@ -100,7 +100,7 @@ public class Main {
         System.out.println(flowChart.getWarnings());
         System.out.println(flowChart.getModules().get(0).getWarnings());
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        final DOM flowDom = new FlowDOM(dom);
+        final IDOM flowDom = new FlowDOM(dom);
         final String originalFcStr = flowChart.toString();
         System.out.println(originalFcStr);
         new StoreLoadFacade().storeFlowChart(new File("/home/jojo/Schreibtisch/flow.xml"), flowDom);
@@ -110,9 +110,9 @@ public class Main {
         flowChart = new ModelFacade().getMainFlowChart();
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
         System.out.println(flowChart.getWarnings());
-        final DOM newFcDom = flowChart.getDOM();
+        final IDOM newFcDom = flowChart.getDOM();
         System.out.println(flowChart.isDOMValid(dom));
-        final DOM newDom = new FlowDOM(newFcDom);
+        final IDOM newDom = new FlowDOM(newFcDom);
         System.out.println(newDom.getDOMMap());
         System.out.println(flowChart);
         System.out.println(original0);

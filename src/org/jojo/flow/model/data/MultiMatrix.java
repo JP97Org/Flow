@@ -23,9 +23,9 @@ public final class MultiMatrix<T> extends BasicCheckable implements IMultiMatrix
     public MultiMatrix(final int[] sizes, final UnitSignature unit) throws IllegalArgumentException {
         this.sizes = Objects.requireNonNull(sizes);
         final boolean ok = this.sizes.length > 0 
-                && Arrays.stream(this.sizes).allMatch(x -> x >= 0);
+                && Arrays.stream(this.sizes).allMatch(x -> x > 0);
         if (!ok) {
-            throw new IllegalArgumentException("sizes must contain only non-negative values and at least one value");
+            throw new IllegalArgumentException("sizes must contain only positive values and at least one value");
         }
         final List<T> dataList = new ArrayList<T>();
         for (int i = 0; i < getProductOfSmallerSizes(-1); i++) {
@@ -146,7 +146,13 @@ public final class MultiMatrix<T> extends BasicCheckable implements IMultiMatrix
     public String toString() {
         return Arrays.deepToString(toArray()) + " " + this.unit;
     }
+    
+    @Override
+    public T[] toOneDimensionalRepresentation() {
+        return Arrays.copyOf(this.multiMatrix, this.multiMatrix.length);
+    }
 
+    @Override
     public Object[] toArray() {
         return toArray(this.multiMatrix, this.sizes);
     }

@@ -3,6 +3,7 @@ package org.jojo.flow.model.storeLoad;
 import java.awt.Point;
 import java.util.Objects;
 
+import org.jojo.flow.model.api.IDOM;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -28,11 +29,11 @@ public class PointDOM extends DOM {
         return ret;
     }
 
-    public static Point pointOf(final DOM pointDomArg) {
-        DOM pointDom = (DOM)pointDomArg.getDOMMap().get(NAME);
-        pointDom = pointDom == null ? pointDomArg : pointDom;
-        final int x = Integer.parseInt(((DOM)pointDom.getDOMMap().get(NAME_X)).elemGet());
-        final int y = Integer.parseInt(((DOM)pointDom.getDOMMap().get(NAME_Y)).elemGet());
+    public static Point pointOf(final IDOM p) {
+        IDOM pointDom = (IDOM)p.getDOMMap().get(NAME);
+        pointDom = pointDom == null ? p : pointDom;
+        final int x = Integer.parseInt(((IDOM)pointDom.getDOMMap().get(NAME_X)).elemGet());
+        final int y = Integer.parseInt(((IDOM)pointDom.getDOMMap().get(NAME_Y)).elemGet());
         return new Point(x, y);
     }
 }

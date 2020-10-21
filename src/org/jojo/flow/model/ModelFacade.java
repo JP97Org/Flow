@@ -59,7 +59,7 @@ public class ModelFacade implements IModelFacade {
     }
     
     @Override
-    public synchronized IFlowChartElement getFlowChartById(final int id) {
+    public synchronized IFlowChart getFlowChartById(final int id) {
         if (id == getMainFlowChart().getId()) {
             return getMainFlowChart();
         }
@@ -211,7 +211,7 @@ public class ModelFacade implements IModelFacade {
         final Connection con = from.getModulePinImp() instanceof DefaultPin 
                 ? DynamicObjectLoader.loadConnection(DefaultArrow.class.getName()) 
                         : DynamicObjectLoader.loadConnection(RigidConnection.class.getName()) ;
-        con.removeToPin(0);
+        con.removeToPin(con.getToPins().get(0));
         try {
             con.setFromPin(from);
             final boolean ok = con.addToPin(to);

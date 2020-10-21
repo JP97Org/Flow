@@ -50,7 +50,7 @@ public class SimulationConfiguration implements ISimulationConfiguration {
     
     @Override
     public void setTimeout(final Time<Double> timeout) {
-        this.timeout = timeout;
+        this.timeout = Objects.requireNonNull(timeout);
     }
 
     @Override

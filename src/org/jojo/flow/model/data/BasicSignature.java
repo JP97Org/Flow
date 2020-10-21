@@ -33,17 +33,6 @@ public class BasicSignature extends DataSignature {
     }
 
     @Override
-    public boolean equals(final Object other) {
-        if (super.equals(other)) {
-            if (!isChecking() || !((DataSignature)other).isChecking()) {
-                return true;
-            }
-            return Arrays.equals(this.components, ((BasicSignature) other).components);
-        }
-        return false;
-    }
-
-    @Override
     public DataSignature getCopy() {
         return new BasicSignature(this);
     }

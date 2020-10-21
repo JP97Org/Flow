@@ -2,6 +2,7 @@ package org.jojo.flow.model.data;
 
 import java.util.Objects;
 
+import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.UnitSignature;
 
 public class UnitDataSignature extends BasicSignatureComponentSignature {
@@ -22,8 +23,8 @@ public class UnitDataSignature extends BasicSignatureComponentSignature {
     }
     
     @Override
-    public boolean equals(final Object other) {
-        if (super.equals(other)) {
+    public boolean matches(final IDataSignature other) {
+        if (super.matches(other)) {
             if (!isChecking() || !((DataSignature)other).isChecking()) {
                 return true;
             }

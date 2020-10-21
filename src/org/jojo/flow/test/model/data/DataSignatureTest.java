@@ -47,19 +47,4 @@ public class DataSignatureTest {
             assert false;
         }
     }
-    
-    @Test
-    public void testHashEfficientCopy() {
-        final RawDataSet dataOne = new RawDataSet(new byte[] {0, 1, 2});
-        final IDataSignature heCopy = dataOne.getDataSignature().tryGetHashEfficientCopy();
-        System.out.println("HashCode of HE-Copy: " + heCopy.hashCode());
-        Assert.assertTrue(heCopy.isHashEfficient());
-        final IDataSignature heCopyTwo = heCopy.tryGetHashEfficientCopy();
-        System.out.println("HashCode of HE-Copy2: " + heCopyTwo.hashCode());
-        Assert.assertEquals(heCopy, heCopyTwo);
-        Assert.assertEquals(heCopy.hashCode(), heCopyTwo.hashCode());
-        heCopy.deactivateChecking();
-        Assert.assertFalse(heCopy.isHashEfficient());
-        Assert.assertEquals(1, heCopy.hashCode());
-    }
 }

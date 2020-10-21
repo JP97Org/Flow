@@ -18,7 +18,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-public abstract class DOM implements IDOMable, IDOM { 
+public abstract class DOM implements IDOM { 
     private static Document documentStatic;
     
     private final Document document;
@@ -29,6 +29,13 @@ public abstract class DOM implements IDOMable, IDOM {
         this.parent = Objects.requireNonNull(parent);
     }
     
+    /**
+     * Gets the document for creating elements. This method does create a new document iff no 
+     * document is availiable at the moment.
+     * 
+     * @return the document for creating elements
+     * @see #resetDocument()
+     */
     public static Document getDocumentForCreatingElements() {
         if (documentStatic == null) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -47,6 +54,12 @@ public abstract class DOM implements IDOMable, IDOM {
         return documentStatic;
     }
     
+    /**
+     * Resets the document for creating elements, i.e. it deletes the document so that
+     * a new document is created the next time 
+     * 
+     * {@link #getDocumentForCreatingElements()} is called.
+     */
     public static void resetDocument() {
         documentStatic = null;
     }
@@ -59,11 +72,11 @@ public abstract class DOM implements IDOMable, IDOM {
         this.parent.appendChild(element);
     }
     
-    protected Document getDocument() {
+    public Document getDocument() {
         return this.document;
     }
     
-    protected Node getParentNode() {
+    public Node getParentNode() {
         return this.parent;
     }
     
@@ -86,11 +99,11 @@ public abstract class DOM implements IDOMable, IDOM {
     }
     
     @Override
-    public void appendInts(final String listName, final String name, final int[] ids) {
-        Objects.requireNonNull(ids);
+    public void appendInts(final String listName, final String name, final int[] ints) {
+        Objects.requireNonNull(ints);
         final var elem = getDocument().createElement(Objects.requireNonNull(listName));
         final List<Integer> idsList = new ArrayList<>();
-        for (int id : ids) {
+        for (int id : ints) {
             idsList.add(id);
         }
         idsList.forEach(i -> elem.appendChild(getDocument().createElement(name)
@@ -168,17 +181,17 @@ public abstract class DOM implements IDOMable, IDOM {
     }
     
     @Override
-    public DOM getDOM() {
+    public IDOM getDOM() {
         return this;
     }
     
     @Override
-    public void restoreFromDOM(final DOM dom) {
+    public void restoreFromDOM(final IDOM dom) {
         // do nothing because this is already a DOM
     }
     
     @Override
-    public boolean isDOMValid(final DOM dom) {
+    public boolean isDOMValid(final IDOM dom) {
         return true;
     }
     

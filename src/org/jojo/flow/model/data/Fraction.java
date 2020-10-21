@@ -123,16 +123,16 @@ public class Fraction extends Number implements IFraction {
 
     @Override
     public IFraction add(final IFraction other) {
-        final long kgv = kgv(this.denominator, other.getDenominator());
-        return new Fraction((this.numerator * kgv) / this.denominator 
-                + (other.getNumerator() * kgv) / other.getDenominator(), kgv);
+        final long lcm = lcm(this.denominator, other.getDenominator());
+        return new Fraction((this.numerator * lcm) / this.denominator 
+                + (other.getNumerator() * lcm) / other.getDenominator(), lcm);
     }
     
-    private static long kgv(long a, long b) {
-        return Math.abs(a * b) / ggt(a, b); 
+    private static long lcm(long a, long b) {
+        return Math.abs(a * b) / gcd(a, b); 
     }
     
-    private static long ggt(final long aArg, final long bArg) {
+    private static long gcd(final long aArg, final long bArg) {
         long signum = (long)Math.signum((double)aArg * bArg);
         signum = signum != 0 ? signum : (aArg != 0 ? (long)Math.signum((double)aArg) : (long)Math.signum((double)bArg));
         long a = Math.abs(aArg) < 0 ? Long.MAX_VALUE : Math.abs(aArg);
@@ -162,15 +162,23 @@ public class Fraction extends Number implements IFraction {
     }
     
     @Override
+    public IFraction cancel() {
+        final long gcd = gcd(this.numerator, this.denominator);
+        return new Fraction(this.numerator / gcd, this.denominator / gcd);
+    }
+    
+    @Override
     public int hashCode() {
         return Objects.hash(this.numerator, this.denominator);
     }
     
     @Override
     public boolean equals(final Object other) {
-        if (other != null && other instanceof Fraction) {
-            final Fraction frac = (Fraction)other;
-            return (this.numerator == frac.numerator && this.denominator == frac.denominator);
+        if (other != null && other instanceof IFraction) {
+            final IFraction tCancelled = cancel();
+            final IFraction frac = ((IFraction)other).cancel();
+            return (tCancelled.getNumerator() == frac.getNumerator() 
+                    && tCancelled.getDenominator() == frac.getDenominator());
         }
         return false;
     }

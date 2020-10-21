@@ -1,6 +1,7 @@
 package org.jojo.flow.model.storeLoad;
 
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IDOM;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -8,13 +9,13 @@ import org.w3c.dom.NodeList;
 public class FlowDOM extends DOM {
     protected static final String NAME = "Flow";
     
-    private final DOM flowChartDOM;
+    private final IDOM flowChartDOM;
     
-    public FlowDOM(final DOM flowChartDOM) {
+    public FlowDOM(final IDOM dom) {
         super(DOM.getDocumentForCreatingElements(), DOM.getDocumentForCreatingElements().hasChildNodes() 
                 ? DOM.getDocumentForCreatingElements().getElementsByTagName(NAME).item(0)
                         : DOM.getDocumentForCreatingElements().createElement(NAME));
-        this.flowChartDOM = flowChartDOM;
+        this.flowChartDOM = dom;
         if (!getDocument().hasChildNodes()) {
             appendCustomDOM(this.flowChartDOM);
             getDocument().appendChild(getParentNode());
@@ -47,7 +48,7 @@ public class FlowDOM extends DOM {
         return new FlowDOM(new DOM(xmlDocument, flowChartNode) {});
     }
 
-    public DOM getFlowChartDOM() {
+    public IDOM getFlowChartDOM() {
         return this.flowChartDOM;
     }
 }

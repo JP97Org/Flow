@@ -1,7 +1,6 @@
 package org.jojo.flow.model.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,17 +31,6 @@ public class RecursiveSignature extends DataSignature {
     private RecursiveSignature(final int dataId, final List<IDataSignature> components) {
         super(dataId);
         this.components = components;
-    }
-    
-    @Override
-    public boolean equals(final Object other) {
-        if (super.equals(other)) {
-            if (!isChecking() || !((DataSignature)other).isChecking()) {
-                return true;
-            }
-            return Arrays.equals(this.components.toArray(), ((RecursiveSignature) other).components.toArray());
-        }
-        return false;
     }
 
     @Override

@@ -13,6 +13,7 @@ public abstract class GraphicalRepresentationView extends Observer {
     public GraphicalRepresentationView(final GraphicalRepresentation gr, final Graphics2D graphics) {
         super(Objects.requireNonNull(gr));
         this.gr = gr;
+        startObservingMainSubject();
         this.graphics = Objects.requireNonNull(graphics);
     }
     
