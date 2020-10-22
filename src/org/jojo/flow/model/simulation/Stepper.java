@@ -28,7 +28,7 @@ public abstract class Stepper implements IStepper {
     @Override
     public abstract void stepForward() throws ModuleRunException;
     @Override
-    public abstract void stepOnce() throws ModuleRunException; //TODO this and all other step methods calling this method clears all modules' warning lists
+    public abstract void stepOnce() throws ModuleRunException;
     
     @Override
     public abstract void unpause();

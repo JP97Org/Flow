@@ -148,6 +148,8 @@ public abstract class DataSignature implements IDataSignature {
         return null;
     }
 
+    //TODO constants!
+    
     protected String toStringDs() {
         return "" + getNameOfDataId() + " | ";
     }
@@ -207,12 +209,8 @@ public abstract class DataSignature implements IDataSignature {
                 }
                 
                 final String[] split = name.split("= ");
-                try {
-                    final int id = split.length == 2 ? Integer.parseInt(split[1]) + BASIC_COMPONENT_SIZE_0 : UNKNOWN;
-                    return id;
-                } catch (NumberFormatException nfe) {
-                    throw new IllegalArgumentException(nfe.toString());
-                }
+                final int id = split.length == 2 ? Integer.parseInt(split[1]) + BASIC_COMPONENT_SIZE_0 : UNKNOWN;
+                return id;
         }
     }
     
@@ -269,9 +267,11 @@ public abstract class DataSignature implements IDataSignature {
      * @param string - the string representation of the data signature to be created
      * @return the IDataSignature represented by the string 
      * or {@code null} if the string does not represent a valid signature
+     * @throws IllegalArgumentException if a number format exception occurs during parsing numeric
+     * parts of the given string
      * @see #toString()
      */
-    public static IDataSignature of(final String string) {
+    public static IDataSignature of(final String string) throws IllegalArgumentException {
         final String name = string.replaceFirst("\\s\\|.*", "");
         final String info = string.replaceFirst("[^|]*\\|\\s", "");
         final int id = getDataIdOfName(name);
@@ -315,7 +315,7 @@ public abstract class DataSignature implements IDataSignature {
         @Override
         public IDataSignature getCopy() {
             final DontCareDataSignature ret = new DontCareDataSignature();
-            ret.info = info;
+            ret.info = "" + this.info;
             return ret;
         }
 

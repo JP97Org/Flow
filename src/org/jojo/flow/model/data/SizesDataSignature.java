@@ -2,10 +2,11 @@ package org.jojo.flow.model.data;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import org.jojo.flow.model.api.IDataSignature;
 
-public class SizesDataSignature extends BasicSignatureComponentSignature {
+class SizesDataSignature extends BasicSignatureComponentSignature {
     /**
      * 
      */
@@ -34,27 +35,48 @@ public class SizesDataSignature extends BasicSignatureComponentSignature {
 
     @Override
     public DataSignature getCopy() {
-        return new SizesDataSignature(Arrays.stream(this.sizes).toArray());
+        final SizesDataSignature ret = new SizesDataSignature(Arrays.stream(this.sizes).toArray());
+        for (int i = 0; i < this.sizes.length; i++) {
+            if (!this.sizesSignatures[i].isChecking()) {
+                ret.getComponent(i).deactivateChecking();
+            }
+        }
+        return ret;
     }
     
     @Override
     public String toString() {
-        return toStringDs() + Arrays.toString(this.sizes).replaceAll(",", ";;");
+        final StringJoiner ret = new StringJoiner(";; ", toStringDs() + "[", "]");
+        final String notChecking = new DontCareDataSignature().getNameOfDataId();
+        for (int i = 0; i < this.sizes.length ; i++) {
+            ret.add(this.sizesSignatures[i].isChecking() ? "" + this.sizes[i] : notChecking);
+        }
+        return ret.toString();
     }
     
     @Override
     public DataSignature ofString(final String info) {
         final String prepared = info.substring(1, info.length() - 1);
+        final String[] splitStr = prepared.split(";;\\s"); 
+        final String notChecking = new DontCareDataSignature().getNameOfDataId();
         try {
-            final int[] split = Arrays.stream(prepared.split(";;\\s")).mapToInt(s -> Integer.parseInt(s)).toArray();
-            return new SizesDataSignature(split);
+            final int[] split = Arrays.stream(splitStr)
+                    .mapToInt(s -> s.equals(notChecking) ? DONT_CARE : Integer.parseInt(s))
+                    .toArray();
+            final SizesDataSignature ret = new SizesDataSignature(split);
+            for (int i = 0; i < split.length; i++) {
+                if (((OneSizeDataSignature)ret.getComponent(i)).size == DONT_CARE) {
+                    ret.getComponent(i).deactivateChecking();
+                }
+            }
+            return ret;
         } catch (NumberFormatException e) {
             e.printStackTrace();
             return null;
         }
     }
     
-    protected static class OneSizeDataSignature extends BasicSignatureComponentSignature {
+    static class OneSizeDataSignature extends BasicSignatureComponentSignature {
         /**
          * 
          */

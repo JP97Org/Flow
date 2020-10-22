@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.UnitSignature;
 
-public class UnitDataSignature extends BasicSignatureComponentSignature {
+class UnitDataSignature extends BasicSignatureComponentSignature {
     /**
      * 
      */

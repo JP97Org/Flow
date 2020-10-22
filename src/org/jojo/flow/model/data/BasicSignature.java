@@ -54,11 +54,10 @@ public class BasicSignature extends DataSignature {
     
     @Override
     public DataSignature ofString(final String info) {
-        //TODO schauen ob das so passt mit dem deaktivieren
         final String prepared = info.substring(1, info.length() - 1);
         final String[] elems = prepared.split(",\\s");
         final BasicSignatureComponentSignature[] componentsLocal = new BasicSignatureComponentSignature[elems.length];
-        final boolean isSizesCheckingDeactivated = prepared.startsWith(new DontCareDataSignature().getNameOfDataId());
+        final Boolean[] activationStates = getActivationStates(elems);
         prepareElems(elems);
         if (elems.length != BasicSignatureComponents.values().length) {
             return null;
@@ -72,10 +71,17 @@ public class BasicSignature extends DataSignature {
         componentsLocal[BasicSignatureComponents.UNIT.index] = 
                 (BasicSignatureComponentSignature) new UnitDataSignature(UnitSignature.NO_UNIT)
                     .ofString(elems[BasicSignatureComponents.UNIT.index]); 
-        if (isSizesCheckingDeactivated) {
-            componentsLocal[BasicSignatureComponents.SIZES.index].deactivateChecking();
+        for (int i = 0; i < BasicSignatureComponents.values().length; i++) {
+            if (!(activationStates[i].booleanValue())) {
+                componentsLocal[i].deactivateChecking();
+            }
         }
         return new BasicSignature(getDataId(), componentsLocal);
+    }
+    
+    private static Boolean[] getActivationStates(final String[] elems) {
+        final String notCheck = new DontCareDataSignature().getNameOfDataId();
+        return Arrays.stream(elems).map(s -> !s.startsWith(notCheck)).toArray(Boolean[]::new);
     }
    
     private static void prepareElems(final String[] elems) {

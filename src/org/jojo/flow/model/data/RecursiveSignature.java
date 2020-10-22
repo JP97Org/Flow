@@ -49,7 +49,7 @@ public class RecursiveSignature extends DataSignature {
     }
     
     @Override
-    public String toString() {
+    public String toString() { //TODO das und ofString mehr testen insb. auch mit deaktivierten und verschiedenen recursives
         final StringBuilder ret = new StringBuilder(toStringDs());
         final String componentsString = this.components.toString();
         int level = -1;
@@ -81,17 +81,17 @@ public class RecursiveSignature extends DataSignature {
         return ofString(info, 0);
     }
     
-    //TODO what to do when rec. signature itself or contained rec. signature is not checking
     private IDataSignature ofString(final String infoLevel, int level) {
         final String prepared = infoLevel.substring(1, infoLevel.length() - 1);
         final String splitString = getSplitString(level);
         final String[] split = prepared.split(splitString);
         
         List<IDataSignature> retList = new ArrayList<>();
+        final String toStrDs = toStringDs();
         for (final String dsStr : split) {
             IDataSignature local;
-            if (dsStr.startsWith(toStringDs() + "[")) {
-                local = ofString(dsStr.replaceFirst(toStringDs(), ""), level + 1);
+            if (dsStr.startsWith(toStrDs + "[")) {
+                local = ofString(dsStr.replaceFirst(toStrDs, ""), level + 1);
             } else {
                 local = DataSignature.of(dsStr);
             }

@@ -264,7 +264,15 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                 + " | IMP= " + getModulePinImp();
     }
 
-    public static Comparator<? super IModulePin> getComparator() { // TODO doc that comparator does not always imply 0 => equals
+    /**
+     * Gets a comparator for flow module pins based on {@link #fixedHashCode()}. Note that
+     * the returned comparator is not necessarily consistent with {@code equals}, i.e. comparison
+     * result 0 does not necessarily imply that the two compared module pins are equal. However, if two
+     * module pins are equal, the comparison result will always be 0.
+     * 
+     * @return a comparator for flow module pins
+     */
+    public static Comparator<? super IModulePin> getComparator() {
         return new Comparator<IModulePin>() {
             @Override
             public int compare(IModulePin o1, IModulePin o2) {

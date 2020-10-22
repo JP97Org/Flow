@@ -153,9 +153,11 @@ public abstract class DOM implements IDOM {
         
         final Element elem = node.getNodeType() == Node.ELEMENT_NODE ? (Element)node : null;
         for (int i = 0; elem != null && i < node.getAttributes().getLength(); i++) {
-            //TODO evtl. nochmal ueberarbeiten, hier sind die namen nicht eindeutig!
             final Node attr = node.getAttributes().item(i);
-            final String name = attr.getNodeName();
+            String name = attr.getNodeName();
+            while (map.containsKey(name)) {
+                name += i + "_";
+            }
             map.put(name, elem.getAttribute(name));
         }
         

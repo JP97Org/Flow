@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.IDataSignature;
 
-public class BasicTypeDataSignature extends BasicSignatureComponentSignature {
+class BasicTypeDataSignature extends BasicSignatureComponentSignature {
     /**
      * 
      */
