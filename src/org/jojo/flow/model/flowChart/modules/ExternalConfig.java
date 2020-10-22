@@ -11,6 +11,7 @@ import org.jojo.flow.model.api.IExternalConfig;
 import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.OK;
 
@@ -93,10 +94,10 @@ public class ExternalConfig extends Subject implements IExternalConfig {
     @Override
     public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
-            final Map<String, Object> domMap = dom.getDOMMap();
-            final IDOM nameDom = (IDOM)domMap.get(ConfigDOM.NAME_NAME);
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            final IDOM nameDom = (IDOM)domMap.get(ConfigDOM.NAME_NAME).getValue();
             this.name = nameDom.elemGet();
-            final IDOM priorityDom = (IDOM)domMap.get(ConfigDOM.NAME_PRIORITY);
+            final IDOM priorityDom = (IDOM)domMap.get(ConfigDOM.NAME_PRIORITY).getValue();
             this.priority = Integer.parseInt(priorityDom.elemGet());
             notifyObservers();
         }
@@ -105,12 +106,13 @@ public class ExternalConfig extends Subject implements IExternalConfig {
     @Override
     public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
-        final Map<String, Object> domMap = dom.getDOMMap();
+        final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
         try {
-            ok(domMap.get(ConfigDOM.NAME_NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM nameDom = (IDOM)domMap.get(ConfigDOM.NAME_NAME);
+            ok(domMap.get(ConfigDOM.NAME_NAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM nameDom = (IDOM)domMap.get(ConfigDOM.NAME_NAME).getValue();
             ok(nameDom.elemGet() != null, OK.ERR_MSG_NULL);
-            final IDOM priorityDom = (IDOM)domMap.get(ConfigDOM.NAME_PRIORITY);
+            ok(domMap.get(ConfigDOM.NAME_PRIORITY).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM priorityDom = (IDOM)domMap.get(ConfigDOM.NAME_PRIORITY).getValue();
             ok(x -> Integer.parseInt(priorityDom.elemGet()), "");
             return true;
         } catch (ParsingException e) {

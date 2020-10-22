@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IConnectionGR;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IFlowChart;
@@ -163,30 +164,30 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
             super.restoreFromDOM(dom);
             this.modules.clear();
             this.connections.clear();
-            final Map<String, Object> domMap = dom.getDOMMap();
-            final IDOM absDom = (IDOM)domMap.get("absOriginPoint");
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            final IDOM absDom = (IDOM)domMap.get("absOriginPoint").getValue();
             this.absOriginPoint = PointDOM.pointOf(absDom);
-            final IDOM reDom = (IDOM)domMap.get("isRasterEnabled");
+            final IDOM reDom = (IDOM)domMap.get("isRasterEnabled").getValue();
             final String reDomStr = reDom.elemGet();
             this.isRasterEnabled = Boolean.parseBoolean(reDomStr);
-            final IDOM connectionsDom = (IDOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS);
-            final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
+            final IDOM connectionsDom = (IDOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS).getValue();
+            final Map<String, DOMStringUnion> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
-                if (conObj instanceof IDOM) {
-                    final IDOM connnectionDom = (IDOM) conObj;
-                    final IDOM cnDom = (IDOM) (connnectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                if (conObj.isDOM()) {
+                    final IDOM connectionDom = (IDOM) conObj.getValue();
+                    final IDOM cnDom = (IDOM) (connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME)).getValue();
                     final String conToLoad = cnDom.elemGet();
                     final GraphicalRepresentation connection = DynamicObjectLoader.loadGR(conToLoad);
-                    connection.restoreFromDOM(connnectionDom);
+                    connection.restoreFromDOM(connectionDom);
                     this.connections.add((ConnectionGR) connection);
                 }
             }
-            final IDOM modulesDom = (IDOM)domMap.get(FlowChartDOM.NAME_MODULES);
-            final Map<String, Object> modulesMap = modulesDom.getDOMMap();
+            final IDOM modulesDom = (IDOM)domMap.get(FlowChartDOM.NAME_MODULES).getValue();
+            final Map<String, DOMStringUnion> modulesMap = modulesDom.getDOMMap();
             for (final var modObj : modulesMap.values()) {
-                if (modObj instanceof IDOM) {
-                    final IDOM modDom = (IDOM) modObj;
-                    final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
+                if (modObj.isDOM()) {
+                    final IDOM modDom = (IDOM) modObj.getValue();
+                    final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
                     final String moduleToLoad = cnDom.elemGet();
                     final GraphicalRepresentation module = DynamicObjectLoader.loadGR(moduleToLoad);
                     module.restoreFromDOM(modDom);
@@ -202,36 +203,37 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "FCE_GR " + OK.ERR_MSG_DOM_NOT_VALID, getFlowChart());
-            final Map<String, Object> domMap = dom.getDOMMap();
-            ok(domMap.get("absOriginPoint") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM absDom = (IDOM)domMap.get("absOriginPoint");
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            ok(domMap.get("absOriginPoint").isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM absDom = (IDOM)domMap.get("absOriginPoint").getValue();
             ok(d -> PointDOM.pointOf(d), absDom);
-            ok(domMap.get("isRasterEnabled") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM reDom = (IDOM)domMap.get("isRasterEnabled");
+            ok(domMap.get("isRasterEnabled").isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM reDom = (IDOM)domMap.get("isRasterEnabled").getValue();
             final String reDomStr = reDom.elemGet();
             ok(reDomStr != null, OK.ERR_MSG_NULL);
             ok(s -> Boolean.parseBoolean(s), reDomStr);
-            final IDOM connectionsDom = (IDOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS);
-            final Map<String, Object> connectionsMap = connectionsDom.getDOMMap();
+            ok(domMap.get(FlowChartDOM.NAME_CONNECTIONS).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM connectionsDom = (IDOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS).getValue();
+            final Map<String, DOMStringUnion> connectionsMap = connectionsDom.getDOMMap();
             for (final var conObj : connectionsMap.values()) {
-                if (conObj instanceof IDOM) {
-                    final IDOM connectionDom = (IDOM) conObj;
-                    ok(connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                    final IDOM cnDom = (IDOM) (connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME));
+                if (conObj.isDOM()) {
+                    final IDOM connectionDom = (IDOM) conObj.getValue();
+                    ok(connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                    final IDOM cnDom = (IDOM) (connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME).getValue());
                     final String conToLoad = cnDom.elemGet();
                     ok(conToLoad != null, OK.ERR_MSG_NULL);
                     final ConnectionGR connection = ok(c -> (ConnectionGR)DynamicObjectLoader.loadGR(c), conToLoad);
                     ok(connection.isDOMValid(connectionDom), "ConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
                 }
             }
-            ok(domMap.get(FlowChartDOM.NAME_MODULES) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM modulesDom = (IDOM)domMap.get(FlowChartDOM.NAME_MODULES);
-            final Map<String, Object> modulesMap = modulesDom.getDOMMap();
+            ok(domMap.get(FlowChartDOM.NAME_MODULES).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM modulesDom = (IDOM)domMap.get(FlowChartDOM.NAME_MODULES).getValue();
+            final Map<String, DOMStringUnion> modulesMap = modulesDom.getDOMMap();
             for (final var modObj : modulesMap.values()) {
-                if (modObj instanceof IDOM) {
-                    final IDOM modDom = (IDOM) modObj;
-                    ok(modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                    final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME));
+                if (modObj.isDOM()) {
+                    final IDOM modDom = (IDOM) modObj.getValue();
+                    ok(modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                    final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
                     final String moduleToLoad = cnDom.elemGet();
                     ok(moduleToLoad != null, OK.ERR_MSG_NULL);
                     final ModuleGR module = ok(m -> (ModuleGR)DynamicObjectLoader.loadGR(m), moduleToLoad);

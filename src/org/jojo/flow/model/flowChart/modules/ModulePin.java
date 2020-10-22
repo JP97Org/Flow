@@ -12,6 +12,7 @@ import org.jojo.flow.exc.ListSizeException;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IData;
@@ -116,18 +117,18 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             getConnections().forEach(c -> removeConnection(c));
-            final Map<String, Object> domMap = dom.getDOMMap();
-            final IDOM modIdDom = (IDOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            final IDOM modIdDom = (IDOM)domMap.get(ModulePinDOM.NAME_MODULE_ID).getValue();
             final int modId = Integer.parseInt(modIdDom.elemGet());
             final IFlowChartElement fce = new ModelFacade().getElementById(modId);
             if (fce instanceof IFlowModule) {
                 setModule((FlowModule)fce);
             }
-            final IDOM conIdsDom = (IDOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
-            final Map<String, Object> conIdsMap = conIdsDom.getDOMMap();
-            for (Object conIdObj : conIdsMap.values()) {
-                if (conIdObj instanceof IDOM) {
-                    final IDOM conIdDom = (IDOM)conIdObj;
+            final IDOM conIdsDom = (IDOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS).getValue();
+            final Map<String, DOMStringUnion> conIdsMap = conIdsDom.getDOMMap();
+            for (var conIdObj : conIdsMap.values()) {
+                if (conIdObj.isDOM()) {
+                    final IDOM conIdDom = (IDOM)conIdObj.getValue();
                     final int conId = Integer.parseInt(conIdDom.elemGet());
                     final Connection con = (Connection)new ModelFacade().getElementById(conId);
                     try {
@@ -138,7 +139,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                     }
                 }
             }
-            final IDOM defaultDataDom = (IDOM)domMap.get("defaultData");
+            final IDOM defaultDataDom = domMap.get("defaultData") == null ? null : (IDOM)domMap.get("defaultData").getValue();
             if (defaultDataDom != null) {
                 final String dataStr = defaultDataDom.elemGet();
                 try {
@@ -148,10 +149,10 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                     e.printStackTrace();
                 }
             }
-            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue();
             this.gr.restoreFromDOM(grDom);
             if (domMap.containsKey("checkDataSignature")) {
-                final IDOM cdsDom = (IDOM)domMap.get("checkDataSignature");
+                final IDOM cdsDom = (IDOM)domMap.get("checkDataSignature").getValue();
                 final String cdsString = cdsDom.elemGet();
                 final IDataSignature cds = DataSignature.of(cdsString);
                 ((DefaultPin)this.imp).forceSetCheckDataSignature(cds);
@@ -163,27 +164,27 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
     @Override
     public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
-        final Map<String, Object> domMap = dom.getDOMMap();
+        final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
         try {
-            ok(domMap.get(ModulePinDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM cnDom = (IDOM)domMap.get(ModulePinDOM.NAME_CLASSNAME);
+            ok(domMap.get(ModulePinDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM cnDom = (IDOM)domMap.get(ModulePinDOM.NAME_CLASSNAME).getValue();
             final String cn = cnDom.elemGet();
             ok(getClass().getName().equals(cn), OK.ERR_MSG_WRONG_CAST);
-            ok(domMap.get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM cnDomImp = (IDOM)domMap.get(ModulePinDOM.NAME_CLASSNAME_IMP);
+            ok(domMap.get(ModulePinDOM.NAME_CLASSNAME_IMP).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM cnDomImp = (IDOM)domMap.get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue();
             final String cnImp = cnDomImp.elemGet();
             ok(this.imp.getClass().getName().equals(cnImp), OK.ERR_MSG_WRONG_CAST);
             
-            ok(domMap.get(ModulePinDOM.NAME_MODULE_ID) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM modIdDom = (IDOM)domMap.get(ModulePinDOM.NAME_MODULE_ID);
+            ok(domMap.get(ModulePinDOM.NAME_MODULE_ID).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM modIdDom = (IDOM)domMap.get(ModulePinDOM.NAME_MODULE_ID).getValue();
             ok(x -> Integer.parseInt(modIdDom.elemGet()), "");
 
-            ok(domMap.get(ModulePinDOM.NAME_CONNECTION_IDS) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM conIdsDom = (IDOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS);
-            final Map<String, Object> conIdsMap = conIdsDom.getDOMMap();
-            for (Object conIdObj : conIdsMap.values()) {
-                if (conIdObj instanceof IDOM) {
-                    final IDOM conIdDom = (IDOM)conIdObj;
+            ok(domMap.get(ModulePinDOM.NAME_CONNECTION_IDS).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM conIdsDom = (IDOM)domMap.get(ModulePinDOM.NAME_CONNECTION_IDS).getValue();
+            final Map<String, DOMStringUnion> conIdsMap = conIdsDom.getDOMMap();
+            for (var conIdObj : conIdsMap.values()) {
+                if (conIdObj.isDOM()) {
+                    final IDOM conIdDom = (IDOM)conIdObj.getValue();
                     final int conId = ok(x -> Integer.parseInt(conIdDom.elemGet()), "");
                     final Connection con = ok(x -> (Connection)new ModelFacade().getElementById(conId), "");
                     ok(ok(x -> {try {
@@ -196,8 +197,8 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                 }
             }
             if (domMap.containsKey("defaultData")) {
-                ok(domMap.get("defaultData") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                final IDOM defaultDataDom = (IDOM)domMap.get("defaultData");
+                ok(domMap.get("defaultData").isDOM(), OK.ERR_MSG_WRONG_CAST);
+                final IDOM defaultDataDom = (IDOM)domMap.get("defaultData").getValue();
                 final String dataStr = defaultDataDom.elemGet();
                 ok(dataStr != null, OK.ERR_MSG_NULL);
                 final IData before = getDefaultData();
@@ -211,12 +212,12 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                 ok(nullIsOk == null, "this exc would occur: " + nullIsOk);
             }
             
-            ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue();
             ok(this.gr.isDOMValid(grDom), "ModulePinGR " + OK.ERR_MSG_DOM_NOT_VALID);
             if (domMap.containsKey("checkDataSignature")) {
-                ok(domMap.get("checkDataSignature") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                final IDOM cdsDom = (IDOM)domMap.get("checkDataSignature");
+                ok(domMap.get("checkDataSignature").isDOM(), OK.ERR_MSG_WRONG_CAST);
+                final IDOM cdsDom = (IDOM)domMap.get("checkDataSignature").getValue();
                 final String cdsString = cdsDom.elemGet();
                 ok(cdsString != null, OK.ERR_MSG_NULL);
                 final IDataSignature cds = DataSignature.of(cdsString);

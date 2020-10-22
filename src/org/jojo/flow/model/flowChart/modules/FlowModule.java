@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IData;
@@ -261,18 +262,18 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     @Override
     public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
-            final Map<String, Object> domMap = dom.getDOMMap();
-            final IDOM idDom = (IDOM)domMap.get(ModuleDOM.NAME_ID);
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            final IDOM idDom = (IDOM)domMap.get(ModuleDOM.NAME_ID).getValue();
             setId(Integer.parseInt(idDom.elemGet()));
             if (domMap.containsKey(ConfigDOM.NAME_INT_CONFIG)) {
-                final IDOM intDom = (IDOM)domMap.get(ConfigDOM.NAME_INT_CONFIG);
+                final IDOM intDom = (IDOM)domMap.get(ConfigDOM.NAME_INT_CONFIG).getValue();
                 setInternalConfig(intDom);
             }
-            final IDOM extDom = (IDOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG);
+            final IDOM extDom = (IDOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG).getValue();
             this.externalConfig.restoreFromDOM(extDom);
-            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue();
             getGraphicalRepresentation().restoreFromDOM(grDom);
-            final IDOM pinsDom = (IDOM)domMap.get(ModuleDOM.NAME_PINS);
+            final IDOM pinsDom = (IDOM)domMap.get(ModuleDOM.NAME_PINS).getValue();
             setAllModulePins(pinsDom);
             notifyObservers();
         }
@@ -281,24 +282,24 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     @Override
     public boolean isDOMValid(IDOM dom) {
         Objects.requireNonNull(dom);
-        final Map<String, Object> domMap = dom.getDOMMap();
+        final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
         try {
-            ok(domMap.get(ModuleDOM.NAME_ID) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM idDom = (IDOM)domMap.get(ModuleDOM.NAME_ID);
+            ok(domMap.get(ModuleDOM.NAME_ID).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM idDom = (IDOM)domMap.get(ModuleDOM.NAME_ID).getValue();
             ok(x -> Integer.parseInt(idDom.elemGet()), "");
             if (domMap.containsKey(ConfigDOM.NAME_INT_CONFIG)) {
-                ok(domMap.get(ConfigDOM.NAME_INT_CONFIG) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                final IDOM intDom = (IDOM)domMap.get(ConfigDOM.NAME_INT_CONFIG);
+                ok(domMap.get(ConfigDOM.NAME_INT_CONFIG).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                final IDOM intDom = (IDOM)domMap.get(ConfigDOM.NAME_INT_CONFIG).getValue();
                 ok(isInternalConfigDOMValid(intDom), "Int.Config " + OK.ERR_MSG_DOM_NOT_VALID);
             }
-            ok((IDOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM extDom = (IDOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG);
+            ok(domMap.get(ConfigDOM.NAME_EXT_CONFIG).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM extDom = (IDOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG).getValue();
             ok(this.externalConfig.isDOMValid(extDom), "EXT_CONFIG " + OK.ERR_MSG_DOM_NOT_VALID);
-            ok((IDOM)domMap.get(GraphicalRepresentationDOM.NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue();
             ok(getGraphicalRepresentation().isDOMValid(grDom), "ModuleGR " + OK.ERR_MSG_DOM_NOT_VALID);
-            ok((IDOM)domMap.get(ModuleDOM.NAME_PINS) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM pinsDom = (IDOM)domMap.get(ModuleDOM.NAME_PINS);
+            ok(domMap.get(ModuleDOM.NAME_PINS).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM pinsDom = (IDOM)domMap.get(ModuleDOM.NAME_PINS).getValue();
             ok(isPinsDOMValid(pinsDom), "Pins " + OK.ERR_MSG_DOM_NOT_VALID);
             return true;
         } catch (ParsingException e) {

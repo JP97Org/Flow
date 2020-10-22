@@ -10,6 +10,7 @@ import javax.swing.Icon;
 
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.model.Subject;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IGraphicalRepresentation;
@@ -79,11 +80,11 @@ public abstract class GraphicalRepresentation extends Subject implements IDOMabl
     @Override
     public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
-            Map<String, Object> domMap = dom.getDOMMap();
+            Map<String, DOMStringUnion> domMap = dom.getDOMMap();
             if (domMap.containsKey(GraphicalRepresentationDOM.NAME)) {
-                domMap = ((IDOM)domMap.get(GraphicalRepresentationDOM.NAME)).getDOMMap();
+                domMap = ((IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue()).getDOMMap();
             }
-            final IDOM posDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_POSITION);
+            final IDOM posDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_POSITION).getValue();
             this.position = PointDOM.pointOf(posDom);
             //TODO icons. Height and width can be done in subclasses
         }
@@ -93,18 +94,18 @@ public abstract class GraphicalRepresentation extends Subject implements IDOMabl
     public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
         try {
-            Map<String, Object> domMap = dom.getDOMMap();
+            Map<String, DOMStringUnion> domMap = dom.getDOMMap();
             if (domMap.containsKey(GraphicalRepresentationDOM.NAME)) {
-                ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                domMap = ((IDOM)domMap.get(GraphicalRepresentationDOM.NAME)).getDOMMap();
+                ok(domMap.get(GraphicalRepresentationDOM.NAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                domMap = ((IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue()).getDOMMap();
             }
-            ok(domMap.get(GraphicalRepresentationDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM cnDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_CLASSNAME);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM cnDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_CLASSNAME).getValue();
             final String cn = cnDom.elemGet();
             ok(cn != null, OK.ERR_MSG_NULL);
             ok(cn.equals(getClass().getName()), OK.ERR_MSG_WRONG_CAST);
-            ok(domMap.get(GraphicalRepresentationDOM.NAME_POSITION) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM posDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_POSITION);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME_POSITION).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM posDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME_POSITION).getValue();
             ok(p -> PointDOM.pointOf(p), posDom);
             //TODO icons. Height and width can be done in subclasses
             return true;

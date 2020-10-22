@@ -14,6 +14,7 @@ import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ListSizeException;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IFlowModule;
@@ -194,18 +195,18 @@ public abstract class Connection extends FlowChartElement implements IConnection
     public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             this.getToPins().forEach(p -> removeToPin(p));
-            final Map<String, Object> domMap = dom.getDOMMap();
-            final String nameStr = (String)domMap.get(ConnectionDOM.NAME_NAME);
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            final String nameStr = (String)domMap.get(ConnectionDOM.NAME_NAME).getValue();
             setName(nameStr);
-            final IDOM idDom = (IDOM)domMap.get(ConnectionDOM.NAME_ID);
+            final IDOM idDom = (IDOM)domMap.get(ConnectionDOM.NAME_ID).getValue();
             final String idStr = idDom.elemGet();
             final int id = Integer.parseInt(idStr);
             setId(id);
-            IDOM fromDom = (IDOM)domMap.get(ConnectionDOM.NAME_FROM_PIN);
-            fromDom = (IDOM)fromDom.getDOMMap().get(ModulePinDOM.NAME);
-            final IDOM cnFromDom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME));
+            IDOM fromDom = (IDOM)domMap.get(ConnectionDOM.NAME_FROM_PIN).getValue();
+            fromDom = (IDOM)fromDom.getDOMMap().get(ModulePinDOM.NAME).getValue();
+            final IDOM cnFromDom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue());
             final String pinToLoadFrom = cnFromDom.elemGet();
-            final IDOM cnDomImpFrom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
+            final IDOM cnDomImpFrom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
             final ModulePin pinFrom = DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
             pinFrom.restoreFromDOM(fromDom);
@@ -224,14 +225,14 @@ public abstract class Connection extends FlowChartElement implements IConnection
                 // should not happen
                 e1.printStackTrace();
             }
-            final IDOM toDoms = (IDOM)domMap.get(ConnectionDOM.NAME_TO_PINS);
-            final Map<String, Object> toMap = toDoms.getDOMMap();
+            final IDOM toDoms = (IDOM)domMap.get(ConnectionDOM.NAME_TO_PINS).getValue();
+            final Map<String, DOMStringUnion> toMap = toDoms.getDOMMap();
             for (final var toObj : toMap.values()) {
-                if (toObj instanceof IDOM) {
-                    final IDOM toDom = (IDOM)toObj;
-                    final IDOM cnDom = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME));
+                if (toObj.isDOM()) {
+                    final IDOM toDom = (IDOM)toObj.getValue();
+                    final IDOM cnDom = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue());
                     final String pinToLoad = cnDom.elemGet();
-                    final IDOM cnDomImp = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
+                    final IDOM cnDomImp = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
                     final String pinToLoadImp = cnDomImp.elemGet();
                     final ModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
                     pin.restoreFromDOM(toDom);
@@ -252,7 +253,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                     }
                 }
             }
-            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue();
             getGraphicalRepresentation().restoreFromDOM(grDom);
             notifyObservers();
         }
@@ -261,25 +262,25 @@ public abstract class Connection extends FlowChartElement implements IConnection
     @Override
     public boolean isDOMValid(final IDOM dom) {
         Objects.requireNonNull(dom);
-        final Map<String, Object> domMap = dom.getDOMMap();
+        final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
         try {
-            ok(domMap.get(ConnectionDOM.NAME_NAME) instanceof String, OK.ERR_MSG_WRONG_CAST);
-            final String nameStr = (String)domMap.get(ConnectionDOM.NAME_NAME);
+            ok(domMap.get(ConnectionDOM.NAME_NAME).isString(), OK.ERR_MSG_WRONG_CAST);
+            final String nameStr = (String)domMap.get(ConnectionDOM.NAME_NAME).getValue();
             ok(nameStr != null, OK.ERR_MSG_NULL);
-            ok(domMap.get(FlowChartDOM.NAME_ID) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM idDom = (IDOM)domMap.get(FlowChartDOM.NAME_ID);
+            ok(domMap.get(FlowChartDOM.NAME_ID).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM idDom = (IDOM)domMap.get(FlowChartDOM.NAME_ID).getValue();
             final String idStr = idDom.elemGet();
             ok(idStr != null, OK.ERR_MSG_NULL);
-            ok(domMap.get(ConnectionDOM.NAME_FROM_PIN) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            IDOM fromDom = (IDOM)domMap.get(ConnectionDOM.NAME_FROM_PIN);
-            ok(fromDom.getDOMMap().get(ModulePinDOM.NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            fromDom = (IDOM)fromDom.getDOMMap().get(ModulePinDOM.NAME);
-            ok(fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM cnFromDom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME));
+            ok(domMap.get(ConnectionDOM.NAME_FROM_PIN).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            IDOM fromDom = (IDOM)domMap.get(ConnectionDOM.NAME_FROM_PIN).getValue();
+            ok(fromDom.getDOMMap().get(ModulePinDOM.NAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            fromDom = (IDOM)fromDom.getDOMMap().get(ModulePinDOM.NAME).getValue();
+            ok(fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM cnFromDom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue());
             final String pinToLoadFrom = cnFromDom.elemGet();
             ok(pinToLoadFrom != null, OK.ERR_MSG_NULL);
-            ok(fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM cnDomImpFrom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
+            ok(fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM cnDomImpFrom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
             ok(pinToLoadImpFrom != null, OK.ERR_MSG_NULL);
             final ModulePin pinFrom = ok(x -> DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom), "");
@@ -311,18 +312,18 @@ public abstract class Connection extends FlowChartElement implements IConnection
                 }
                 return false;
             }}, "").booleanValue(), "from pin setting failed");
-            ok(domMap.get(ConnectionDOM.NAME_TO_PINS) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM toDoms = (IDOM)domMap.get(ConnectionDOM.NAME_TO_PINS);
-            final Map<String, Object> toMap = toDoms.getDOMMap();
+            ok(domMap.get(ConnectionDOM.NAME_TO_PINS).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM toDoms = (IDOM)domMap.get(ConnectionDOM.NAME_TO_PINS).getValue();
+            final Map<String, DOMStringUnion> toMap = toDoms.getDOMMap();
             for (final var toObj : toMap.values()) {
-                if (toObj instanceof IDOM) {
-                    final IDOM toDom = (IDOM)toObj;
-                    ok(toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                    final IDOM cnDom = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME));
+                if (toObj.isDOM()) {
+                    final IDOM toDom = (IDOM)toObj.getValue();
+                    ok(toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                    final IDOM cnDom = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue());
                     final String pinToLoad = cnDom.elemGet();
                     ok(pinToLoad != null, OK.ERR_MSG_NULL);
-                    ok(toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                    final IDOM cnDomImp = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP));
+                    ok(toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                    final IDOM cnDomImp = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
                     final String pinToLoadImp = cnDomImp.elemGet();
                     ok(pinToLoadImp != null, OK.ERR_MSG_NULL);
                     final ModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
@@ -349,8 +350,8 @@ public abstract class Connection extends FlowChartElement implements IConnection
                     }}, "").booleanValue(), "to pin adding failed");
                 }
             }
-            ok(domMap.get(GraphicalRepresentationDOM.NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME);
+            ok(domMap.get(GraphicalRepresentationDOM.NAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue();
             ok(getGraphicalRepresentation().isDOMValid(grDom), "ConnectionGR " + OK.ERR_MSG_DOM_NOT_VALID);
             return true;
         } catch (ParsingException e) {

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IFlowChartElementGR;
 import org.jojo.flow.model.api.ILabelGR;
@@ -50,11 +51,11 @@ public abstract class FlowChartElementGR extends GraphicalRepresentation impleme
     public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
-            final Map<String, Object> domMap = dom.getDOMMap();
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
             if (domMap.containsKey("label")) {
-                final IDOM labelDom = (IDOM)domMap.get("label");
+                final IDOM labelDom = (IDOM)domMap.get("label").getValue();
                 this.label = (LabelGR) DynamicObjectLoader.loadGR(LabelGR.class.getName());
-                final IDOM grDom = (IDOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
+                final IDOM grDom = (IDOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME).getValue();
                 this.label.restoreFromDOM(grDom);
             }
         }
@@ -65,13 +66,13 @@ public abstract class FlowChartElementGR extends GraphicalRepresentation impleme
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID);
-            final Map<String, Object> domMap = dom.getDOMMap();
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
             if (domMap.containsKey("label")) {
-                ok(domMap.get("label") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                final IDOM labelDom = (IDOM)domMap.get("label");
+                ok(domMap.get("label").isDOM(), OK.ERR_MSG_WRONG_CAST);
+                final IDOM labelDom = (IDOM)domMap.get("label").getValue();
                 ok(g -> (LabelGR) DynamicObjectLoader.loadGR(g), LabelGR.class.getName());
-                ok(labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                final IDOM grDom = (IDOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME);
+                ok(labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                final IDOM grDom = (IDOM)labelDom.getDOMMap().get(GraphicalRepresentationDOM.NAME).getValue();
                 ok(this.label.isDOMValid(grDom), "Label " + OK.ERR_MSG_DOM_NOT_VALID);
             }
             

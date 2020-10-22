@@ -30,10 +30,10 @@ public class PointDOM extends DOM {
     }
 
     public static Point pointOf(final IDOM p) {
-        IDOM pointDom = (IDOM)p.getDOMMap().get(NAME);
+        IDOM pointDom = p.getDOMMap().get(NAME) == null ? null : (IDOM)p.getDOMMap().get(NAME).getValue();
         pointDom = pointDom == null ? p : pointDom;
-        final int x = Integer.parseInt(((IDOM)pointDom.getDOMMap().get(NAME_X)).elemGet());
-        final int y = Integer.parseInt(((IDOM)pointDom.getDOMMap().get(NAME_Y)).elemGet());
+        final int x = Integer.parseInt(((IDOM)pointDom.getDOMMap().get(NAME_X).getValue()).elemGet());
+        final int y = Integer.parseInt(((IDOM)pointDom.getDOMMap().get(NAME_Y).getValue()).elemGet());
         return new Point(x, y);
     }
 }

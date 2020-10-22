@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.jojo.flow.exc.ConnectionException;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
@@ -133,11 +134,11 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
     public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
-            final Map<String, Object> domMap = dom.getDOMMap();
-            final IDOM dataTypeDom = (IDOM)domMap.get("dataType");
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            final IDOM dataTypeDom = (IDOM)domMap.get("dataType").getValue();
             final String dataTypeStr = dataTypeDom.elemGet();
             this.dataType = DataSignature.of(dataTypeStr);
-            final IDOM dataDom = (IDOM)domMap.get("data");
+            final IDOM dataDom = (IDOM)domMap.get("data").getValue();
             final String dataStr = dataDom.elemGet();
             try {
                 this.data = dataStr.equals("null") ? null : Data.ofSerializedString(dataStr);
@@ -154,14 +155,14 @@ public class DefaultArrow extends Connection implements IDefaultArrow {
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
-            final Map<String, Object> domMap = dom.getDOMMap();
-            ok(domMap.get("dataType") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM dataTypeDom = (IDOM)domMap.get("dataType");
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            ok(domMap.get("dataType").isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM dataTypeDom = (IDOM)domMap.get("dataType").getValue();
             final String dataTypeStr = dataTypeDom.elemGet();
             ok(dataTypeStr != null, OK.ERR_MSG_NULL);
             ok(s -> DataSignature.of(s), dataTypeStr);
-            ok(domMap.get("data") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM dataDom = (IDOM)domMap.get("data");
+            ok(domMap.get("data").isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM dataDom = (IDOM)domMap.get("data").getValue();
             final String dataStr = dataDom.elemGet();
             ok(dataStr != null, OK.ERR_MSG_NULL);
             final Exception exc = ok(s -> {

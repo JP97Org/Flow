@@ -100,12 +100,13 @@ public interface IDOM extends IDOMable {
 
     /**
      * Gets a map from tags and attributes to contained objects. 
-     * The contained object can either be another IDOM or a String describing basic data.
+     * The contained object is a DOMStringUnion which either contains another IDOM or 
+     * a String describing basic data.
      * 
      * @return a map from tags and attributes to contained objects
      * 
      */
-    Map<String, Object> getDOMMap();
+    Map<String, DOMStringUnion> getDOMMap();
 
     /**
      * Gets the content of the text element of this tag which only contains one text element. 

@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.ModelFacade;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IConnectionLineGR;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
@@ -82,8 +83,8 @@ public class ConnectionLineGR extends GraphicalRepresentation implements IConnec
     public void restoreFromDOM(IDOM dom) {
         if (isDOMValid(dom)) {
             super.restoreFromDOM(dom);
-            final Map<String, Object> domMap = dom.getDOMMap();
-            final IDOM posBDom = (IDOM)domMap.get("positionB");
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            final IDOM posBDom = (IDOM)domMap.get("positionB").getValue();
             this.positionB = PointDOM.pointOf(posBDom);
             notifyObservers();
         }
@@ -94,9 +95,9 @@ public class ConnectionLineGR extends GraphicalRepresentation implements IConnec
         Objects.requireNonNull(dom);
         try {
             ok(super.isDOMValid(dom), "GR " + OK.ERR_MSG_DOM_NOT_VALID, (new ModelFacade()).getMainFlowChart());
-            final Map<String, Object> domMap = dom.getDOMMap();
-            ok(domMap.get("positionB") instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-            final IDOM posBDom = (IDOM)domMap.get("positionB");
+            final Map<String, DOMStringUnion> domMap = dom.getDOMMap();
+            ok(domMap.get("positionB").isDOM(), OK.ERR_MSG_WRONG_CAST);
+            final IDOM posBDom = (IDOM)domMap.get("positionB").getValue();
             ok(d -> PointDOM.pointOf(d), posBDom);
             return true;
         } catch (ParsingException e) {

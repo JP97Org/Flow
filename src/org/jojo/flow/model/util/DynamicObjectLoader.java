@@ -15,6 +15,7 @@ import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ParsingException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultArrow;
@@ -333,14 +334,14 @@ public final class DynamicObjectLoader {
                     this.rigidPins = new ArrayList<>();
                 }
                 this.rigidPins.clear();
-                final Map<String, Object> domMap = pinsDom.getDOMMap();
+                final Map<String, DOMStringUnion> domMap = pinsDom.getDOMMap();
                 int i = 0;
                 for(var pinObj : domMap.values()) {
-                    if (pinObj instanceof IDOM) {
-                        final IDOM pinDom = (IDOM) pinObj;
-                        final IDOM pinCnDom = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
+                    if (pinObj.isDOM()) {
+                        final IDOM pinDom = (IDOM) pinObj.getValue();
+                        final IDOM pinCnDom = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue();
                         final String pinCn = pinCnDom.elemGet();
-                        final IDOM pinCnDomImp = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
+                        final IDOM pinCnDomImp = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue();
                         final String pinCnImp = pinCnDomImp.elemGet();
                         if (pinCnImp.equals(DefaultPin.class.getName())) {
                             if (pinCn.equals(OutputPin.class.getName())) {
@@ -356,8 +357,8 @@ public final class DynamicObjectLoader {
                             } else {
                                 Point lastLinePoint = null;
                                 final Point thisLinePoint = PointDOM.pointOf((IDOM) ((IDOM) pinDom.getDOMMap()
-                                        .get(GraphicalRepresentationDOM.NAME)).getDOMMap()
-                                        .get("linePoint"));
+                                        .get(GraphicalRepresentationDOM.NAME).getValue()).getDOMMap()
+                                        .get("linePoint").getValue());
                                 int index = 0;
                                 inner:
                                 for (; index < this.rigidPins.size(); index++) {
@@ -398,19 +399,19 @@ public final class DynamicObjectLoader {
         @Override
         protected boolean isPinsDOMValid(final IDOM pinsDom) {
             Objects.requireNonNull(pinsDom);
-            final Map<String, Object> domMap = pinsDom.getDOMMap();
+            final Map<String, DOMStringUnion> domMap = pinsDom.getDOMMap();
             try {
                 int i = 0;
                 for(var pinObj : domMap.values()) {
-                    if (pinObj instanceof IDOM) {
-                        ok(pinObj instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                        final IDOM pinDom = (IDOM) pinObj;
-                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                        final IDOM pinCnDom = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME);
+                    if (pinObj.isDOM()) {
+                        ok(pinObj.isDOM(), OK.ERR_MSG_WRONG_CAST);
+                        final IDOM pinDom = (IDOM) pinObj.getValue();
+                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                        final IDOM pinCnDom = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue();
                         final String pinCn = pinCnDom.elemGet();
                         ok(pinCn != null, OK.ERR_MSG_NULL);
-                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP) instanceof IDOM, OK.ERR_MSG_WRONG_CAST);
-                        final IDOM pinCnDomImp = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP);
+                        ok(pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                        final IDOM pinCnDomImp = (IDOM)pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue();
                         final String pinCnImp = pinCnDomImp.elemGet();
                         ok(pinCnImp != null, OK.ERR_MSG_NULL);
                         final ModulePin pin = ok(x -> loadPin(pinCn, pinCnImp, this), "");

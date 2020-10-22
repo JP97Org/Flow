@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDOMable;
 import org.w3c.dom.Document;
@@ -134,7 +135,7 @@ public abstract class DOM implements IDOM {
     }
     
     @Override
-    public Map<String, Object> getDOMMap() {
+    public Map<String, DOMStringUnion> getDOMMap() {
         return getDOMMap(getParentNode());
     }
     
@@ -148,8 +149,8 @@ public abstract class DOM implements IDOM {
                 ? (((Text) this.parent.getChildNodes().item(0)).getNodeValue()) : null;
     }
     
-    private static Map<String, Object> getDOMMap(final Node node) {
-        final Map<String, Object> map = new HashMap<>();
+    private static Map<String, DOMStringUnion> getDOMMap(final Node node) {
+        final Map<String, DOMStringUnion> map = new HashMap<>();
         
         final Element elem = node.getNodeType() == Node.ELEMENT_NODE ? (Element)node : null;
         for (int i = 0; elem != null && i < node.getAttributes().getLength(); i++) {
@@ -158,11 +159,11 @@ public abstract class DOM implements IDOM {
             while (map.containsKey(name)) {
                 name += i + "_";
             }
-            map.put(name, elem.getAttribute(name));
+            map.put(name, new DOMStringUnion(elem.getAttribute(name)));
         }
         
         if (!elem.hasChildNodes()) {
-            map.put(elem.getTagName(), "");
+            map.put(elem.getTagName(), new DOMStringUnion(""));
             return map;
         }
         
@@ -177,7 +178,7 @@ public abstract class DOM implements IDOM {
             final Object value = (childText != null) 
                     ? childText.getNodeValue() 
                     : new DOM(getDocumentForCreatingElements(), childNode) {};
-            map.put(name, value);
+            map.put(name, new DOMStringUnion(value));
         }
         return map;
     }
