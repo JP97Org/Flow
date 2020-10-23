@@ -23,6 +23,7 @@ import org.jojo.flow.model.api.IFraction;
 import org.jojo.flow.model.api.IMathMatrix;
 import org.jojo.flow.model.api.IMatrix;
 import org.jojo.flow.model.api.IModuleClassesList;
+import org.jojo.flow.model.api.ISettings;
 import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.BasicSignatureComponents;
 import org.jojo.flow.model.data.StringDataSet;
@@ -48,6 +49,13 @@ import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
 public class Main {
     // TODO at the moment only test main class
     public static void main(String[] args) {
+        //Setting settings
+        IAPI.initialize();
+        ISettings settings = ISettings.getDefaultImplementation();
+        settings.setLocationTmpDir(new File("/home/jojo/tmp/flow"));
+        //TODO toggle next line comment for xml/serial write of data on arrows
+        //settings.setLocationXMLSerialTransformerJar(new File("/home/jojo/xmlSerial.jar"));
+        
         IFlowChart flowChart = new FlowChart(0, new FlowChartGR());
         new ModelFacade().setMainFlowChart(flowChart);
         final MockModule mod = (MockModule)DynamicObjectLoader.loadModule(DynamicObjectLoader.MockModule.class.getName(), 100);
@@ -151,7 +159,10 @@ public class Main {
         
         //Class Loader Test
         try {
-            final IModuleClassesList list = new StoreLoadFacade().getNewModuleClassesList(new File("/home/jojo/tmp/flow"), new File("/home/jojo/qfpm.jar")).loadAll();
+            final IModuleClassesList list = new StoreLoadFacade().getNewModuleClassesList(
+                        ISettings.getDefaultImplementation().getLocationTmpDir(), 
+                        new File("/home/jojo/qfpm.jar"))
+                    .loadAll();
             final List<Class<? extends IFlowModule>> moduleClasses = list.getModuleClassesList();
             System.out.println(moduleClasses);
             final FlowModule loaded = DynamicObjectLoader.loadModule(list.getClassLoader().getClassLoader(), moduleClasses.get(0).getName(), 400);
@@ -166,7 +177,6 @@ public class Main {
         }
         
         //API test
-        IAPI.initialize();
         IDataSignature sign = IDataSignature.getDefaultImplementation();
         System.out.println(sign);
         IFraction frac = IFraction.getDefaultImplementation(3L, 5L);

@@ -3,6 +3,7 @@ package org.jojo.flow.model.api;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This interface represents a dynamic class loader for a jar file.
@@ -34,6 +35,16 @@ public interface IDynamicClassLoader extends IAPI {
         return (IDynamicClassLoader) IAPI.defaultImplementationOfThisApi(
                 new Class<?>[] {ClassLoader.class, File.class}, parent, tmpDirForJarExtraction);
     }
+    
+    //TODO doc the methods
+    
+    void putExternalClass(final String name, final File file);
+    
+    Map<String, File> getExternalClassesMap();
+    
+    List<File> unpack(final File jarFile) throws IOException;
+    
+    String binaryNameOf(final String absPathName);
 
     /**
      * Loads all classes in the given jar file.

@@ -33,11 +33,13 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
         this.tmpDirForJarExtraction = tmpDirForJarExtraction;
     }
     
-    protected void putExternalClass(final String name, final File file) {
+    @Override
+    public void putExternalClass(final String name, final File file) {
         this.externalClassesMap.put(name, file);
     }
     
-    protected Map<String, File> getExternalClassesMap() {
+    @Override
+    public Map<String, File> getExternalClassesMap() {
         return new HashMap<>(this.externalClassesMap);
     }
     
@@ -74,6 +76,12 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
     @Override
     public Class<?> loadClass(final String name) throws ClassNotFoundException {
         final String path = pathNameOf(name); 
+        try {
+            final Class<?> alreadyDefined = Class.forName(name);
+            return alreadyDefined;
+        } catch (ClassNotFoundException e) {
+            // class is not already defined --> everything ok
+        }
         if (!this.externalClassesMap.containsKey(name)) {
             return super.loadClass(name);
         } else {
@@ -101,7 +109,8 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
         return this.tmpDirForJarExtraction.getAbsolutePath() + File.separator + name.replaceAll("\\.", File.separator) + ".class";
     }
     
-    private String binaryNameOf(final String absPathName) {
+    @Override
+    public String binaryNameOf(final String absPathName) {
         final String pathName = absPathName.replaceFirst(Pattern.quote(this.tmpDirForJarExtraction.getAbsolutePath() + File.separator), "");
         return pathName.replaceAll(Pattern.quote(File.separator), ".").replaceAll("\\.class", "");
     }
@@ -111,7 +120,8 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
      */
     private static final int BUFFER_SIZE = 4096;
 
-    private List<File> unpack(final File jarFile) throws IOException {
+    @Override
+    public List<File> unpack(final File jarFile) throws IOException {
         final List<File> files = new ArrayList<>();
         
         if (!this.tmpDirForJarExtraction.exists()) {

@@ -244,7 +244,25 @@ public final class DynamicObjectLoader {
         return null;
     }
     
-    public static Object load(final ClassLoader classLoader, final String className, final Class<?>[] parameterTypes, final Object... initArgs) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    /**
+     * TODO
+     * @param classLoader
+     * @param className
+     * @param parameterTypes
+     * @param initArgs
+     * @return
+     * @throws ClassNotFoundException if a class is not found
+     * @throws InvocationTargetException if the invoked constructor throws an exception
+     * @throws IllegalAccessException if the access of the constructor is not possible
+     * @throws InstantiationException  if a class cannot be instatiated
+     * @throws SecurityException if the security manager does not allow the access
+     * @throws NoSuchMethodException if a method was not found
+     */
+    public static Object load(final ClassLoader classLoader, final String className, 
+            final Class<?>[] parameterTypes, final Object... initArgs) 
+                    throws ClassNotFoundException, NoSuchMethodException, SecurityException, 
+                    InstantiationException, IllegalAccessException, IllegalArgumentException, 
+                    InvocationTargetException {
         final Class<?> moduleToLoadClass = Class.forName(className, true, classLoader);
         final var constr = moduleToLoadClass.getConstructor(parameterTypes);
         return constr.newInstance(initArgs);

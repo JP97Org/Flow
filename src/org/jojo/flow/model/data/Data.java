@@ -1,15 +1,12 @@
 package org.jojo.flow.model.data;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Base64;
-import java.util.regex.Pattern;
+import java.lang.reflect.InvocationTargetException;
 
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IXMLSerialTransform;
 
 public abstract class Data implements IData {
     /**
@@ -41,47 +38,40 @@ public abstract class Data implements IData {
     @Override
     public abstract String toString();
     
-    private static final int TIMES = 10;
     private static <T extends Data> String serialize(T o) throws IOException, ClassNotFoundException {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-        try (ObjectOutputStream oos = new ObjectOutputStream (baos)) {
-            oos.writeObject(o);
-        }
-        return Base64.getEncoder().encodeToString(baos.toByteArray())
-                .replaceAll(Pattern.quote("\n"), times("newline", TIMES))
-                .replaceAll(Pattern.quote("\""), times("quote", TIMES))
-                .replaceAll(Pattern.quote(";"), times("semicolon", TIMES));
-    }
-
-    private static String times(final String in, int times) {
-        final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < times; i++) {
-            builder.append(in);
-        }
-        return builder.toString();
+        return IXMLSerialTransform.serialize(o);
     }
     
     public String toSerializedString() throws ClassNotFoundException, IOException {
-        return serialize(this);
+        final String base64 = serialize(this);
+        IXMLSerialTransform transform = null;
+        try {
+            transform = IXMLSerialTransform.getDefaultImplementation();
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            new Warning(null, e.toString(), true).reportWarning();
+        }
+        return transform == null ? base64 : transform.toXMLString(base64);
     }
     
     public static Data ofSerializedString(final String serializedString) throws ClassNotFoundException, IOException {
-        return deserialize(serializedString);
+        IXMLSerialTransform transform = null;
+        try {
+            transform = IXMLSerialTransform.getDefaultImplementation();
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            new Warning(null, e.toString(), true).reportWarning();
+        }
+        final String base64 = transform == null ? serializedString : transform.toSerialString(serializedString);
+        return deserialize(base64);
     }
     
     private static Data deserialize(final String serializedString) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bais = new ByteArrayInputStream (
-                Base64.getDecoder().decode(serializedString
-                .replaceAll("(semicolon){"+TIMES+"}", ";")
-                .replaceAll("(quote){"+TIMES+"}", "\"")
-                .replaceAll("(newline){"+TIMES+"}", "\n")));
-        try (ObjectInputStream ois = new ObjectInputStream (bais)) {
-            Object o = ois.readObject();
-            if (o instanceof Data) {
-                return (Data)o;
-            } else {
-                throw new IllegalArgumentException("read object has not the correct type, it should be an instance of Data but is: " + o.getClass());
-            }
+        Object o = IXMLSerialTransform.deserialize(serializedString);
+        if (o instanceof Data) {
+             return (Data)o;
+        } else {
+            throw new IllegalArgumentException("read object has not the correct type, it should be an instance of Data but is: " + o.getClass());
         }
     }
 }

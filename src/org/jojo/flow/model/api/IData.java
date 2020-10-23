@@ -42,9 +42,12 @@ public interface IData extends IAPI, Serializable {
     String toString();
     
     /**
-     * Serializes this data.
+     * Serializes this data. If XML should be created and the transformer fails in being created or during
+     * transformation, an error Warning is reported.
      * 
-     * @return the serialized data encoded as BASE64
+     * @return the serialized data encoded as BASE64 or XML 
+     * if {@link IXMLSerialTransform#getDefaultImplementation()} 
+     * does not return {@code null}
      * @throws ClassNotFoundException if a class is not found
      * @throws IOException if an IO failure occurs
      */
