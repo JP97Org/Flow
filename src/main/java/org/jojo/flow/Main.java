@@ -49,12 +49,13 @@ import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
 public class Main {
     // TODO at the moment only test main class
     public static void main(String[] args) {
+        final long base = System.currentTimeMillis();
         //Setting settings
         IAPI.initialize();
         ISettings settings = ISettings.getDefaultImplementation();
         settings.setLocationTmpDir(new File("/home/jojo/tmp/flow"));
         //TODO toggle next line comment for xml/serial write of data on arrows
-        //settings.setLocationXMLSerialTransformerJar(new File("/home/jojo/xmlSerial.jar"));
+        //settings.setLocationXMLSerialTransformerJar(new File("/home/jojo/Dokumente/MainWorkspace/xmlSerial/target/xmlSerial.jar"));
         
         IFlowChart flowChart = new FlowChart(0, new FlowChartGR());
         new ModelFacade().setMainFlowChart(flowChart);
@@ -194,5 +195,8 @@ public class Main {
         //Warning Log empty?
         System.out.println(Warning.getWarningLog());
         System.out.println(Warning.getWarningLog().isEmpty());
+        
+        //Time needed
+        System.out.println((System.currentTimeMillis() - base) + "ms");
     }
 }
