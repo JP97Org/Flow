@@ -95,22 +95,23 @@ public interface IConnection extends IFlowChartElement {
     List<IInputPin> getToPins();
 
     /**
-     * Gets a set of IFlowModule instances to which this connection is connected.
+     * Gets a set of {@link IFlowModule} instances to which this connection is connected.
      * 
-     * @return a set of IFlowModule instances to which this connection is connected
+     * @return a set of {@link IFlowModule} instances to which this connection is connected
      */
     Set<IFlowModule> getConnectedModules();
 
     /**
-     * Determines whether the given IModulePinImp is inside this connection, i.e. either the from or a to pin.
+     * Determines whether the given {@link IModulePinImp} is inside this connection, 
+     * i.e. either the from or a to pin.
      * 
-     * @param modulePinImp - the given IModulePinImp
-     * @return whether the given IModulePinImp is inside this connection
+     * @param modulePinImp - the given {@link IModulePinImp}
+     * @return whether the given {@link IModulePinImp} is inside this connection
      */
     boolean isPinImpInConnection(IModulePinImp modulePinImp);
 
     /**
-     * Adds the given IInputPin as a new to pin to this connection. 
+     * Adds the given {@link IInputPin} as a new to pin to this connection. 
      * If this method is unsuccessful, nothing changes.
      * 
      * @param toPin - the given to pin

@@ -13,7 +13,7 @@ import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.data.Fraction;
 
 /**
- * This class represents a unit scalar, i.e. a numeric value and and UnitSignature.
+ * This class represents a unit scalar, i.e. a numeric value and an {@link UnitSignature}.
  * @author Jonathan Schenkenberger
  * @version 1.0
  * @param <T> - the generic numeric type

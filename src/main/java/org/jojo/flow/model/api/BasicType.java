@@ -8,7 +8,8 @@ import java.util.Objects;
 /**
  * The BasicType enum represents a basic type for the IData IBasicCheckable datatypes.
  * A BasicType is one of these: 
- * boolean, char, byte, short, int, long, float, double, BigInteger, BigDecimal or Fraction.
+ * boolean, char, byte, short, int, long, float, double, {@link BigInteger}, {@link BigDecimal} or 
+ * {@link IFraction}.
  * Moreover, there is also an UNKNOWN constant for unknown datatypes, i.e none of the beforementioned types.
  * 
  * @author Jonathan Schenkenberger
@@ -22,7 +23,8 @@ public enum BasicType {
      * @param value - the numeric value
      * @return  the Unit.Type representing the given numeric value or {@code null} if it is {@code null} 
      *          or not one of the following:
-     *          byte, short, int, long, float, double, BigInteger, BigDecimal or Fraction
+     *          byte, short, int, long, float, double, {@link BigInteger}, {@link BigDecimal} or 
+     *          {@link IFraction}
      */
     public static Unit.Type of(final Number value) {
         if (value instanceof Byte) {
@@ -58,7 +60,7 @@ public enum BasicType {
     /**
      * 
      * @param type - the unit type (must not be null)
-     * @return the basic type representing the given Unit.Type
+     * @return the basic type representing the given {@link Unit.Type}
      */
     public static BasicType of(final Unit.Type type) {
         Objects.requireNonNull(type);
@@ -71,7 +73,7 @@ public enum BasicType {
     /**
      * 
      * @param o - the given object
-     * @return the respective basic type of the object or BasicType.UNKNOWN if it is unknown
+     * @return the respective basic type of the object or {@code BasicType.UNKNOWN} if it is unknown
      */
     public static BasicType of(final Object o) {
         if (o instanceof Boolean) {

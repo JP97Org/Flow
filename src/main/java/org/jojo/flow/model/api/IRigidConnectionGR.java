@@ -4,7 +4,7 @@ import org.jojo.flow.model.flowChart.connections.RigidConnectionGR;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
- * This interface represents the graphical representation for an IRigidConnection.
+ * This interface represents the graphical representation for an {@link IRigidConnection}.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

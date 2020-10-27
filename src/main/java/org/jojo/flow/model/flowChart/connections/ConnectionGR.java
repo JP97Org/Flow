@@ -28,6 +28,13 @@ public abstract class ConnectionGR extends FlowChartElementGR implements IConnec
     @Override
     public abstract void addToPin(final Point diversionPoint, final IModulePinGR toPin);
     
+    /**
+     * Determines whether the connection is addable, i.e. the connection is not {@code null} and
+     * the from pin of this connection and the connection to add are equal.
+     * 
+     * @param connection - the connection
+     * @return whether the connection is addable
+     */
     protected boolean isAddable(final OneConnectionGR connection) {
         if (connection == null || !connection.getFromPin().equals(this.fromPin)) {
             return false;
@@ -35,6 +42,12 @@ public abstract class ConnectionGR extends FlowChartElementGR implements IConnec
         return true;
     }
     
+    /**
+     * Adds the given connection.
+     * 
+     * @param c - the given connection
+     * @see #isAddable(OneConnectionGR)
+     */
     protected void addConnection(final IOneConnectionGR c) {
         Objects.requireNonNull(c);
         if (!c.getFromPin().equals(this.fromPin)) {
@@ -44,10 +57,18 @@ public abstract class ConnectionGR extends FlowChartElementGR implements IConnec
         notifyObservers(c);
     }
     
+    /**
+     * Sets the from pin.
+     * 
+     * @param fromPin - the from pin
+     */
     protected void setFromPin(final ModulePinGR fromPin) {
         this.fromPin = fromPin;
     }
     
+    /**
+     * Deletes all connections of this connection.
+     */
     protected void deleteAllConnections() {
         this.connections.clear();
     }

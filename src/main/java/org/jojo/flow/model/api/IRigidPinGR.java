@@ -4,7 +4,7 @@ import org.jojo.flow.model.flowChart.modules.RigidPinGR;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
- * This interface represents a graphical representation of an IRigidPin.
+ * This interface represents a graphical representation of an {@link IRigidPin}.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart.modules;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +35,7 @@ import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
-import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.util.OK;
 
 public abstract class FlowModule extends FlowChartElement implements IObserver, IFlowModule {
     private final IExternalConfig externalConfig;
@@ -69,11 +69,25 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
     
     @Override
     public abstract List<IModulePin> getAllModulePins();
+    
+    /**
+     * Sets all module pins with the given pins DOM.
+     * 
+     * @param pinsDom - the given pins DOM
+     */
     protected abstract void setAllModulePins(IDOM pinsDom);
+    
+    /**
+     * Determines whether the given pins DOM is valid.
+     * 
+     * @param pinsDom - the given pins DOM
+     * @return whether the given pins DOM is valid
+     */
     protected abstract boolean isPinsDOMValid(IDOM pinsDom);
     
     @Override
     public abstract Frequency<Fraction> getFrequency();
+    
     @Override
     public abstract void run() throws Exception;
     
@@ -146,8 +160,10 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
 
     @Override
     public abstract void setInternalConfig(final IDOM internalConfigDOM);
+    
     @Override
     public abstract boolean isInternalConfigDOMValid(final IDOM internalConfigDOM);
+    
     @Override
     public abstract IInternalConfig getInternalConfig();
     

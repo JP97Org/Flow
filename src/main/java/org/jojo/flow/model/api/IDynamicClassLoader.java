@@ -36,14 +36,38 @@ public interface IDynamicClassLoader extends IAPI {
                 new Class<?>[] {ClassLoader.class, File.class}, parent, tmpDirForJarExtraction);
     }
     
-    //TODO doc the methods
-    
+    /**
+     * Puts the external class defined by the given class name as an external class located
+     * in the given class file.
+     * 
+     * @param name - the given class name (must not be {@code null})
+     * @param file - the class given file (must not be {@code null})
+     */
     void putExternalClass(final String name, final File file);
     
+    /**
+     * Gets a copy of the mappings from class names to external class files.
+     * 
+     * @return a copy of the mappings from class names to external class files
+     */
     Map<String, File> getExternalClassesMap();
     
+    /**
+     * Unpacks the given jar files class files to the temp directory specified at construction time.
+     * 
+     * @param jarFile - the given jar file
+     * @return the list of extracted class files
+     * @throws IOException if an I/O failure occurs
+     */
     List<File> unpack(final File jarFile) throws IOException;
     
+    /**
+     * Gets the binary name of the public class defined by the absolute path name of the respective
+     * class file.
+     * 
+     * @param absPathName - the absolute path name of the respective class file
+     * @return the binary name of the public class
+     */
     String binaryNameOf(final String absPathName);
 
     /**
@@ -57,11 +81,12 @@ public interface IDynamicClassLoader extends IAPI {
     List<Class<?>> loadClasses(File jarFile) throws ClassNotFoundException, IOException;
 
     /**
-     * Loads a class by a name. This method exists for this loader to be used as an Java class loader.
+     * Loads a class by a binary name. This method exists for this loader to be used as an Java class loader.
      * 
      * @param name - the full name of the class to load
      * @return the class with the given name
      * @throws ClassNotFoundException if a class was not found
+     * @see ClassLoader#loadClass(String)
      * @see #loadClasses(File)
      */
     Class<?> loadClass(String name) throws ClassNotFoundException;

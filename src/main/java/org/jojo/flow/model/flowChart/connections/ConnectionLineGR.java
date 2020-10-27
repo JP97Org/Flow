@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart.connections;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.awt.Point;
 import java.util.Map;
@@ -15,8 +15,8 @@ import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.PointDOM;
+import org.jojo.flow.model.util.OK;
 
 public class ConnectionLineGR extends GraphicalRepresentation implements IConnectionLineGR {
     private Point positionB;
@@ -30,6 +30,14 @@ public class ConnectionLineGR extends GraphicalRepresentation implements IConnec
         }
     }
     
+    /**
+     * Determines whether the two points define a line, i.e. have exactly one coordinate in common.
+     * If they do not define a line a {@link org.jojo.flow.exc.Warning} is reported.
+     * 
+     * @param positionA - the first point
+     * @param positionB - the second point
+     * @return whether the two points define a line
+     */
     public static boolean isLine(final Point positionA, final Point positionB) {
         if (positionA.x != positionB.x && positionA.y != positionB.y) {
             new Warning(null, "A and B are not on a line", false).reportWarning();

@@ -6,7 +6,7 @@ import org.jojo.flow.model.flowChart.connections.DefaultArrowGR;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
- * This interface represents the graphical representation for an IDefaultArrow.
+ * This interface represents the graphical representation for an {@link IDefaultArrow}.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

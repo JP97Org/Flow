@@ -13,7 +13,7 @@ import java.util.List;
 public interface IConnectionGR extends IFlowChartElementGR {
 
     /**
-     * Adds the given to pin by connecting the from pin with two IConnectionLineGR instances
+     * Adds the given to pin by connecting the from pin with two {@link IConnectionLineGR} instances
      * diverted at the given point of diversion.
      * 
      * @param diversionPoint - the point of diversion
@@ -46,7 +46,7 @@ public interface IConnectionGR extends IFlowChartElementGR {
     /**
      * Gets the single connections of this connection.
      * 
-     * @return a copy of the IOneConnectionGR list
+     * @return a copy of the {@link IOneConnectionGR} list
      */
     List<IOneConnectionGR> getSingleConnections();
 

@@ -3,7 +3,7 @@ package org.jojo.flow.model.api;
 import java.util.List;
 
 /**
- * This interface represents an observer for observable ISubject instances.
+ * This interface represents an observer for observable {@link ISubject} instances.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

@@ -7,7 +7,7 @@ import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
  * This interface represents a graphical representation for a connection line, i.e. a straight line
- * from a Point A to a different Point B. It must be ensured by implementations of this interface
+ * from a {@link Point} A to a different {@link Point} B. It must be ensured by implementations of this interface
  * that A and B are different points and that either the x coordinate or the y coordinate of the
  * two points are equal.
  * 
@@ -25,30 +25,30 @@ public interface IConnectionLineGR extends IGraphicalRepresentation {
     }
 
     /**
-     * Gets the position of Point A. It must not be {@code null}.
+     * Gets the position of {@link Point} A. It must not be {@code null}.
      * 
-     * @return the position of Point A
+     * @return the position of {@link Point} A
      */
     Point getPositionA();
 
     /**
-     * Gets the position of Point B. It must not be {@code null}.
+     * Gets the position of {@link Point} B. It must not be {@code null}.
      * 
-     * @return the position of Point B
+     * @return the position of {@link Point} B
      */
     Point getPositionB();
 
     /**
-     * Sets the position of Point A. It must not be {@code null}.
+     * Sets the position of {@link Point} A. It must not be {@code null}.
      * 
-     * @param positionA - the position of Point A
+     * @param positionA - the position of {@link Point} A
      */
     void setPositionA(Point positionA);
 
     /**
-     * Sets the position of Point B. It must not be {@code null}.
+     * Sets the position of {@link Point} B. It must not be {@code null}.
      * 
-     * @param positionB - the position of Point B
+     * @param positionB - the position of {@link Point} B
      */
     void setPositionB(Point positionB);
 }

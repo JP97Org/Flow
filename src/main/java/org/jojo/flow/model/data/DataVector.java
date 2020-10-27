@@ -33,6 +33,7 @@ public class DataVector extends RecursiveCheckable implements IDataVector {
         this.dataSignature = new RecursiveSignature(this);
     }
     
+    @Override
     public void add(final IData toAdd) throws DataTypeIncompatException {
         if (!toAdd.hasSameType(this.componentSignature)) {
             throw new DataTypeIncompatException("all data must have this signature: " + componentSignature);
@@ -40,7 +41,8 @@ public class DataVector extends RecursiveCheckable implements IDataVector {
         this.data.add(toAdd);
     }
     
-    public void remove(final int index) {
+    @Override
+    public void remove(final int index) throws IndexOutOfBoundsException {
         this.data.remove(index);
     }
     

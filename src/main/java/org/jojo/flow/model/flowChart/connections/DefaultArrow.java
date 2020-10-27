@@ -3,6 +3,9 @@ package org.jojo.flow.model.flowChart.connections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static org.jojo.flow.model.util.OK.ok;
+
 import java.awt.Shape;
 import java.io.IOException;
 
@@ -20,11 +23,9 @@ import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
-import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.util.OK;
 import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
-
-import static org.jojo.flow.model.storeLoad.OK.ok;
 
 public class DefaultArrow extends Connection implements IDefaultArrow {
     private IDataSignature dataType;

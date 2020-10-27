@@ -16,8 +16,8 @@ import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
  * Represents a XML to Serial and vice versa transformator. Classes which implement this interface
- * must specify a parameter-less public constructor and be named XMLSerialTransformer in a package with
- * the name "org.xmlSerial".
+ * must specify a parameter-less public constructor and be named "XMLSerialTransformer" in a package with
+ * the name "org.xmlSerial", i.e. the binary name must be "org.xmlSerial.XMLSerialTransformer".
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0
@@ -25,17 +25,17 @@ import org.jojo.flow.model.util.DynamicObjectLoader;
 public interface IXMLSerialTransform extends IAPI {
     
     /**
-     * Gets the default IXMLSerialTransform, i.e. the first element of the classes loaded
-     * by the default IDyanimClassLoader instance from the location specified by the
-     * {@link ISettings#getLocationXMLSerialTransformerJar()} method of the default ISettings
+     * Gets the default {@link IXMLSerialTransform}, i.e. the first element of the classes loaded
+     * by the default {@link IDynamicClassLoader} instance from the location specified by the
+     * {@link ISettings#getLocationXMLSerialTransformerJar()} method of the default {@link ISettings}
      * implementation.
      * 
-     * @return the default IXMLSerialTransform or {@code null} if non-existent or tmp dir is not specified
+     * @return the default {@link IXMLSerialTransform} or {@code null} if non-existent or tmp dir is not specified
      * @throws IOException if an I/O failure occurs
      * @throws ClassNotFoundException if a class is not found
      * @throws InvocationTargetException if the invoked constructor throws an exception
      * @throws IllegalAccessException if the access of the constructor is not possible
-     * @throws InstantiationException  if a class cannot be instatiated
+     * @throws InstantiationException  if a class cannot be instantiated
      * @throws SecurityException if the security manager does not allow the access
      * @throws NoSuchMethodException if a method was not found
      */

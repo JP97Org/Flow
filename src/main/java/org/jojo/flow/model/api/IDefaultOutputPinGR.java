@@ -4,7 +4,7 @@ import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
- * This interface represents the graphical representation for an IDefaultOutputPin.
+ * This interface represents the graphical representation for a default output pin.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

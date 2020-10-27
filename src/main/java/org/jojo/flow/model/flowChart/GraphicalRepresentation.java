@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.awt.Point;
 import java.util.Map;
@@ -15,8 +15,8 @@ import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDOMable;
 import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.PointDOM;
+import org.jojo.flow.model.util.OK;
 
 public abstract class GraphicalRepresentation extends Subject implements IDOMable, IGraphicalRepresentation {
     private Point position;

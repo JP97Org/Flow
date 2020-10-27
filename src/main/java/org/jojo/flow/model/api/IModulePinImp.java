@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * This interface represents a super-interface for implementations of module pins. 
- * As of version 1.0, the two implementations for pins are IDefaultPin and IRigidPin.
+ * As of version 1.0, the two implementations for pins are {@link IDefaultPin} and {@link IRigidPin}.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

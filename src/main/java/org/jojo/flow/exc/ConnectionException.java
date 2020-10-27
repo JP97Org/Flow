@@ -2,6 +2,12 @@ package org.jojo.flow.exc;
 
 import org.jojo.flow.model.flowChart.FlowChartElement;
 
+/**
+ * This exception represents an exception which may occur during connecting of connections.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class ConnectionException extends FlowException {
     /**
      * 

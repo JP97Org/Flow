@@ -6,14 +6,15 @@ import org.jojo.flow.exc.DataTypeIncompatException;
 import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultPin;
+import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 
 public class DefaultPin extends ModulePinImp implements IDefaultPin {
     private IDataSignature checkDataSignature;
     
-    public DefaultPin(final FlowModule module, final Data defaultData) {
-        super(module, defaultData);
+    public DefaultPin(final IFlowModule flowModule, final Data defaultData) {
+        super(flowModule, defaultData);
         Objects.requireNonNull(defaultData);
         this.checkDataSignature = defaultData.getDataSignature().getCopy();
     }
@@ -23,13 +24,6 @@ public class DefaultPin extends ModulePinImp implements IDefaultPin {
         return this.checkDataSignature;
     }
     
-    /**
-     * Sets a new checking data signature. It must match the old checking data signature.
-     * However, it may be more or less checking.
-     * 
-     * @param checkingDataSignature - the data signature to be set
-     * @throws FlowException if the data signature to be set and the already set one do not match
-     */
     @Override
     public void setCheckDataSignature(final IDataSignature checkingDataSignature) throws FlowException {
         if (this.checkDataSignature.matches(checkingDataSignature)) {
@@ -39,6 +33,12 @@ public class DefaultPin extends ModulePinImp implements IDefaultPin {
         }
     }
     
+    /**
+     * Force sets the given data signature on this pin and all connected arrows.
+     * 
+     * @param checkingDataSignature - the given data signature
+     * @see #setCheckDataSignature(IDataSignature)
+     */
     protected void forceSetCheckDataSignature(final IDataSignature checkingDataSignature) {
         this.checkDataSignature = checkingDataSignature;
         getConnections().forEach(c -> ((DefaultArrow)c).forcePutDataSignature(checkingDataSignature));

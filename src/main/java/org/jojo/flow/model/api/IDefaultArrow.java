@@ -4,7 +4,7 @@ import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
  * This interface represents a default arrow, i.e. a connection used for sending data from an
- * IOutputPin to one ore more IInputPin.
+ * {@link IOutputPin} to one ore more {@link IInputPin}.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0
@@ -32,8 +32,8 @@ public interface IDefaultArrow extends IConnection {
     IData getData();
 
     /**
-     * Puts data on the arrow if the IDataSignature of the given IData matches this arrow's IDataSignature.
-     * If this method does not succeed, nothing changes.
+     * Puts data on the arrow if the IDataSignature of the given {@link IData} matches this arrow's 
+     * {@link IDataSignature}. If this method does not succeed, nothing changes.
      *
      * @param data - the data to be put on the arrow or {@code null} if the data should be removed from the arrow
      * @return whether the putting succeeded

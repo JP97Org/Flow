@@ -14,7 +14,7 @@ public interface IGraphicalRepresentation extends IDOMable {
 
     /**
      * Gets the position of this graphical representation. 
-     * The position is usually defined as the Point of the most upper-left point of the respective
+     * The position is usually defined as the {@link Point} of the most upper-left point of the respective
      * graphical representation, i.e. the point with the lowest x and the lowest y coordinate.
      * However, it may be that such a point does not exist or that for graphical representations for
      * certain elements this point is not meaningful and there may be other and better possibilities 
@@ -39,7 +39,7 @@ public interface IGraphicalRepresentation extends IDOMable {
      * The height is usually defined as the difference between the highest and the lowest Point
      * of this graphical representation regarding the y coordinate. <br/><br/>
      * 
-     * This is not the case is in IOneConnectionGR.
+     * This is not the case is in {@link IOneConnectionGR}.
      * 
      * @return the height of this graphical representation
      * @see IOneConnectionGR#getHeight()
@@ -51,7 +51,7 @@ public interface IGraphicalRepresentation extends IDOMable {
      * The width is usually defined as the difference between the highest and the lowest Point
      * of this graphical representation regarding the x coordinate. <br/><br/>
      * 
-     * This is not the case is in IOneConnectionGR.
+     * This is not the case is in {@link IOneConnectionGR}.
      * 
      * @return the width of this graphical representation
      * @see IOneConnectionGR#getWidth()

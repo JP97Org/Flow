@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart.modules;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.util.Map;
 import java.util.Objects;
@@ -11,9 +11,9 @@ import org.jojo.flow.model.api.IExternalConfig;
 import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.Pair;
 import org.jojo.flow.model.storeLoad.ConfigDOM;
+import org.jojo.flow.model.util.OK;
 import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
-import org.jojo.flow.model.storeLoad.OK;
 
 public class ExternalConfig extends Subject implements IExternalConfig {
     private String name;

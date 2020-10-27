@@ -20,12 +20,12 @@ import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.PointDOM;
 import org.jojo.flow.model.util.DynamicObjectLoader;
+import org.jojo.flow.model.util.OK;
 
 import static org.jojo.flow.model.flowChart.connections.ConnectionLineGR.isLine;
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 public class OneConnectionGR extends GraphicalRepresentation implements IOneConnectionGR {
     private IModulePinGR fromPin; // output pin

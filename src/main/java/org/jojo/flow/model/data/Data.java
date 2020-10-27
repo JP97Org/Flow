@@ -54,7 +54,7 @@ public abstract class Data implements IData {
         return transform == null ? base64 : transform.toXMLString(base64);
     }
     
-    public static Data ofSerializedString(final String serializedString) throws ClassNotFoundException, IOException {
+    public static Data ofSerializedString(final String serializedString) throws ClassNotFoundException, IOException, IllegalArgumentException {
         IXMLSerialTransform transform = null;
         try {
             transform = IXMLSerialTransform.getDefaultImplementation();

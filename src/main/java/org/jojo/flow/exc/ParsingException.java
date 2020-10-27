@@ -2,6 +2,12 @@ package org.jojo.flow.exc;
 
 import org.jojo.flow.model.flowChart.FlowChartElement;
 
+/**
+ * This exception represents an exception which may occur during parsing.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class ParsingException extends FlowException {
     /**
      * 

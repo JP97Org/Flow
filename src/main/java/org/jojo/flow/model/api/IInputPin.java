@@ -15,10 +15,10 @@ import org.jojo.flow.model.util.DynamicObjectLoader;
 public interface IInputPin extends IModulePin {
     
     /**
-     * Gets the default implementation with an IDefaultPin as implementation.
+     * Gets the default implementation with an {@link IDefaultPin} as implementation.
      * 
      * @param module - the flow module to which this pin is attached (must not be {@code null})
-     * @return the default implementation with an IDefaultPin as implementation
+     * @return the default implementation with an {@link IDefaultPin} as implementation
      * @see IRigidPin#getDefaultImplementation(FlowModule)
      * @see IOutputPin#getDefaultImplementation(FlowModule)
      */

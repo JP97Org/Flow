@@ -82,7 +82,7 @@ public interface IFlowModule extends IFlowChartElement, Comparable<IFlowModule> 
      * Validates this flow module’s default input pins which must have completely checking data signatures
      * for using the default implementation of the validate method.
      * Thereafter, it puts correct complete-does-care default data (data signature completely checking)
-     * on all its default output pins. Returns a faulty IDefaultArrow if any exists, otherwise returns
+     * on all its default output pins. Returns a faulty {@link IDefaultArrow} if any exists, otherwise returns
      * {@code null}.
      * 
      * @return {@code null} if this flow module is valid, otherwise the first found invalid arrow
@@ -159,19 +159,19 @@ public interface IFlowModule extends IFlowChartElement, Comparable<IFlowModule> 
     List<IOutputPin> getAllOutputs();
 
     /**
-     * Gets all modules which are directly connected with an IDefaultArrow
+     * Gets all modules which are directly connected with an {@link IDefaultArrow}
      * to one of this module’s default input pins.
      * 
-     * @return all modules which are directly connected with an IDefaultArrow
+     * @return all modules which are directly connected with an {@link IDefaultArrow}
      * to one of this module’s default input pins
      */
     List<IFlowModule> getDefaultDependencyList();
 
     /**
-     * Gets all modules which are directly connected with an IDefaultArrow
+     * Gets all modules which are directly connected with an {@link IDefaultArrow}
      * to one of this module’s default output pins.
      * 
-     * @return all modules which are directly connected with an IDefaultArrow
+     * @return all modules which are directly connected with an {@link IDefaultArrow}
      * to one of this module’s default output pins
      */
     List<IFlowModule> getDefaultAdjacencyList();

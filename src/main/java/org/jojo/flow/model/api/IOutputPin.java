@@ -14,10 +14,10 @@ import org.jojo.flow.model.util.DynamicObjectLoader;
 public interface IOutputPin extends IModulePin {
     
     /**
-     * Gets the default implementation with an IDefaultPin as implementation.
+     * Gets the default implementation with an {@link IDefaultPin} as implementation.
      * 
      * @param module - the flow module to which this pin is attached (must not be {@code null})
-     * @return the default implementation with an IDefaultPin as implementation
+     * @return the default implementation with an {@link IDefaultPin} as implementation
      * @see IRigidPin#getDefaultImplementation(FlowModule)
      * @see IInputPin#getDefaultImplementation(FlowModule)
      */
@@ -26,7 +26,7 @@ public interface IOutputPin extends IModulePin {
     }
 
     /**
-     * Puts the given data on each outgoing IDefaultArrow. If some arrows refuse the data to be put,
+     * Puts the given data on each outgoing {@link IDefaultArrow}. If some arrows refuse the data to be put,
      * it is put on the other arrows anyway.
      * 
      * @param data - the given data

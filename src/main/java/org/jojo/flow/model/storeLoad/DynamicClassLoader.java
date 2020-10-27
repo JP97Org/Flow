@@ -35,6 +35,8 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
     
     @Override
     public void putExternalClass(final String name, final File file) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(file);
         this.externalClassesMap.put(name, file);
     }
     

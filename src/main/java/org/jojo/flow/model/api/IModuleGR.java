@@ -16,7 +16,7 @@ public interface IModuleGR extends IFlowChartElementGR {
     
     /**
      * Gets the default implementation (a "mock module" GR). However, this is not the usual way
-     * to get a IModuleGR implementation, flow module designers should rather provide their own
+     * to get a {@link IModuleGR} implementation, flow module designers should rather provide their own
      * implementation of this interface for the flow modules they develop.
      * 
      * @return the default implementation (a "mock module" GR)

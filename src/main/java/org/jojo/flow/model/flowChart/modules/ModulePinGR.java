@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart.modules;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.awt.Point;
 import java.util.Map;
@@ -14,8 +14,8 @@ import org.jojo.flow.model.flowChart.GraphicalRepresentation;
 import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.PointDOM;
+import org.jojo.flow.model.util.OK;
 
 public abstract class ModulePinGR extends GraphicalRepresentation implements IModulePinGR {
     private int height;

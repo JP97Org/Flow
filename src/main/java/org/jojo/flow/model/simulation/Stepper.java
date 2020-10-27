@@ -27,22 +27,28 @@ public abstract class Stepper implements IStepper {
     
     @Override
     public abstract void stepForward() throws ModuleRunException;
+    
     @Override
     public abstract void stepOnce() throws ModuleRunException;
     
     @Override
     public abstract void unpause();
+    
     @Override
     public abstract void pause();
+    
     @Override
     public abstract boolean isPaused();
+    
     @Override
     public abstract void reset() throws FlowException;
     
     @Override
     public abstract Frequency<Fraction> getFrequency();
+    
     @Override
     public abstract int getStepCount();
+    
     @Override
     public abstract Time<Fraction> getTimePassed();
     

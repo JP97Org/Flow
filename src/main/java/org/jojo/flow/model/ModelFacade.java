@@ -8,7 +8,9 @@ import java.util.Objects;
 import org.jojo.flow.exc.ConnectionException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
+import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDefaultArrow;
+import org.jojo.flow.model.api.IDefaultPin;
 import org.jojo.flow.model.api.IDynamicClassLoader;
 import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IFlowChartElement;
@@ -25,7 +27,6 @@ import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.flowChart.connections.DefaultArrow;
 import org.jojo.flow.model.flowChart.connections.RigidConnection;
-import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.simulation.Simulation;
 import org.jojo.flow.model.simulation.SimulationConfiguration;
@@ -208,7 +209,7 @@ public class ModelFacade implements IModelFacade {
         Objects.requireNonNull(fc);
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
-        final Connection con = from.getModulePinImp() instanceof DefaultPin 
+        final IConnection con = from.getModulePinImp() instanceof IDefaultPin 
                 ? DynamicObjectLoader.loadConnection(DefaultArrow.class.getName()) 
                         : DynamicObjectLoader.loadConnection(RigidConnection.class.getName()) ;
         con.removeToPin(con.getToPins().get(0));

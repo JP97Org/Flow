@@ -5,6 +5,13 @@ import java.util.Arrays;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.UnitSignature;
 
+/**
+ * This class represents an {@link org.jojo.flow.model.api.IDataSignature} for 
+ * {@link org.jojo.flow.model.api.IBasicCheckable}s.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class BasicSignature extends DataSignature {
     /**
      * 

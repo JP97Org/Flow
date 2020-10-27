@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * This interface represents an internal config for a flow module. The internal config may contain
  * any amount and types of serializable data. All implementing non-abstract classes must also provide 
- * the methods for DOM creation.
+ * the methods for DOM creation defined in {@link IDOMable}.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

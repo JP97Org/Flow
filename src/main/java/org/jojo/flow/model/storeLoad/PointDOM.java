@@ -17,6 +17,13 @@ public class PointDOM extends DOM {
         super(document, parent);
     }
     
+    /**
+     * Gets a point DOM for the given name and point.
+     * 
+     * @param name - the given name
+     * @param point - the given point
+     * @return a point DOM for the given name and point
+     */
     public static PointDOM of(final String name, final Point point) {
         Objects.requireNonNull(point);
         final Document doc = getDocumentForCreatingElements();
@@ -29,6 +36,12 @@ public class PointDOM extends DOM {
         return ret;
     }
 
+    /**
+     * Gets the point defined in the given DOM.
+     * 
+     * @param p - the given DOM (must match a point DOM or else the behavior is undefined)
+     * @return the point defined in the given DOM
+     */
     public static Point pointOf(final IDOM p) {
         IDOM pointDom = p.getDOMMap().get(NAME) == null ? null : (IDOM)p.getDOMMap().get(NAME).getValue();
         pointDom = pointDom == null ? p : pointDom;

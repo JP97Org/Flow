@@ -1,5 +1,12 @@
 package org.jojo.flow.exc;
 
+/**
+ * This exception represents an exception which should be used for wrapping exceptions occurring
+ * during running of flow module code.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class ModuleRunException extends FlowException {
     /**
      * 

@@ -1,8 +1,8 @@
 package org.jojo.flow.model.api;
 
 /**
- * This interface represents a super-interface for recursive checkable IData, i.e. data which is
- * recursive in its nature, i.e. it usually contains other IData as components.
+ * This interface represents a super-interface for recursive checkable {@link IData}, i.e. data which is
+ * recursive in its nature, i.e. it usually contains other {@link IData} as components.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0
@@ -13,7 +13,7 @@ public interface IRecursiveCheckable extends IData, Iterable<IData> {
      * Gets the data at the given index. If the index is out of bounds the behavior is undefined.
      * 
      * @param index - the given index
-     * @return the IData at the given index
+     * @return the {@link IData} at the given index
      */
     IData get(int index);
     

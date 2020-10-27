@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart.modules;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.awt.Point;
 import java.awt.Window;
@@ -19,8 +19,8 @@ import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.flowChart.FlowChartElementGR;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.PointDOM;
+import org.jojo.flow.model.util.OK;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
 
 public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {

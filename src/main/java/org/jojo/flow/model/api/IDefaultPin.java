@@ -3,7 +3,7 @@ package org.jojo.flow.model.api;
 import org.jojo.flow.exc.FlowException;
 
 /**
- * This interface represents a default pin, i.e. a pin to which a IDefaultArrow can be connected.
+ * This interface represents a default pin, i.e. a pin to which a {@link IDefaultArrow} can be connected.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

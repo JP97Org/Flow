@@ -1,7 +1,7 @@
 package org.jojo.flow.model.api;
 
 /**
- * This interface represents a data array, i.e. a constant-sized array of IData of the same type.
+ * This interface represents a data array, i.e. a constant-sized array of {@link IData} of the same type.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

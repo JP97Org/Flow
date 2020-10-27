@@ -4,7 +4,7 @@ import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
- * This interface represents a rigid pin, i.e. a pin to which a IRigidConnection can be connected.
+ * This interface represents a rigid pin, i.e. a pin to which a {@link IRigidConnection} can be connected.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

@@ -1,5 +1,11 @@
 package org.jojo.flow.exc;
 
+/**
+ * This exception represents an exception which may occur during unit operations.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class IllegalUnitOperationException extends FlowException {
     /**
      * 

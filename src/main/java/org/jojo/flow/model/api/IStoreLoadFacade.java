@@ -70,7 +70,7 @@ public interface IStoreLoadFacade extends IAPI {
     Pair<IModuleClassesList, IDynamicClassLoader> getListLoaderPair();
 
     /**
-     * Gets a new IModuleClassesList.
+     * Gets a new {@link IModuleClassesList}.
      * 
      * @param tmpDirectory - the temporary directory where to store the extracted classes
      * @param jars - the jar files
@@ -79,7 +79,7 @@ public interface IStoreLoadFacade extends IAPI {
     IModuleClassesList getNewModuleClassesList(File tmpDirectory, File... jars);
 
     /**
-     * Gets a new IDynamicClassLoader.
+     * Gets a new {@link IDynamicClassLoader}.
      * 
      * @param tmpDirectory - the temporary directory where to store the extracted classes
      * @return a new IDynamicClassLoader

@@ -3,10 +3,10 @@ package org.jojo.flow.model.api;
 import java.io.Serializable;
 
 /**
- * This interface represents a data signature for an IData instance. 
- * However, instances of IDataSignature may also be used as stand-alone objects. When used as such,
+ * This interface represents a data signature for an {@link IData} instance. 
+ * However, instances of {@link IDataSigature} may also be used as stand-alone objects. When used as such,
  * the checking can be deactivated in order to allow more data signatures to match. 
- * However, IDataSignature instances attached to IData instances should not be altered.
+ * However, {@link IDataSigature} instances attached to IData instances should not be altered.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0
@@ -16,8 +16,8 @@ public interface IDataSignature extends IAPI, Iterable<IDataSignature>, Serializ
     
     /**
      * Gets the default implementation, i.e. a non-checking data signature.
-     * Note that this is not the usual way to get a IDataSignature. It should rather be retrieved
-     * from an IData instance by {@link IData#getDataSignature()} and {@link #getCopy()}.
+     * Note that this is not the usual way to get a {@link IDataSigature}. It should rather be retrieved
+     * from an {@link IData} instance by {@link IData#getDataSignature()} and {@link #getCopy()}.
      * 
      * @return the default implementation, i.e. a non-checking data signature
      */
@@ -38,7 +38,7 @@ public interface IDataSignature extends IAPI, Iterable<IDataSignature>, Serializ
     boolean matches(IDataSignature other);
     
     /**
-     * Gets a copy of this IDataSignature, i.e. a data signature which is exactly equal to this
+     * Gets a copy of this {@link IDataSigature}, i.e. a data signature which is exactly equal to this
      * one except for object identities of itself and all its components.
      * 
      * @return a copy of this data signature
@@ -46,17 +46,17 @@ public interface IDataSignature extends IAPI, Iterable<IDataSignature>, Serializ
     IDataSignature getCopy();
     
     /**
-     * Determines whether this signature is one for an IRecursiveCheckable instance.
+     * Determines whether this signature is one for an {@link IRecursiveCheckable} instance.
      * 
-     * @return whether this signature is one for an IRecursiveCheckable instance.
+     * @return whether this signature is one for an {@link IRecursiveCheckable} instance.
      */
     boolean isRecursiveSignature();
     
     /**
-     * Determines whether this signature is one for an IRecursiveCheckable instance with a single data type,
+     * Determines whether this signature is one for an {@link IRecursiveCheckable} instance with a single data type,
      * i.e. if all IData instances are of the same type.
      * 
-     * @return whether this signature is one for an IRecursiveCheckable instance with a single data type.
+     * @return whether this signature is one for an {@link IRecursiveCheckable} instance with a single data type.
      */
     boolean isSingleTypeRecursiveSignature();
     
@@ -94,7 +94,7 @@ public interface IDataSignature extends IAPI, Iterable<IDataSignature>, Serializ
     boolean isCheckingRecursive();
     
     /**
-     * Gets the IDataSignature at the given index. If the index is out of bounds the behavior is undefined.
+     * Gets the {@link IDataSigature} at the given index. If the index is out of bounds the behavior is undefined.
      * 
      * @param index - the given index
      * @return the component at the given index
@@ -138,12 +138,12 @@ public interface IDataSignature extends IAPI, Iterable<IDataSignature>, Serializ
     String toString();
     
     /**
-     * Gets the IDataSignature represented by the data ID of this data signature
+     * Gets the {@link IDataSigature} represented by the data ID of this data signature
      * and the given info string.
      * 
      * @param info - the info part of the {@link #toString()} result, i.e. the part which has nothing 
      * to do with the data ID but rather describes the creation of the respective signature
-     * @return the IDataSignature represented by the data ID of this data signature
+     * @return the {@link IDataSigature} represented by the data ID of this data signature
      * and the given info string
      */
     IDataSignature ofString(final String info);

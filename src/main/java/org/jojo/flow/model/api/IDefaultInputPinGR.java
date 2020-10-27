@@ -4,7 +4,7 @@ import org.jojo.flow.model.flowChart.modules.DefaultInputPinGR;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 
 /**
- * This interface represents the graphical representation for an IDefaultInputPin.
+ * This interface represents the graphical representation for a default input pin.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

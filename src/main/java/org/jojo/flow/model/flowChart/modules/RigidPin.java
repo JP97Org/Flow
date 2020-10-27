@@ -1,12 +1,13 @@
 package org.jojo.flow.model.flowChart.modules;
 
+import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IRigidPin;
 
 public class RigidPin extends ModulePinImp implements IRigidPin {
     private final InputPin inputPin;
     private final OutputPin outputPin;
     
-    public RigidPin(final FlowModule module, final RigidPinGR gr) {
+    public RigidPin(final IFlowModule module, final RigidPinGR gr) {
         super(module, null);
         this.inputPin = new InputPin(this, gr);
         this.outputPin = new OutputPin(this, gr);

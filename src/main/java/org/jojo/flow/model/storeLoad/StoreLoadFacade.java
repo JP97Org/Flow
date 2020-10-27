@@ -10,10 +10,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDynamicClassLoader;
+import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IModuleClassesList;
 import org.jojo.flow.model.api.IStoreLoadFacade;
 import org.jojo.flow.model.api.Pair;
-import org.jojo.flow.model.flowChart.FlowChart;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -38,7 +38,7 @@ public class StoreLoadFacade implements IStoreLoadFacade {
     }
     
     @Override
-    public FlowChart loadFlowChart(final File xmlFile) {
+    public IFlowChart loadFlowChart(final File xmlFile) {
         Objects.requireNonNull(xmlFile);
         if (DocumentString.isParseable(xmlFile)) {
             final DocumentString docStr;

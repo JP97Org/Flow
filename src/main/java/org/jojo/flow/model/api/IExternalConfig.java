@@ -74,6 +74,8 @@ public interface IExternalConfig extends ISubject, IDOMable, Comparable<IExterna
      * Gets the config as a pair of name and priority.
      * 
      * @return the config as a pair of name and priority
+     * @see #getName()
+     * @see #getPriority()
      */
     Pair<String, Integer> getConfig();
 }

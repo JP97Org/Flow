@@ -3,7 +3,7 @@ package org.jojo.flow.model.api;
 import java.util.List;
 
 /**
- * This interface represents a data bundle, i.e. a constant-sized array of IData with possibly 
+ * This interface represents a data bundle, i.e. a constant-sized array of {@link IData} with possibly 
  * different types.
  * 
  * @author Jonathan Schenkenberger

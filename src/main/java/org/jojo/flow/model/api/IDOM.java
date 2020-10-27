@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
 
 /**
  * This interface represents a DOM, i.e. a document object model which can be used for building a xml file
- * from objects of types implementing IDOMable.
+ * from objects of types implementing {@link IDOMable}.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0
@@ -22,9 +22,8 @@ public interface IDOM extends IDOMable {
     String NAME_OTHERS = "Others";
     
     /**
-     * Resets the document of the default implementation of IDOM, i.e. it deletes the document so that
+     * Resets the document of the default implementation of {@link IDOM}, i.e. it deletes the document so that
      * a new document is created the next time 
-     * 
      * {@link org.jojo.flow.model.storeLoad.DOM#getDocumentForCreatingElements()} is called.
      * 
      * @see org.jojo.flow.model.storeLoad.DOM#resetDocument()
@@ -83,24 +82,24 @@ public interface IDOM extends IDOMable {
     <T extends IDOMable> void appendList(String name, List<T> list);
 
     /**
-     * Appends a custom IDOMable's IDOM to this DOM. 
+     * Appends a custom {@link IDOMable} {@link IDOM} to this DOM. 
      * 
      * @param name - the name of the tag
-     * @param domable - the IDOMable to be appended
+     * @param domable - the {@link IDOMable} to be appended
      */
     void appendCustomDOM(String name, IDOMable domable);
 
     /**
-     * Appends a custom IDOMable's IDOM directly to this DOM, i.e. no tag is created under which the
-     * given IDOMable is appended.
+     * Appends a custom {@link IDOMable}'s {@link IDOM} directly to this DOM, i.e. no tag is created under which the
+     * given {@link IDOMable} is appended.
      * 
-     * @param domable - the IDOMable to be appended
+     * @param domable - the {@link IDOMable} to be appended
      */
     void appendCustomDOM(IDOMable domable);
 
     /**
      * Gets a map from tags and attributes to contained objects. 
-     * The contained object is a DOMStringUnion which either contains another IDOM or 
+     * The contained object is a {@link DOMStringUnion} which either contains another {@link IDOM} or 
      * a String describing basic data.
      * 
      * @return a map from tags and attributes to contained objects
@@ -112,7 +111,7 @@ public interface IDOM extends IDOMable {
      * Gets the content of the text element of this tag which only contains one text element. 
      * 
      * @return the content of the text element of this tag which only contains one text element 
-     * or {@code null} if this IDOM's parent node contains child nodes.
+     * or {@code null} if this {@link IDOM}'s parent node contains child nodes.
      */
     String elemGet();
 }

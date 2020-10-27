@@ -1,7 +1,7 @@
 package org.jojo.flow.model.api;
 
 /**
- * This interface represents a subject which can be observed by an IObserver.
+ * This interface represents a subject which can be observed by an {@link IObserver}.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

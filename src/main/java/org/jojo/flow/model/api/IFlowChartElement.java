@@ -19,9 +19,10 @@ import org.jojo.flow.model.flowChart.FlowChartGR;
 public interface IFlowChartElement extends IDOMable {
     
     /**
-     * This IFlowChartElement represents an element for reporting instances of Warning and error Warning 
+     * This {@link IFlowChartElement} represents an element for reporting instances of 
+     * {@link org.jojo.flow.exc.Warning} and error {@link org.jojo.flow.exc.Warning} 
      * whenever it is not possible to determine an actual element to which the warning should be reported.
-     * The element is implemented as an instance of IFlowChart but it should usually not be used as such.
+     * The element is implemented as an instance of {@link IFlowChart} but it should usually not be used as such.
      * The ID of the element is -1.
      */
     IFlowChartElement GENERIC_ERROR_ELEMENT = new FlowChart(-1, new FlowChartGR());
@@ -38,7 +39,7 @@ public interface IFlowChartElement extends IDOMable {
     /**
      * Gets the graphical representation of this element. It must not be {@code null}.
      * 
-     * @return the IGraphicalRepresentation of this element
+     * @return the {@link IGraphicalRepresentation} of this element
      */
     IGraphicalRepresentation getGraphicalRepresentation();
 
@@ -89,7 +90,7 @@ public interface IFlowChartElement extends IDOMable {
      * Note that implementations of this method should be {@code synchronized} or use another
      * synchronization mechanism in order to ensure this method's contract.
      * 
-     * @return the last reported Warning or {@code null} if none was reported
+     * @return the last reported {@link org.jojo.flow.exc.Warning} or {@code null} if none was reported
      */
     Warning getLastWarning();
 }

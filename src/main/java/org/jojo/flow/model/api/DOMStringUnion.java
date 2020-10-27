@@ -3,7 +3,7 @@ package org.jojo.flow.model.api;
 import java.util.Objects;
 
 /**
- * This class represents a union of IDOM and String.
+ * This class represents a union of {@link IDOM} and String.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0
@@ -13,7 +13,7 @@ public class DOMStringUnion {
     private final String str;
     
     /**
-     * Creates a new union for a IDOM.
+     * Creates a new union for a {@link IDOM}.
      * 
      * @param dom - the IDOM
      */
@@ -33,7 +33,7 @@ public class DOMStringUnion {
     /**
      * Creates a new union.
      * 
-     * @param value - the value of the union (if it is not String nor IDOM this union will contain {@code null})
+     * @param value - the value of the union (if it is not String nor {@link IDOM} this union will contain {@code null})
      */
     public DOMStringUnion(final Object value) {
         this(value instanceof IDOM ? (IDOM)value : null, value instanceof String ? (String)value : null);
@@ -45,9 +45,9 @@ public class DOMStringUnion {
     }
     
     /**
-     * Gets the IDOM if existent.
+     * Gets the {@link IDOM} if existent.
      * 
-     * @return the IDOM if existent
+     * @return the {@link IDOM} if existent
      */
     public IDOM getDOM() {
         return this.dom;
@@ -63,9 +63,9 @@ public class DOMStringUnion {
     }
     
     /**
-     * Determines whether this union contains an IDOM.
+     * Determines whether this union contains an {@link IDOM}.
      * 
-     * @return whether this union contains an IDOM
+     * @return whether this union contains an {@link IDOM}
      */
     public boolean isDOM() {
         return this.dom != null;
@@ -81,9 +81,9 @@ public class DOMStringUnion {
     }
     
     /**
-     * Determines whether this union contains neither a string nor an IDOM.
+     * Determines whether this union contains neither a string nor an {@link IDOM}.
      * 
-     * @return whether this union contains neither a string nor an IDOM
+     * @return whether this union contains neither a string nor an {@link IDOM}
      */
     public boolean isNull() {
         return !isDOM() && !isString();

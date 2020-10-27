@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart.modules;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -27,7 +27,7 @@ import org.jojo.flow.model.flowChart.connections.Connection;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
-import org.jojo.flow.model.storeLoad.OK;
+import org.jojo.flow.model.util.OK;
 
 public abstract class ModulePin extends Subject implements IDOMable, IModulePin {
     private final ModulePinImp imp;

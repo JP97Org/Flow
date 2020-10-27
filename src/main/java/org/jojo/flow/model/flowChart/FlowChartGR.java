@@ -1,5 +1,7 @@
 package org.jojo.flow.model.flowChart;
 
+import static org.jojo.flow.model.util.OK.ok;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import org.jojo.flow.model.api.IConnectionGR;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IFlowChartGR;
+import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
@@ -20,11 +23,9 @@ import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.storeLoad.PointDOM;
 import org.jojo.flow.model.util.DynamicObjectLoader;
-
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import org.jojo.flow.model.util.OK;
 
 public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
     private final List<IModuleGR> modules;
@@ -177,7 +178,7 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
                     final IDOM connectionDom = (IDOM) conObj.getValue();
                     final IDOM cnDom = (IDOM) (connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME)).getValue();
                     final String conToLoad = cnDom.elemGet();
-                    final GraphicalRepresentation connection = DynamicObjectLoader.loadGR(conToLoad);
+                    final IGraphicalRepresentation connection = DynamicObjectLoader.loadGR(conToLoad);
                     connection.restoreFromDOM(connectionDom);
                     this.connections.add((ConnectionGR) connection);
                 }
@@ -189,7 +190,7 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
                     final IDOM modDom = (IDOM) modObj.getValue();
                     final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
                     final String moduleToLoad = cnDom.elemGet();
-                    final GraphicalRepresentation module = DynamicObjectLoader.loadGR(moduleToLoad);
+                    final IGraphicalRepresentation module = DynamicObjectLoader.loadGR(moduleToLoad);
                     module.restoreFromDOM(modDom);
                     this.modules.add((ModuleGR) module);
                 }

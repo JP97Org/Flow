@@ -1,5 +1,7 @@
 package org.jojo.flow.model.flowChart;
 
+import static org.jojo.flow.model.util.OK.ok;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -42,10 +44,8 @@ import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.util.DynamicObjectLoader;
-
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import org.jojo.flow.model.util.OK;
 
 public class FlowChart extends FlowChartElement implements IFlowChart{
     private final List<IFlowModule> modules;
@@ -409,7 +409,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
                     final IDOM connnectionDom = (IDOM) conObj.getValue();
                     final IDOM cnDom = (IDOM) (connnectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME)).getValue();
                     final String conToLoad = cnDom.elemGet();
-                    final Connection connection = DynamicObjectLoader.loadConnection(conToLoad);
+                    final Connection connection = (Connection) DynamicObjectLoader.loadConnection(conToLoad);
                     this.connections.add(connection);
                     final IDOM connectionIdDom = (IDOM)connnectionDom.getDOMMap().get(ConnectionDOM.NAME_ID).getValue();
                     connection.setId(Integer.parseInt(connectionIdDom.elemGet()));
@@ -423,7 +423,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
                     final IDOM modDom = (IDOM) modObj.getValue();
                     final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
                     final String moduleToLoad = cnDom.elemGet();
-                    final FlowModule module = DynamicObjectLoader.loadModule(moduleToLoad, 0);
+                    final FlowModule module = (FlowModule) DynamicObjectLoader.loadModule(moduleToLoad, 0);
                     this.modules.add(module);
                     final IDOM moduleIdDom = (IDOM)modDom.getDOMMap().get(ConnectionDOM.NAME_ID).getValue();
                     module.setId(Integer.parseInt(moduleIdDom.elemGet()));
@@ -461,7 +461,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
                     final IDOM cnDom = (IDOM) (connectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME).getValue());
                     final String conToLoad = cnDom.elemGet();
                     ok(conToLoad != null, OK.ERR_MSG_NULL);
-                    final Connection connection = ok(c -> DynamicObjectLoader.loadConnection(c), conToLoad);
+                    final Connection connection = ok(c -> (Connection) DynamicObjectLoader.loadConnection(c), conToLoad);
                     ok(connection.isDOMValid(connectionDom), "Connection " + OK.ERR_MSG_DOM_NOT_VALID);
                 }
             }
@@ -475,7 +475,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
                     final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
                     final String moduleToLoad = cnDom.elemGet();
                     ok(moduleToLoad != null, OK.ERR_MSG_NULL);
-                    final FlowModule module = ok(m -> DynamicObjectLoader.loadModule(m, 0), moduleToLoad);
+                    final FlowModule module = ok(m -> (FlowModule) DynamicObjectLoader.loadModule(m, 0), moduleToLoad);
                     ok(module.isDOMValid(modDom), "Module " + OK.ERR_MSG_DOM_NOT_VALID);
                 }
             }

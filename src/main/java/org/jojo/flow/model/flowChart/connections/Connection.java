@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart.connections;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,8 @@ import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.util.DynamicObjectLoader;
+import org.jojo.flow.model.util.OK;
 
 public abstract class Connection extends FlowChartElement implements IConnection {
     private final List<IInputPin> toPins;
@@ -175,8 +175,19 @@ public abstract class Connection extends FlowChartElement implements IConnection
         return ok;
     }
     
+    /**
+     * Determines whether the connection matches the pins, i.e. their 
+     * {@link org.jojo.flow.model.api.IModulePinImp} type.
+     * 
+     * @return whether the connection matches the pins
+     */
     protected abstract boolean connectionMatchesPins();
     
+    /**
+     * Determines whether the data types of from pin and to pins match.
+     * 
+     * @return whether the data types of from pin and to pins match
+     */
     protected abstract boolean checkDataTypes();
     
     @Override
@@ -208,7 +219,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
             final String pinToLoadFrom = cnFromDom.elemGet();
             final IDOM cnDomImpFrom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
-            final ModulePin pinFrom = DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
+            final IModulePin pinFrom = DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
             pinFrom.restoreFromDOM(fromDom);
             final IDataSignature fromBeforeSign = pinFrom.getModulePinImp() instanceof DefaultPin 
                     ? ((DefaultPin)pinFrom.getModulePinImp()).getCheckDataSignature().getCopy()
@@ -234,7 +245,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                     final String pinToLoad = cnDom.elemGet();
                     final IDOM cnDomImp = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
                     final String pinToLoadImp = cnDomImp.elemGet();
-                    final ModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
+                    final IModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
                     pin.restoreFromDOM(toDom);
                     final IDataSignature toBeforeSign = pin.getModulePinImp() instanceof DefaultPin 
                             ? ((DefaultPin)pin.getModulePinImp()).getCheckDataSignature().getCopy()
@@ -283,7 +294,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
             final IDOM cnDomImpFrom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
             final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
             ok(pinToLoadImpFrom != null, OK.ERR_MSG_NULL);
-            final ModulePin pinFrom = ok(x -> DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom), "");
+            final IModulePin pinFrom = ok(x -> DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom), "");
             final var before = getFromPin();
             final var fromDomFinal = fromDom;
             ok(ok(x -> {try {
@@ -326,7 +337,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                     final IDOM cnDomImp = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
                     final String pinToLoadImp = cnDomImp.elemGet();
                     ok(pinToLoadImp != null, OK.ERR_MSG_NULL);
-                    final ModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
+                    final IModulePin pin = ok(x -> DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp), "");
                     ok(ok(x -> {try {
                         final IDataSignature checkSignBefore = pin.getModulePinImp() instanceof DefaultPin 
                                 ? ((DefaultPin)pin.getModulePinImp()).getCheckDataSignature() : null;

@@ -1,6 +1,6 @@
 package org.jojo.flow.model.flowChart.connections;
 
-import static org.jojo.flow.model.storeLoad.OK.ok;
+import static org.jojo.flow.model.util.OK.ok;
 
 import java.awt.Point;
 import java.awt.Shape;
@@ -16,8 +16,8 @@ import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
-import org.jojo.flow.model.storeLoad.OK;
 import org.jojo.flow.model.util.DynamicObjectLoader;
+import org.jojo.flow.model.util.OK;
 
 public class DefaultArrowGR extends ConnectionGR implements IDefaultArrowGR {
     private Shape defaultArrow; //TODO evtl. anderer Typ jenachdem ob das so geht
