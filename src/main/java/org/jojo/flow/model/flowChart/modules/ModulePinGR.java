@@ -30,6 +30,9 @@ public abstract class ModulePinGR extends GraphicalRepresentation implements IMo
     public ModulePinGR(final Point position, final String iconText,
             final int height, final int width) {
         super(position);
+        if (height <= 0 || width <= 0) {
+            throw new IllegalArgumentException("height and width must be >0");
+        }
         this.height = height;
         this.width = width;
         setIconTextAllowed(iconText != null);
@@ -45,6 +48,21 @@ public abstract class ModulePinGR extends GraphicalRepresentation implements IMo
     @Override
     public int getWidth() {
         return this.width;
+    }
+    
+    @Override
+    public void setHeight(final int height) {
+        if (height <= 0) {
+            throw new IllegalArgumentException("height and width must be >0");
+        }
+        this.height = height;
+    }
+    @Override
+    public void setWidth(final int width) {
+        if (width <= 0) {
+            throw new IllegalArgumentException("height and width must be >0");
+        }
+        this.width = width;
     }
 
     @Override

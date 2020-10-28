@@ -161,7 +161,7 @@ public class Main {
         try {
             final IModuleClassesList list = new StoreLoadFacade().getNewModuleClassesList(
                         ISettings.getDefaultImplementation().getLocationTmpDir(), 
-                        new File("/home/jojo/qfpm.jar"))
+                        new File("/home/jojo/Dokumente/MainWorkspace/qfpm/target/qfpm.jar"))
                     .loadAll();
             final List<Class<? extends IFlowModule>> moduleClasses = list.getModuleClassesList();
             System.out.println(moduleClasses);
@@ -171,6 +171,9 @@ public class Main {
             new ModelFacade().setMainFlowChart(flowChart);
             flowChart.addModule(loaded);
             System.out.println(flowChart);
+            IDOM.resetDocument();
+            final IDOM flowDom2 = new FlowDOM(flowChart.getDOM());
+            new StoreLoadFacade().storeFlowChart(new File("/home/jojo/Schreibtisch/flow2.xml"), flowDom2);
         } catch (ClassNotFoundException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -11,6 +11,20 @@ import java.awt.Point;
 public interface IModulePinGR extends IGraphicalRepresentation {
 
     /**
+     * Sets the given height (must be {@code > 0}).
+     * 
+     * @param height - the given height
+     */
+    void setHeight(final int height);
+    
+    /**
+     * Sets the given width (must be {@code > 0}).
+     * 
+     * @param width - the given width
+     */
+    void setWidth(final int width);
+    
+    /**
      * Determines whether an icon text is allowed instead of an actual icon.
      * 
      * @return whether an icon text is allowed instead of an actual icon
