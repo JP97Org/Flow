@@ -54,7 +54,7 @@ public class Main {
         ISettings settings = ISettings.getDefaultImplementation();
         settings.setLocationTmpDir(new File("/home/jojo/tmp/flow"));
         //TODO toggle next line comment for xml/serial write of data on arrows
-        //settings.setLocationXMLSerialTransformerJar(new File("/home/jojo/Dokumente/MainWorkspace/xmlSerial/target/xmlSerial.jar"));
+        settings.setLocationXMLSerialTransformerJar(new File("/home/jojo/Dokumente/MainWorkspace/xmlSerial/target/xmlSerial.jar"));
         
         IFlowChart flowChart = new FlowChart(0, new FlowChartGR());
         new ModelFacade().setMainFlowChart(flowChart);

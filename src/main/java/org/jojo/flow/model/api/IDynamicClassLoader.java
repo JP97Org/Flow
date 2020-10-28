@@ -54,6 +54,7 @@ public interface IDynamicClassLoader extends IAPI {
     
     /**
      * Unpacks the given jar files class files to the temp directory specified at construction time.
+     * Moreover, adds all linked libraries (to the given jar file) to the class path.
      * 
      * @param jarFile - the given jar file
      * @return the list of extracted class files

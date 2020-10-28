@@ -1,11 +1,15 @@
 package org.jojo.flow.model.storeLoad;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,15 +24,18 @@ import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IDynamicClassLoader;
 
 public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoader {
+    private URLClassLoader parent;
+    
     private final Map<String, File> externalClassesMap;
     private final File tmpDirForJarExtraction;
     
     public DynamicClassLoader(final File tmpDirForJarExtraction) {
-        this(DynamicClassLoader.class.getClassLoader(), tmpDirForJarExtraction);
+        this(new URLClassLoader(new URL[] {}, DynamicClassLoader.class.getClassLoader()), tmpDirForJarExtraction);
     }
     
-    public DynamicClassLoader(final ClassLoader parent, final File tmpDirForJarExtraction) {
+    public DynamicClassLoader(final URLClassLoader parent, final File tmpDirForJarExtraction) {
         super(Objects.requireNonNull(parent));
+        this.parent = parent;
         this.externalClassesMap = new HashMap<>();
         this.tmpDirForJarExtraction = tmpDirForJarExtraction;
     }
@@ -58,7 +65,7 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
     
     private List<Class<?>> loadClasses(final String name, final File file) throws ClassNotFoundException, IOException {
         if (!this.externalClassesMap.containsKey(name)) {
-            return Arrays.asList(super.loadClass(name));
+            return Arrays.asList(this.parent.loadClass(name));
         } else {
             final List<Class<?>> ret = new ArrayList<>();
             final List<File> filesToLoad = new ArrayList<>();
@@ -85,7 +92,7 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
             // class is not already defined --> everything ok
         }
         if (!this.externalClassesMap.containsKey(name)) {
-            return super.loadClass(name);
+            return this.parent.loadClass(name);
         } else {
             try {
                 final FileInputStream fis = new FileInputStream(new File(path)); 
@@ -133,7 +140,8 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
         ZipEntry entry = zipIn.getNextEntry();
         // iterates over entries in the zip file
         while (entry != null) {
-            final String filePath = this.tmpDirForJarExtraction + File.separator + entry.getName();
+            final String filePath = this.tmpDirForJarExtraction.getAbsolutePath() 
+                    + File.separator + entry.getName();
             if (!entry.isDirectory()) {
                 // if the entry is a file, extracts it
                 File dir = new File(getDirOf(filePath));
@@ -152,9 +160,48 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
         }
         zipIn.close();
         
+        // add dependencies of extracted file to class path
+        final File manifestFile = new File(this.tmpDirForJarExtraction.getAbsolutePath() 
+                + File.separator + "META-INF" + File.separator
+                + "MANIFEST.MF");
+        final BufferedReader reader = new BufferedReader(new FileReader(manifestFile));
+        final List<String> lines = new ArrayList<>();
+        String s = reader.readLine();
+        while (s != null) {
+            lines.add(s);
+            s = reader.readLine();
+        }
+        reader.close();
+        final String start = "Class-Path:";
+        final String classPathLine = lines.stream()
+                .filter(k -> k.startsWith(start))
+                .findFirst()
+                .orElse(start)
+                .substring(start.length())
+                .trim();
+        final String[] dependencies = classPathLine.split("\\s");
+        Arrays.stream(dependencies)
+            .forEach(d -> addToClasspath(new File(getDirOf(jarFile.getAbsolutePath()) + File.separator + d)));
         return files;
     }
     
+    private void addToClasspath(File file) {
+        try {
+            URL url = file.toURI().toURL();
+
+            URLClassLoader classLoader = getParentClassLoader();
+            final List<URL> urls = new ArrayList<>(Arrays.asList(classLoader.getURLs()));
+            urls.add(url);
+            this.parent = new URLClassLoader(urls.toArray(new URL[urls.size()]), classLoader.getParent());
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected exception", e); //TODO better exc management or warn!
+        }
+    }
+    
+    private URLClassLoader getParentClassLoader() {
+        return this.parent;
+    }
+
     private String getDirOf(final String filePath) {
         final File file = new File(filePath);
         if (file.isDirectory()) {
