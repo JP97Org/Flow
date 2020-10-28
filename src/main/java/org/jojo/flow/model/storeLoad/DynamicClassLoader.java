@@ -167,12 +167,28 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
         final BufferedReader reader = new BufferedReader(new FileReader(manifestFile));
         final List<String> lines = new ArrayList<>();
         String s = reader.readLine();
+        final String start = "Class-Path:";
+        boolean started = false;
+        final StringBuilder builder = new StringBuilder();
         while (s != null) {
-            lines.add(s);
+            if (s.startsWith(start)) {
+                started = true;
+            }
+            if (started) {
+                if (s.startsWith(start) || s.startsWith(" ")) {
+                    builder.append(s.trim());
+                } else {
+                    lines.add(builder.toString());
+                    lines.add(s);
+                    started = false;
+                }
+            } else {
+                lines.add(s);
+            }
             s = reader.readLine();
         }
         reader.close();
-        final String start = "Class-Path:";
+        
         final String classPathLine = lines.stream()
                 .filter(k -> k.startsWith(start))
                 .findFirst()
