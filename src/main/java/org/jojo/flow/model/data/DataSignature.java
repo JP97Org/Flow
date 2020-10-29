@@ -37,6 +37,19 @@ public abstract class DataSignature implements IDataSignature {
     //0. size signature (all DataIDs >= this DataID are reserved for sizes-dimensions)
     protected static final int BASIC_COMPONENT_SIZE_0 = 0x1000;
     
+    // other constants
+    protected static final String DONT_CARE_STR = "not checking";
+    protected static final String NO_SIZES_STR = "no_sizes";
+    protected static final String SIZES_STR = "sizes";
+    protected static final String TYPE_STR = "type";
+    protected static final String UNIT_STR = "unit";
+    protected static final String UNKNOWN_STR = "unknown";
+    protected static final String ONE_SIZE_STR = "one size int, index";
+    protected static final String INDEX_EQSIGN_STR = "= ";
+    protected static final String DELIM_STR = " | ";
+    protected static final String REPL_REGEX_NAME_STR = "\\s\\|.*"; // see also DELIM_STR
+    protected static final String REPL_REGEX_INFO_STR = "[^|]*\\|\\s"; // see also REPL_REGEX_NAME_STR
+    
     private int dataId;
     
     public DataSignature(final int dataId) {
@@ -147,44 +160,42 @@ public abstract class DataSignature implements IDataSignature {
             }
         return null;
     }
-
-    //TODO constants!
     
     protected String toStringDs() {
-        return "" + getNameOfDataId() + " | ";
+        return getNameOfDataId() + DELIM_STR;
     }
     
     protected String getNameOfDataId() {
         if (getDataId() == DONT_CARE) {
-            return "not checking";
+            return DONT_CARE_STR;
         } else if (getDataId() == NO_SIZES) {
-            return "no_sizes";
+            return NO_SIZES_STR;
         }
         
         switch(getDataId()) {
-            case BASIC_COMPONENT_SIZES: return "sizes";
-            case BASIC_COMPONENT_TYPE: return "type";
-            case BASIC_COMPONENT_UNIT: return "unit";
+            case BASIC_COMPONENT_SIZES: return SIZES_STR;
+            case BASIC_COMPONENT_TYPE: return TYPE_STR;
+            case BASIC_COMPONENT_UNIT: return UNIT_STR;
             default:
                 if (getDataId() >= BASIC_COMPONENT_SIZE_0) {
-                    return "one size int, index= " + (getDataId() - BASIC_COMPONENT_SIZE_0);
+                    return ONE_SIZE_STR + INDEX_EQSIGN_STR + (getDataId() - BASIC_COMPONENT_SIZE_0);
                 }
                 final Class<?> dataClass = getDataClass();
-                return dataClass == null ? "unknown" : dataClass.getName();
+                return dataClass == null ? UNKNOWN_STR : dataClass.getName();
         }
     }
     
     private static int getDataIdOfName(final String name) {
-        if (name.equals("not checking")) {
+        if (name.equals(DONT_CARE_STR)) {
             return DONT_CARE;
-        } else if (name.equals("no_sizes")) {
+        } else if (name.equals(NO_SIZES_STR)) {
             return NO_SIZES;
         }
         
         switch(name) {
-            case "sizes": return BASIC_COMPONENT_SIZES;
-            case "type": return BASIC_COMPONENT_TYPE;
-            case "unit": return BASIC_COMPONENT_UNIT;
+            case SIZES_STR: return BASIC_COMPONENT_SIZES;
+            case TYPE_STR: return BASIC_COMPONENT_TYPE;
+            case UNIT_STR: return BASIC_COMPONENT_UNIT;
             default:
                 if (name.equals(ScalarDataSet.class.getName())) {
                     return SCALAR;
@@ -208,8 +219,9 @@ public abstract class DataSignature implements IDataSignature {
                     return RAW;
                 }
                 
-                final String[] split = name.split("= ");
-                final int id = split.length == 2 ? Integer.parseInt(split[1]) + BASIC_COMPONENT_SIZE_0 : UNKNOWN;
+                final String[] split = name.split(INDEX_EQSIGN_STR);
+                final int id = split.length == 2 
+                        ? Integer.parseInt(split[1]) + BASIC_COMPONENT_SIZE_0 : UNKNOWN;
                 return id;
         }
     }
@@ -272,8 +284,8 @@ public abstract class DataSignature implements IDataSignature {
      * @see #toString()
      */
     public static IDataSignature of(final String string) throws IllegalArgumentException {
-        final String name = string.replaceFirst("\\s\\|.*", "");
-        final String info = string.replaceFirst("[^|]*\\|\\s", "");
+        final String name = string.replaceFirst(REPL_REGEX_NAME_STR, "");
+        final String info = string.replaceFirst(REPL_REGEX_INFO_STR, "");
         final int id = getDataIdOfName(name);
         return createDataSignatureByIdAndInfo(id, info);
     }

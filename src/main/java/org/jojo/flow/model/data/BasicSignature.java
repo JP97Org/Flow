@@ -93,7 +93,7 @@ public class BasicSignature extends DataSignature {
    
     private static void prepareElems(final String[] elems) {
         for(int i = 0; i < elems.length; i++) {
-            elems[i] = elems[i].equals("null") ? "null" : elems[i].replaceFirst("[^|]*\\|\\s", "");
+            elems[i] = elems[i].equals("null") ? "null" : elems[i].replaceFirst(REPL_REGEX_INFO_STR, "");
         }
     }
 }

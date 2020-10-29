@@ -153,7 +153,6 @@ public class Main {
             System.out.println(flowChart.getWarnings());
             System.out.println(!sim.isRunning());
         } catch (FlowException | InterruptedException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
         
@@ -175,7 +174,6 @@ public class Main {
             final IDOM flowDom2 = new FlowDOM(flowChart.getDOM());
             new StoreLoadFacade().storeFlowChart(new File("/home/jojo/Schreibtisch/flow2.xml"), flowDom2);
         } catch (ClassNotFoundException | IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         

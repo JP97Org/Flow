@@ -49,18 +49,22 @@ public interface IXMLSerialTransform extends IAPI {
          }
          
          final File locationTransformer = ISettings.getDefaultImplementation().getLocationXMLSerialTransformerJar();
-         final IDynamicClassLoader loader = IDynamicClassLoader.getDefaultImplementation(locationTmp);
-         final List<File> files = locationTransformer == null ? new ArrayList<>() : loader.unpack(locationTransformer);
+         final IDynamicClassLoader loader = IDynamicClassLoader.DEFAULT_DYNAMIC_LOADER;
+         final List<String> classNames = locationTransformer == null 
+                 ? new ArrayList<>() : loader.getClassNames(locationTransformer);
          final List<Class<?>> loaded = new ArrayList<>();
-         if (!files.isEmpty()) {
-             final File mainClassFile = files.stream()
-                     .filter(f -> f.getName().startsWith("XMLSerialTransformer"))
+         if (!classNames.isEmpty()) {
+             final String mainClassName = classNames.stream()
+                     .filter(n -> n.endsWith("XMLSerialTransformer"))
                      .findFirst().orElse(null);
-             files.forEach(f -> {
-                 final String binaryName = loader.binaryNameOf(f.getAbsolutePath());
-                 loader.putExternalClass(binaryName, locationTransformer);
-             });
-             loaded.add(loader.loadClass(loader.binaryNameOf(mainClassFile.getAbsolutePath())));
+             final List<Class<?>> localLoaded = loader.loadClasses(locationTransformer);
+             final Class<?> loadedNow = localLoaded.stream()
+                     .filter(l -> l.getName().equals(mainClassName))
+                     .findFirst().orElse(null);
+             if (loadedNow == null) {
+                 return null;
+             }
+             loaded.add(loadedNow);
          }
          @SuppressWarnings("unchecked")
          final Class<? extends IXMLSerialTransform> transformerClass = loaded

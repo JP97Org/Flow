@@ -12,12 +12,23 @@ import java.util.Map;
  * @version 1.0
  */
 public interface IDynamicClassLoader extends IAPI {
+    /**
+     * The default dynamic class loader or {@code null} if 
+     * {@link ISettings#getLocationTmpDir()} was {@code null} at the time this interface was loaded.
+     * 
+     * @see #getDefaultImplementation(File)
+     */
+    public static final IDynamicClassLoader DEFAULT_DYNAMIC_LOADER = 
+            ISettings.getDefaultImplementation().getLocationTmpDir() == null ? null : 
+                getDefaultImplementation(ISettings.getDefaultImplementation().getLocationTmpDir());
     
     /**
      * Gets the default implementation with the default Java class loader as parent.
      * 
      * @param tmpDirForJarExtraction - the temp directory which is used for extracting the classes to
      * @return the default implementation
+     * @see #DEFAULT_DYNAMIC_LOADER
+     * @see #getDefaultImplementation(ClassLoader, File)
      */
     public static IDynamicClassLoader getDefaultImplementation(final File tmpDirForJarExtraction) {
         return (IDynamicClassLoader) IAPI.defaultImplementationOfThisApi(
@@ -98,4 +109,13 @@ public interface IDynamicClassLoader extends IAPI {
      * @return the Java class loader representing this class loader
      */
     ClassLoader getClassLoader();
+
+    /**
+     * Gets the class names of the classes in the given jar file.
+     * 
+     * @param jarFile - the given jar file
+     * @return the class names of the classes in the given jar file
+     * @throws IOException if an I/O failure occurs
+     */
+    List<String> getClassNames(File jarFile) throws IOException;
 }
