@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.jojo.flow.model.api.IDynamicClassLoader;
 import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IModuleClassesList;
-import org.jojo.flow.model.flowChart.modules.FlowModule;
 
 public class ModuleClassesList implements IModuleClassesList {
     private final IDynamicClassLoader loader;
@@ -76,8 +75,8 @@ public class ModuleClassesList implements IModuleClassesList {
     @SuppressWarnings("unchecked")
     private void load(final File jarFile) throws ClassNotFoundException, IOException {
         this.moduleClassesList.addAll(this.loader.loadClasses(jarFile).stream()
-                .filter(c -> FlowModule.class.isAssignableFrom(c))
-                .map(c -> (Class<? extends FlowModule>)c)
+                .filter(c -> IFlowModule.class.isAssignableFrom(c))
+                .map(c -> (Class<? extends IFlowModule>)c)
                 .collect(Collectors.toList()));
         this.loadedUntilIndex++;
     }

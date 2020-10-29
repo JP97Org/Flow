@@ -59,7 +59,7 @@ public interface IXMLSerialTransform extends IAPI {
                      .findFirst().orElse(null);
              final List<Class<?>> localLoaded = loader.loadClasses(locationTransformer);
              final Class<?> loadedNow = localLoaded.stream()
-                     .filter(l -> l.getName().equals(mainClassName))
+                     .filter(l -> l != null && l.getName().equals(mainClassName))
                      .findFirst().orElse(null);
              if (loadedNow == null) {
                  return null;

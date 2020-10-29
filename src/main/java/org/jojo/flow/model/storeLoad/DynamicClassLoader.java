@@ -67,12 +67,15 @@ public class DynamicClassLoader extends ClassLoader implements IDynamicClassLoad
     @Override
     public List<Class<?>> loadClasses(final File jarFile) throws ClassNotFoundException, IOException {
         final List<String> binaryNames = getClassNames(jarFile);
+        final Map<String, Class<?>> ret = new HashMap<>();
         if (!binaryNames.isEmpty()) {
-            final String binaryName = binaryNames.get(0);
-            putExternalClass(binaryName, jarFile);
-            return loadClasses(binaryName, jarFile);
+            addToClasspath(jarFile);
+            for (final String binaryName : binaryNames) {
+                final List<Class<?>> loadedClasses = loadClasses(binaryName, jarFile);
+                loadedClasses.forEach(c -> ret.put(c.getName(), c));
+            }
         }
-        return new ArrayList<>();
+        return new ArrayList<>(ret.values());
     }
 
     private List<Class<?>> loadClasses(final String name, final File file) throws ClassNotFoundException, IOException {
