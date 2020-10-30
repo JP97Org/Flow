@@ -30,7 +30,7 @@ public interface IXMLSerialTransform extends IAPI {
      * {@link ISettings#getLocationXMLSerialTransformerJar()} method of the default {@link ISettings}
      * implementation.
      * 
-     * @return the default {@link IXMLSerialTransform} or {@code null} if non-existent or tmp dir is not specified
+     * @return the default {@link IXMLSerialTransform} or {@code null} if non-existent
      * @throws IOException if an I/O failure occurs
      * @throws ClassNotFoundException if a class is not found
      * @throws InvocationTargetException if the invoked constructor throws an exception
@@ -42,12 +42,7 @@ public interface IXMLSerialTransform extends IAPI {
      static IXMLSerialTransform getDefaultImplementation() 
              throws ClassNotFoundException, IOException, NoSuchMethodException, SecurityException, 
              InstantiationException, IllegalAccessException, IllegalArgumentException, 
-             InvocationTargetException {
-         final File locationTmp = ISettings.getDefaultImplementation().getLocationTmpDir();
-         if (locationTmp == null) {
-             return null;
-         }
-         
+             InvocationTargetException {         
          final File locationTransformer = ISettings.getDefaultImplementation().getLocationXMLSerialTransformerJar();
          final IDynamicClassLoader loader = IDynamicClassLoader.DEFAULT_DYNAMIC_LOADER;
          final List<String> classNames = locationTransformer == null 

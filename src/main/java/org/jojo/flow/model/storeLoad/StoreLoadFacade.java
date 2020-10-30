@@ -89,13 +89,13 @@ public class StoreLoadFacade implements IStoreLoadFacade {
     }
     
     @Override
-    public ModuleClassesList getNewModuleClassesList(final File tmpDirectory, final File... jars) {
-        final var classLoader = new DynamicClassLoader(tmpDirectory);
+    public ModuleClassesList getNewModuleClassesList(final File... jars) {
+        final IDynamicClassLoader classLoader = IDynamicClassLoader.DEFAULT_DYNAMIC_LOADER;
         return new ModuleClassesList(classLoader, jars);
     }
     
     @Override
-    public DynamicClassLoader getNewDynamicClassLoader(final File tmpDirectory) {
-        return new DynamicClassLoader(tmpDirectory);
+    public DynamicClassLoader getNewDynamicClassLoader() {
+        return new DynamicClassLoader();
     }
 }

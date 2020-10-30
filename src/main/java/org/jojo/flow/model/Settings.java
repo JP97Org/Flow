@@ -13,11 +13,12 @@ import org.jojo.flow.model.api.ISettings;
 public class Settings implements ISettings {
     private static Settings settings;
     
+    private int locationTmpDirChangesCount;
     private File locationTmpDir;
     private File locationXMLSerialTransformerJar;
     
     private Settings() {
-        
+        this.locationTmpDirChangesCount = 0;
     }
     
     public static synchronized Settings getInstance() {
@@ -35,6 +36,7 @@ public class Settings implements ISettings {
     @Override
     public void setLocationTmpDir(File location) {
         this.locationTmpDir = location;
+        this.locationTmpDirChangesCount++;
     }
 
     @Override
@@ -45,5 +47,10 @@ public class Settings implements ISettings {
     @Override
     public void setLocationXMLSerialTransformerJar(File location) {
         this.locationXMLSerialTransformerJar = location;
+    }
+
+    @Override
+    public boolean hasLocationTmpDirChanged() {
+        return this.locationTmpDirChangesCount > 1;
     }
 }

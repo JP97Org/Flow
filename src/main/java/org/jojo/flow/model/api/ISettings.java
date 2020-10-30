@@ -50,4 +50,11 @@ public interface ISettings extends IAPI {
      * @param location - the location of the XMLSerialTransformer jar
      */
     void setLocationXMLSerialTransformerJar(File location);
+    
+    /**
+     * Determines whether the location of the tmp dir has changed after the first setting.
+     * 
+     * @return whether the location of the tmp dir has changed after the first setting
+     */
+    boolean hasLocationTmpDirChanged();
 }

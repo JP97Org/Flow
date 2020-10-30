@@ -52,7 +52,7 @@ public class Main {
         //Setting settings
         IAPI.initialize();
         ISettings settings = ISettings.getDefaultImplementation();
-        settings.setLocationTmpDir(new File("/home/jojo/tmp/flow"));
+        //settings.setLocationTmpDir(new File("/home/jojo/tmp/flow")); //TODO not used at the moment
         //TODO toggle next line comment for xml/serial write of data on arrows
         settings.setLocationXMLSerialTransformerJar(new File("/home/jojo/Dokumente/MainWorkspace/xmlSerial/target/xmlSerial.jar"));
         
@@ -159,7 +159,6 @@ public class Main {
         //Class Loader Test
         try {
             final IModuleClassesList list = new StoreLoadFacade().getNewModuleClassesList(
-                        ISettings.getDefaultImplementation().getLocationTmpDir(), 
                         new File("/home/jojo/Dokumente/MainWorkspace/qfpm/target/qfpm.jar"))
                     .loadAll();
             final List<Class<? extends IFlowModule>> moduleClasses = list.getModuleClassesList();
