@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import org.jojo.flow.exc.ListSizeException;
 import org.jojo.flow.exc.ParsingException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.ModelFacade;
 import org.jojo.flow.model.Subject;
 import org.jojo.flow.model.api.DOMStringUnion;
@@ -103,6 +104,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
             }
         } catch (ClassNotFoundException | IOException e) {
             // should not happen
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
         }
         dom.setGraphicalRepresentation(getGraphicalRepresentation());
@@ -135,6 +137,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                         addConnection(con);
                     } catch (ListSizeException e) {
                         // should not happen
+                    	new Warning(null, e.toString(), true).reportWarning();
                         e.printStackTrace();
                     }
                 }
@@ -146,6 +149,7 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                     setDefaultData(Data.ofSerializedString(dataStr));
                 } catch (ClassNotFoundException | IOException e) {
                     // should not happen
+                	new Warning(null, e.toString(), true).reportWarning();
                     e.printStackTrace();
                 }
             }

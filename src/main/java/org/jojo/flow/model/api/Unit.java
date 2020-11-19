@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 import org.jojo.flow.exc.IllegalUnitOperationException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.data.Fraction;
 
 /**
@@ -326,8 +327,9 @@ public class Unit<T extends Number> implements Serializable {
                 case DIVIDE:  return divide(other);
                 default: assert false; return null;
             }
-        } catch (ArithmeticException | IllegalUnitOperationException e) {
+        } catch (IllegalArgumentException | IllegalUnitOperationException e) {
             // should not happen
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
             return null;
         }
@@ -550,12 +552,15 @@ public class Unit<T extends Number> implements Serializable {
      * @param other - the other unit (must have 0 value)
      * @return the division result
      * @throws IllegalUnitOperationException if units do not fit
-     * @throws ArithmeticException if division by 0 occurs
+     * @throws IllegalArgumentException if division by 0 occurs
      */
-    public Unit<T> divide(final Unit<T> other) throws IllegalUnitOperationException, ArithmeticException {
+    public Unit<T> divide(final Unit<T> other) throws IllegalUnitOperationException, IllegalArgumentException {
         if (this.type == other.type) {
             final Type type = this.type;
             final Number value;
+            if(other.value.intValue() == 0) {
+            	throw new IllegalArgumentException("division by 0 is not allowed");
+            }
             switch (type) {
                 case BYTE: 
                     value = (byte) (this.value.byteValue() / other.value.byteValue());

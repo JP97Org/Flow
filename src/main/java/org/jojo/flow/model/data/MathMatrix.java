@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.jojo.flow.exc.IllegalUnitOperationException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.IMathMatrix;
 import org.jojo.flow.model.api.Pair;
@@ -95,6 +96,7 @@ public final class MathMatrix<T extends Number> extends BasicCheckable implement
                                 return new Unit<T>(scalar.type, (T) y, UnitSignature.NO_UNIT).multiply(scalar).value;
                             } catch (IllegalUnitOperationException e) {
                                 // should not happen
+                            	new Warning(null, e.toString(), true).reportWarning();
                                 e.printStackTrace();
                                 return null;
                             }
@@ -131,6 +133,7 @@ public final class MathMatrix<T extends Number> extends BasicCheckable implement
                         resultEntry = resultEntry.add(factorOne.multiply(factorTwo));
                     } catch (IllegalUnitOperationException e) {
                         // should not happen
+                    	new Warning(null, e.toString(), true).reportWarning();
                         e.printStackTrace();
                         return null;
                     }
@@ -177,6 +180,7 @@ public final class MathMatrix<T extends Number> extends BasicCheckable implement
                 ret = ret.add(toAdd); 
             } catch (IllegalUnitOperationException e) {
                 // should not happen
+            	new Warning(null, e.toString(), true).reportWarning();
                 e.printStackTrace();
                 return null;
             }

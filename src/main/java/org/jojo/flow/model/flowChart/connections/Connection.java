@@ -65,6 +65,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                 this.fromPin.addConnection(this);
             } catch (ListSizeException e) {
                 // should not happen
+            	new Warning(null, e.toString(), true).reportWarning();
                 e.printStackTrace();
                 return false;
             }
@@ -234,6 +235,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                 }
             } catch (FlowException e1) {
                 // should not happen
+            	new Warning(null, e1.toString(), true).reportWarning();
                 e1.printStackTrace();
             }
             final IDOM toDoms = (IDOM)domMap.get(ConnectionDOM.NAME_TO_PINS).getValue();
@@ -260,6 +262,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                         }
                     } catch (FlowException e) {
                         // should not happen
+                    	new Warning(null, e.toString(), true).reportWarning();
                         e.printStackTrace();
                     }
                 }
@@ -307,6 +310,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                         ((DefaultPin)pinFrom.getModulePinImp()).setCheckDataSignature(copy);
                     } catch (FlowException e) {
                         // should not happen
+                    	new Warning(null, e.toString(), true).reportWarning();
                         e.printStackTrace();
                         return false;
                     }
@@ -319,6 +323,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                     setFromPin(before);
                 } catch (ConnectionException e) {
                     //should not happen
+                	new Warning(null, e.toString(), true).reportWarning();
                     e.printStackTrace();
                 }
                 return false;
@@ -348,6 +353,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
                                 ((DefaultPin)pin.getModulePinImp()).setCheckDataSignature(copy);
                             } catch (FlowException e) {
                                 // should not happen
+                            	new Warning(null, e.toString(), true).reportWarning();
                                 e.printStackTrace();
                                 return false;
                             }

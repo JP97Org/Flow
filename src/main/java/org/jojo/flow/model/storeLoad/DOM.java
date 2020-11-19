@@ -47,8 +47,8 @@ public abstract class DOM implements IDOM {
                 documentStatic = doc;
                 return doc;
             } catch (ParserConfigurationException e) {
+            	new Warning(null, e.toString(), true).reportWarning();
                 e.printStackTrace();
-                new Warning(null, e.getMessage(), true).reportWarning();
                 return null;
             }
         }

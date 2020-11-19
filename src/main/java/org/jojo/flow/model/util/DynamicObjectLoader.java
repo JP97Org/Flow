@@ -505,6 +505,7 @@ public final class DynamicObjectLoader {
                 ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(checkingDataSignature);
             } catch (FlowException e) {
                 // should not happen
+            	new Warning(null, e.toString(), true).reportWarning();
                 e.printStackTrace();
             }
             final IDefaultArrow ret = super.validate();
@@ -512,6 +513,7 @@ public final class DynamicObjectLoader {
                 ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(before);
             } catch (FlowException e) {
                 // should not happen
+            	new Warning(null, e.toString(), true).reportWarning();
                 e.printStackTrace();
             }
             return ret;

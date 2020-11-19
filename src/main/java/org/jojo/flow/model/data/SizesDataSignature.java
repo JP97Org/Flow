@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IDataSignature;
 
 class SizesDataSignature extends BasicSignatureComponentSignature {
@@ -71,6 +72,7 @@ class SizesDataSignature extends BasicSignatureComponentSignature {
             }
             return ret;
         } catch (NumberFormatException e) {
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
             return null;
         }
@@ -118,6 +120,7 @@ class SizesDataSignature extends BasicSignatureComponentSignature {
             try {
                 return new OneSizeDataSignature(Integer.parseInt(info), getDataId() - BASIC_COMPONENT_SIZE_0);
             } catch (NumberFormatException e) {
+            	new Warning(null, e.toString(), true).reportWarning();
                 e.printStackTrace();
                 return null;
             }

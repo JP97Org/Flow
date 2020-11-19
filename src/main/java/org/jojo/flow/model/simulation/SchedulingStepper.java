@@ -56,7 +56,7 @@ public class SchedulingStepper extends Stepper {
             this.timeStep.add(Unit.getFractionConstant(new Fraction(0)).multiply(UnitSignature.SECOND));
         } catch (IllegalUnitOperationException e) {
             throw new FlowException(e, this.flowChart);
-        } catch (ArithmeticException e) {
+        } catch (IllegalArgumentException e) {
             throw new FlowException(e, this.flowChart);
         }
     }
@@ -89,6 +89,7 @@ public class SchedulingStepper extends Stepper {
             }
         } catch (IllegalUnitOperationException e) {
             // should not happen
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
         }
     }
@@ -169,6 +170,7 @@ public class SchedulingStepper extends Stepper {
             this.timePassed = Time.of(this.timePassed.add(this.timeStep));
         } catch (IllegalUnitOperationException e) {
             // should not happen
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
         }
     }
@@ -179,8 +181,9 @@ public class SchedulingStepper extends Stepper {
             final Fraction frac = moduleStep.divide(this.timeStep).value;
             final int ret = (int) (frac.getNumerator() / frac.getDenominator());
             return ret == 0 ? 1 : ret;
-        } catch (IllegalUnitOperationException | ArithmeticException e) {
+        } catch (IllegalUnitOperationException | IllegalArgumentException e) {
             // should not happen
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
         }
         return 0;
@@ -214,6 +217,7 @@ public class SchedulingStepper extends Stepper {
             reset();
         } catch (FlowException e) {
             // should not happen
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
         }
     }
@@ -222,8 +226,9 @@ public class SchedulingStepper extends Stepper {
     public Frequency<Fraction> getFrequency() {
         try {
             return Frequency.of(Unit.getFractionConstant(new Fraction(1)).divide(this.timeStep));
-        } catch (IllegalUnitOperationException | ArithmeticException e) {
+        } catch (IllegalUnitOperationException | IllegalArgumentException e) {
             // should not happen
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
             return null;
         }

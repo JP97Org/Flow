@@ -39,7 +39,7 @@ public class Simulation implements ISimulation {
             timeStep = frequency == null 
                     ? null : Time.of(Unit.getFractionConstant(new Fraction(1)).divide(frequency));
             this.stepper = new SchedulingStepper(this.flowChart, new PriorityScheduler(), timeStep, config.isRealtime());
-        } catch (ArithmeticException | FlowException e) {
+        } catch (IllegalArgumentException | FlowException e) {
             // should not happen
             new Warning(null, e.toString(), true).reportWarning();
         }

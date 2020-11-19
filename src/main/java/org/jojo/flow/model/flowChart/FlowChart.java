@@ -347,6 +347,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
                             }
                         } catch (FlowException e) {
                             // should not happen
+                        	new Warning(null, e.toString(), true).reportWarning();
                             e.printStackTrace();
                         }
                     } else { // pin is OutputPin
@@ -367,6 +368,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
                             }
                         } catch (FlowException e) {
                             // should not happen
+                        	new Warning(null, e.toString(), true).reportWarning();
                             e.printStackTrace();
                         }
                     }

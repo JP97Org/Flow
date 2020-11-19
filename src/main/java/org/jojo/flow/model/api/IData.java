@@ -3,7 +3,6 @@ package org.jojo.flow.model.api;
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.data.Data;
 
 /**

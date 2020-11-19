@@ -86,8 +86,8 @@ public class DocumentString implements IDocumentString {
         try {
             return transform();
         } catch (TransformerFactoryConfigurationError | TransformerException e) {
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
-            new Warning(null, e.toString(), true).reportWarning();
             return e.toString();
         }
     }

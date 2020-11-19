@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import org.jojo.flow.exc.DataTypeIncompatException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.Unit;
@@ -262,6 +263,7 @@ public abstract class DataSignature implements IDataSignature {
             }
         } catch (DataTypeIncompatException e) {
             //should not happen
+        	new Warning(null, e.toString(), true).reportWarning();
             e.printStackTrace();
             return null;
         }
