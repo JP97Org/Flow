@@ -3,6 +3,7 @@ package org.jojo.flow.model.data;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import org.jojo.flow.exc.DataTypeIncompatException;
 import org.jojo.flow.exc.Warning;
@@ -164,6 +165,10 @@ public abstract class DataSignature implements IDataSignature {
     
     protected String toStringDs() {
         return getNameOfDataId() + DELIM_STR;
+    }
+    
+    public String toDebugString() {
+    	return toString().replaceFirst(Pattern.quote(toStringDs()), "");
     }
     
     protected String getNameOfDataId() {

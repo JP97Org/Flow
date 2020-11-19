@@ -54,7 +54,7 @@ public class Main {
         ISettings settings = ISettings.getDefaultImplementation();
         //settings.setLocationTmpDir(new File("/home/jojo/tmp/flow")); //TODO not used at the moment
         //TODO toggle next line comment for xml/serial write of data on arrows
-        settings.setLocationXMLSerialTransformerJar(new File("/home/jojo/Dokumente/MainWorkspace/xmlSerial/target/xmlSerial.jar"));
+        settings.setLocationXMLSerialTransformerJar(new File("/home/jojo/Dokumente/NewMainWorkspace/xmlSerial/target/xmlSerial.jar"));
         
         IFlowChart flowChart = new FlowChart(0, new FlowChartGR());
         new ModelFacade().setMainFlowChart(flowChart);
@@ -159,7 +159,7 @@ public class Main {
         //Class Loader Test
         try {
             final IModuleClassesList list = new StoreLoadFacade().getNewModuleClassesList(
-                        new File("/home/jojo/Dokumente/MainWorkspace/qfpm/target/qfpm.jar"))
+                        new File("/home/jojo/Dokumente/NewMainWorkspace/qfpm/target/qfpm.jar"))
                     .loadAll();
             final List<Class<? extends IFlowModule>> moduleClasses = list.getModuleClassesList();
             System.out.println(moduleClasses);

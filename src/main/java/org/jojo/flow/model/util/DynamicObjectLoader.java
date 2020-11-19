@@ -143,7 +143,7 @@ public final class DynamicObjectLoader {
         Objects.requireNonNull(className);
         try {
             if (className.equals(DefaultArrow.class.getName())) {
-                Data data = new StringDataSet(className);
+                Data data = new StringDataSet("");
                 return new DefaultArrow(0,
                         new OutputPin(new DefaultPin(loadModule(MockModule.class.getName()), data ), 
                                 new DefaultOutputPinGR(new Point(0,0), className, 10, 10)), 
