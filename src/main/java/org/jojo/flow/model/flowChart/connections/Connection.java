@@ -71,7 +71,9 @@ public abstract class Connection extends FlowChartElement implements IConnection
             }
             for (final var p : this.toPins) {
                 try {
-                    p.addConnection(this);
+                	if (p.getModulePinImp() != this.fromPin.getModulePinImp()) {
+                		p.addConnection(this);
+                	}
                 } catch (ListSizeException e) {
                     disconnect();
                     e.getWarning().reportWarning();
