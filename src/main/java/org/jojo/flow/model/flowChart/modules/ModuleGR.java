@@ -124,22 +124,29 @@ public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {
     
     @Override
     public final void rotateLeft() {
-        setPosition(this.corners[1]);
+        rotate(1);
+    }
+    
+    private void rotate(int add) {
+        setPosition(this.corners[add]);
         final int oldHeight = this.height;
         this.height = this.width;
         this.width = oldHeight;
-        setCorners();
+        cornerRotate(add);
         notifyObservers();
+    }
+    
+    private void cornerRotate(int add) {
+        final Point[] oldCorners = new Point[this.corners.length];
+        System.arraycopy(this.corners, 0, oldCorners, 0, this.corners.length);
+        for (int i = 0; i < this.corners.length; i++) {
+            this.corners[i] = oldCorners[(i + add) % this.corners.length]; 
+        }
     }
     
     @Override
     public final void rotateRight() {
-        setPosition(this.corners[3]);
-        final int oldHeight = this.height;
-        this.height = this.width;
-        this.width = oldHeight;
-        setCorners();
-        notifyObservers();
+        rotate(3);
     }
     
     @Override
