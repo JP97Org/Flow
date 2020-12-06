@@ -22,7 +22,7 @@ public abstract class ConnectionGR extends FlowChartElementGR implements IConnec
         super(fromPin.getPosition());
         this.fromPin = Objects.requireNonNull(fromPin);
         this.connections = new ArrayList<>();
-        addToPin(new Point(fromPin.getPosition().x, toPin.getPosition().y), toPin);
+        addToPin(new Point(fromPin.getLinePoint().x, toPin.getLinePoint().y), toPin);
     }
     
     @Override

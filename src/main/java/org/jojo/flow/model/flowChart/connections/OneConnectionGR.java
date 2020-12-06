@@ -42,7 +42,7 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
         this.lines = new ArrayList<>();
         this.diversionPoints = new ArrayList<>();
         setColor(Color.BLACK);
-        setToPin(new Point(fromPin.getPosition().x, toPin.getPosition().y), Objects.requireNonNull(toPin));
+        setToPin(new Point(fromPin.getLinePoint().x, toPin.getLinePoint().y), Objects.requireNonNull(toPin));
     }
 
     @Override
@@ -96,12 +96,12 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
                 return;
             }
             
-            Point divPointBefore = this.fromPin.getPosition();
+            Point divPointBefore = this.fromPin.getLinePoint();
             for (final Point diversionPoint : diversionPoints) {
                 this.lines.add(new ConnectionLineGR(divPointBefore, diversionPoint));
                 divPointBefore = diversionPoint;
             }
-            if (!divPointBefore.equals(this.toPin.getPosition())) {
+            if (!divPointBefore.equals(this.toPin.getLinePoint())) {
                 this.lines.add(new ConnectionLineGR(divPointBefore, this.toPin.getPosition()));
             }
             this.diversionPoints.addAll(diversionPoints);

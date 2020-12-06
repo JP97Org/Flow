@@ -61,27 +61,36 @@ public abstract class Connection extends FlowChartElement implements IConnection
     @Override
     public synchronized boolean connect() {
         if (!this.toPins.isEmpty()) {
-            try {
-                this.fromPin.addConnection(this);
-            } catch (ListSizeException e) {
-                // should not happen
-                new Warning(null, e.toString(), true).reportWarning();
-                e.printStackTrace();
-                return false;
-            }
-            for (final var p : this.toPins) {
+            boolean ret = checkDataTypes();
+            if (ret) {
                 try {
-                    if (p.getModulePinImp() != this.fromPin.getModulePinImp()) {
-                        p.addConnection(this);
-                    }
+                    this.fromPin.addConnection(this);
                 } catch (ListSizeException e) {
-                    disconnect();
-                    e.getWarning().reportWarning();
-                    new Warning(e.getWarning()).setAffectedElement(this).reportWarning();
+                    // should not happen
+                    new Warning(null, e.toString(), true).reportWarning();
+                    e.printStackTrace();
                     return false;
                 }
+                
+                for (final var p : this.toPins) {
+                    try {
+                        if (p.getModulePinImp() != this.fromPin.getModulePinImp()) {
+                            p.addConnection(this);
+                        }
+                    } catch (ListSizeException e) {
+                        disconnect();
+                        e.getWarning().reportWarning();
+                        new Warning(e.getWarning()).setAffectedElement(this).reportWarning();
+                        return false;
+                    }
+                }
             }
-            return true;
+            
+            if (!ret) {
+                disconnect();
+                new Warning(this, "connecting failed due dataType failure", true).reportWarning();
+            }
+            return ret;
         }
         return false;
     }

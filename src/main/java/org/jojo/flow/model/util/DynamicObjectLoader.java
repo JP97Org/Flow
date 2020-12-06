@@ -476,10 +476,16 @@ public final class DynamicObjectLoader {
             if (this.rigidPins == null) {
                 this.rigidPins = new ArrayList<>();
                 final IRigidPin rigidPinOne = loadRigidPin(this);
+                ((ModulePinGR) rigidPinOne.getOutputPin().getGraphicalRepresentation()).setPosition(RIGID_ONE_POS);
+                ((ModulePinGR) rigidPinOne.getInputPin().getGraphicalRepresentation()).setPosition(RIGID_ONE_POS);
                 ((ModulePinGR) rigidPinOne.getOutputPin().getGraphicalRepresentation()).setLinePoint(RIGID_ONE_POS);
+                ((ModulePinGR) rigidPinOne.getInputPin().getGraphicalRepresentation()).setLinePoint(RIGID_ONE_POS);
                 
                 final IRigidPin rigidPinTwo = loadRigidPin(this);
+                ((ModulePinGR) rigidPinTwo.getOutputPin().getGraphicalRepresentation()).setPosition(RIGID_TWO_POS);
+                ((ModulePinGR) rigidPinTwo.getInputPin().getGraphicalRepresentation()).setPosition(RIGID_TWO_POS);   
                 ((ModulePinGR) rigidPinTwo.getOutputPin().getGraphicalRepresentation()).setLinePoint(RIGID_TWO_POS);
+                ((ModulePinGR) rigidPinTwo.getInputPin().getGraphicalRepresentation()).setLinePoint(RIGID_TWO_POS);            
                 this.rigidPins.add(rigidPinOne.getOutputPin());
                 this.rigidPins.add(rigidPinOne.getInputPin());
                 this.rigidPins.add(rigidPinTwo.getOutputPin());
