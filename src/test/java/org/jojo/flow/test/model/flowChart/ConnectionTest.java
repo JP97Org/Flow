@@ -1,6 +1,5 @@
 package org.jojo.flow.test.model.flowChart;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 

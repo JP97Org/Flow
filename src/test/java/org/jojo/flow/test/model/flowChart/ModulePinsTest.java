@@ -73,6 +73,10 @@ public class ModulePinsTest {
         Assert.assertTrue(defIn.getConnections().size() == 1);
         Assert.assertTrue(rigid.getConnections().size() == 1);
         Assert.assertTrue(defOut.getConnections().get(0) == defIn.getConnections().get(0));
+        
+        Assert.assertTrue(defOut.putData(defOut.getDefaultData()));
+        Assert.assertTrue(defOut.putData(null));
+        
         final IDataSignature outOne = ((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().getCopy();
         outOne.deactivateChecking();
         final IDataSignature outTwo = ((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().getCopy();

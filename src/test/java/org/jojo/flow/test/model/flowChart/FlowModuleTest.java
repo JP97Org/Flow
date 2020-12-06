@@ -51,11 +51,16 @@ public class FlowModuleTest {
             final IDefaultArrow arrow = DynamicObjectLoader.loadConnection(200, from, to, "Arrow");
             Assert.assertTrue(arrow.connect());
             Assert.assertTrue(this.module.validate() == null);
-            IDataSignature wrong = new MultiMatrix<Integer>(new int[] {1}, UnitSignature.NO_UNIT).getDataSignature();
-            IDataSignature inactive = new StringDataSet("").getDataSignature().deactivateChecking();
-            ((IDefaultPin)from.getModulePinImp()).setCheckDataSignature(inactive);
-            ((IDefaultPin)from.getModulePinImp()).setCheckDataSignature(wrong);
+            modWronging(this.module);
             Assert.assertTrue(this.module.validate() == arrow);
         }
+    }
+    
+    public static void modWronging(final IFlowModule moduleArg) throws FlowException {
+        final var from = moduleArg.getDefaultOutputs().get(0);
+        IDataSignature wrong = new MultiMatrix<Integer>(new int[] {1}, UnitSignature.NO_UNIT).getDataSignature();
+        IDataSignature inactive = new StringDataSet("").getDataSignature().deactivateChecking();
+        ((IDefaultPin)from.getModulePinImp()).setCheckDataSignature(inactive);
+        ((IDefaultPin)from.getModulePinImp()).setCheckDataSignature(wrong);
     }
 }
