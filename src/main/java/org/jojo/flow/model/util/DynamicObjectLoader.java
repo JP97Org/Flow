@@ -501,7 +501,10 @@ public final class DynamicObjectLoader {
                     ((DefaultPin)this.pinIn.getModulePinImp()).getCheckDataSignature().getCopy();
             final IDataSignature checkingDataSignature = 
                     ((DefaultPin)this.pinOut.getModulePinImp()).getCheckDataSignature().getCopy();
+            final IDataSignature inactive = new StringDataSet("").getDataSignature().deactivateChecking();
+            
             try {
+                ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(inactive);
                 ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(checkingDataSignature);
             } catch (FlowException e) {
                 // should not happen
@@ -510,6 +513,7 @@ public final class DynamicObjectLoader {
             }
             final IDefaultArrow ret = super.validate();
             try {
+                ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(inactive);
                 ((DefaultPin)this.pinIn.getModulePinImp()).setCheckDataSignature(before);
             } catch (FlowException e) {
                 // should not happen
