@@ -34,7 +34,7 @@ public class GRTest {
                 .collect(Collectors.toList()));
     }
 
-    private IGraphicalRepresentation[] getAllGRs() {
+    public static IGraphicalRepresentation[] getAllGRs() {
         final List<IGraphicalRepresentation> grs = new ArrayList<>();
         grs.add(loadGR(FlowChartGR.class.getName()));
         grs.add(loadGR(ConnectionLineGR.class.getName()));
