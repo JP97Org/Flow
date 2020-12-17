@@ -85,6 +85,11 @@ public abstract class DataSignature implements IDataSignature {
     }
     
     @Override
+    public Object clone() {
+        return getCopy();
+    }
+    
+    @Override
     public abstract IDataSignature getCopy();
     
     @Override

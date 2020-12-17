@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @version 1.0
  * @see IData#getDataSignature()
  */
-public interface IDataSignature extends IAPI, Iterable<IDataSignature>, Serializable {
+public interface IDataSignature extends IAPI, Iterable<IDataSignature>, Serializable, Cloneable {
     
     /**
      * Gets the default implementation, i.e. a non-checking data signature.
