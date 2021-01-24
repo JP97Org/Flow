@@ -558,7 +558,7 @@ public class Unit<T extends Number> implements Serializable {
         if (this.type == other.type) {
             final Type type = this.type;
             final Number value;
-            if(other.value.intValue() == 0) {
+            if(other.value.doubleValue() == 0) {
             	throw new IllegalArgumentException("division by 0 is not allowed");
             }
             switch (type) {

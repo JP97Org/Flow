@@ -451,7 +451,8 @@ public final class DynamicObjectLoader {
         private IModulePin pinOut;
         private IModulePin pinIn;
         private List<IModulePin> rigidPins;
-        
+        private Frequency<Fraction> freq;
+
         /**
          * Creates a new mock module with the given ID and external config.
          * 
@@ -462,6 +463,7 @@ public final class DynamicObjectLoader {
             super(id, externalConfig);
             this.gr = (MockModuleGR) loadGR(MockModuleGR.class.getName());
             this.gr.setModuleMock(this);
+            this.freq = Frequency.getFractionConstant(new Fraction(1));
             this.getExternalConfig().setModule(this);
         }
         
@@ -497,7 +499,11 @@ public final class DynamicObjectLoader {
 
         @Override
         public Frequency<Fraction> getFrequency() {
-            return Frequency.getFractionConstant(new Fraction(1));
+            return this.freq; 
+        }
+
+        public void setFrequency(final Frequency<Fraction> freq) {
+            this.freq = freq;
         }
         
         @Override

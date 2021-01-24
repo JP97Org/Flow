@@ -1,9 +1,6 @@
 package org.jojo.flow.model.api;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.jojo.flow.exc.Warning;
-import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.FactoryUtil;
 
 /**
@@ -42,27 +39,10 @@ public interface IAPI {
             iClassName = e.getStackTrace()[1].getClassName();
         }
         try {
-            final Class<?> iClass = Class.forName(iClassName);
-            final var apiToDefaultImplementationMap = FactoryUtil.getApiToDefaultImplementationMap();
-            final Class<?> implClass = apiToDefaultImplementationMap.get(iClass);
-            if (implClass != null) {
-                final Object o = DynamicObjectLoader.load(IAPI.class.getClassLoader(), implClass.getName(), 
-                            parameterTypes, initArgs);
-                if (IAPI.class.isInstance(o) && implClass.isInstance(o)) {
-                    return (IAPI) o;
-                } else {
-                    final String warning = "wrong API to default impl. mapping: " + iClass + " -> " + implClass;
-                    new Warning(null, warning, true).reportWarning();
-                    System.err.println(warning);
-                }
-            }
-        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | 
-                InstantiationException | IllegalAccessException | IllegalArgumentException | 
-                InvocationTargetException e) {
-            // should not happen
+            return FactoryUtil.getImplementationOfApi(iClassName, parameterTypes, initArgs);
+        } catch (IllegalArgumentException e) {
             new Warning(null, e.toString(), true).reportWarning();
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }
