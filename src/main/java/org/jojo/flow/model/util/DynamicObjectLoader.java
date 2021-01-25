@@ -452,6 +452,8 @@ public final class DynamicObjectLoader {
         private IModulePin pinIn;
         private List<IModulePin> rigidPins;
         private Frequency<Fraction> freq;
+        private boolean doBusyWait;
+        private long slp;
 
         /**
          * Creates a new mock module with the given ID and external config.
@@ -464,6 +466,8 @@ public final class DynamicObjectLoader {
             this.gr = (MockModuleGR) loadGR(MockModuleGR.class.getName());
             this.gr.setModuleMock(this);
             this.freq = Frequency.getFractionConstant(new Fraction(1));
+            this.setDoBusyWait(false);
+            this.slp = 100;
             this.getExternalConfig().setModule(this);
         }
         
@@ -505,6 +509,22 @@ public final class DynamicObjectLoader {
         public void setFrequency(final Frequency<Fraction> freq) {
             this.freq = freq;
         }
+
+        public boolean doesBusyWait() {
+            return this.doBusyWait;
+        }
+
+        public void setDoBusyWait(boolean doBusyWait) {
+            this.doBusyWait = doBusyWait;
+        }
+        
+        public long getSlp() {
+            return this.slp;
+        }
+
+        public void setSlp(long slp) {
+            this.slp = slp;
+        }
         
         @Override
         public IDefaultArrow validate() throws ValidationException {
@@ -537,10 +557,13 @@ public final class DynamicObjectLoader {
 
         @Override
         public void run() throws Exception {
-            Thread.sleep(100);
-            /*for(long i = 0; i < 1000000000; i++) {
+            if (!doesBusyWait()) {
+                Thread.sleep(this.slp);
+            } else {
+                for(long i = 0; i < this.slp; i++) {
                 
-            }*/
+                }
+            }
         }
 
         @Override
