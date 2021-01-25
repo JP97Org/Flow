@@ -3,6 +3,7 @@ package org.jojo.flow.model.simulation;
 import java.util.Objects;
 
 import org.jojo.flow.exc.FlowException;
+import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.exc.ModuleRunException;
 import org.jojo.flow.exc.TimeoutException;
 import org.jojo.flow.exc.Warning;
@@ -46,7 +47,7 @@ public class Simulation implements ISimulation {
     }
     
     @Override
-    public void start() {
+    public synchronized void start() {
         this.isRunning = true;
         this.stepper.unpause();
         this.simThread = new Thread(new Runnable() { 
@@ -63,6 +64,35 @@ public class Simulation implements ISimulation {
             }});
         this.simThread.start();
     }
+    
+    @Override
+    public void stepForward(final Time<Fraction> time) {
+        final Frequency<Fraction> frequency = this.stepper.getFrequency();
+        try {
+            final long count = (long) time.multiply(frequency).value.doubleValue();
+            this.isRunning = true;
+            this.stepper.unpause();
+            this.simThread = new Thread(new Runnable() { 
+                @Override
+                public void run() {
+                    for (long i = 0; i < count; i++) {
+                        try {
+                            stepOnce();
+                        } catch (FlowException e) {
+                            //e.getWarning().reportWarning(); // already reported in exception creation
+                        }
+                    }
+                    stepper.pause();
+                    isRunning = false;
+                }
+            });
+            this.simThread.start();
+        } catch (IllegalUnitOperationException e) {
+            // should not happen
+            new Warning(null, e.toString(), true).reportWarning();
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public synchronized void stepOnce() throws ModuleRunException, TimeoutException, FlowException {
@@ -77,16 +107,13 @@ public class Simulation implements ISimulation {
             long base = System.currentTimeMillis();
             long now = 0;
             TimeoutException timeoutExc = null;
-            while (stepThread.isAlive()) {
-                long delay = timeoutMillis - now;
-                if (delay <= 0) {
-                    timeoutExc = new TimeoutException(new Warning(this.flowChart, "a timeout occured, timeout= " + timeoutMillis + "ms", true));
-                    break;
-                }
-                wait(delay);
-                now = System.currentTimeMillis() - base;
+            this.stepThread.join(timeoutMillis);
+            now = System.currentTimeMillis() - base;
+            long delay = timeoutMillis - now;
+            if (delay <= 0) {
+                timeoutExc = new TimeoutException(new Warning(this.flowChart, "a timeout occured, timeout= " + timeoutMillis + "ms", true));
             }
-            if (stepThread.isAlive() && timeoutExc != null) {
+            if (!this.stepper.isPaused() && stepThread.isAlive() && timeoutExc != null) {
                 forceStop();
                 stepThread.join(timeoutMillis);
                 throw timeoutExc;
@@ -99,26 +126,37 @@ public class Simulation implements ISimulation {
                         .findFirst().orElse(null));
             }
         } catch (InterruptedException e) {
-            throw new FlowException(e, this.flowChart);
+            throw new FlowException(new Warning(this.flowChart, e.toString(), true));
         }
     }
     
     @Override
-    public void stop() throws FlowException {
+    public void stop() throws FlowException, InterruptedException {
         this.stepper.reset();
+        if (this.simThread != null && this.simThread.isAlive()) {
+            this.simThread.join();
+        }
+        this.isRunning = false;
     }
     
     @Override
     public void forceStop() {
-        pause();
+        this.stepper.pause();
         if (this.stepThread != null && this.stepThread.isAlive()) {
             this.stepThread.interrupt();
         }
+        if (this.simThread != null && this.simThread.isAlive()) {
+            this.simThread.interrupt();
+        }
+        this.isRunning = false;
     }
 
     @Override
-    public void pause() {
+    public void pause() throws InterruptedException {
         this.stepper.pause();
+        if (this.simThread != null && this.simThread.isAlive()) {
+            this.simThread.join();
+        }
     }
     
     @Override

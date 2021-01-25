@@ -3,6 +3,8 @@ package org.jojo.flow.model.api;
 import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ModuleRunException;
 import org.jojo.flow.exc.TimeoutException;
+import org.jojo.flow.model.data.Fraction;
+import org.jojo.flow.model.data.units.Time;
 
 /**
  * This interface represents the simulation facade.
@@ -46,6 +48,17 @@ public interface ISimulation extends IAPI {
      * @see IStepper#stepOnce()
      */
     void stepOnce() throws ModuleRunException, TimeoutException, FlowException;
+    
+    /** 
+     * Performs simulation partial steps until the time has passed. 
+     * If an exception occurs during simulation an error Warning is reported.
+     * Moreover, the simulation and the simulation stepper run in a separate threads, so this method 
+     * returns after it has started the simulation thread (which starts the stepper thread).
+     * The simulation thread runs as long as the stepper is running.
+     * 
+     * @param time - the time to be stepped
+     */
+    void stepForward(final Time<Fraction> time);
 
     /**
      * Stops this simulation by resetting the stepper. The step which is done at the moment is finished regularly
@@ -53,26 +66,29 @@ public interface ISimulation extends IAPI {
      * ended simulation but to the new one, so call stop again after {@link #isRunning()} returns 
      * {@code false} to make sure the simulation is completely reset. If you do not want to stop the
      * simulation but want to only pause it, also e.g. for getting the passed time from the stepper, consider
-     * using  {@link #pause()} instead.
+     * using  {@link #pause()} instead. The simulation thread is joined if existent and alive.
      * 
      * @throws FlowException if time step cannot be reset
+     * @throws InterruptedException if the joining is interrupted
      * @see IStepper#reset()
      */
-    void stop() throws FlowException;
+    void stop() throws FlowException, InterruptedException;
 
     /**
      * Force-Stops the simulation by interrupting the stepper thread. Note that this method is an 
      * exceptional stopping of the simulation which does not necessarily provides a safe stopping
-     * of the simulation, consider using {@link #stop()} for this purpose.
+     * of the simulation, consider using {@link #stop()} for this purpose. 
+     * The simulation thread is also interrupted if existent and alive.
      */
     void forceStop();
 
     /**
-     * Pauses the stepper.
+     * Pauses the stepper and joins the simulation thread if existent and alive.
+     * @throws InterruptedException if the joining is interrupted
      * 
      * @see IStepper#pause()
      */
-    void pause();
+    void pause() throws InterruptedException;
 
     /**
      * Determines whether the simulation is running, i.e. whether the simulation thread is running.

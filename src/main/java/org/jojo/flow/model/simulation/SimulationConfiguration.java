@@ -55,7 +55,7 @@ public class SimulationConfiguration implements ISimulationConfiguration {
 
     @Override
     public boolean isRealtime() {
-        return isRealtime;
+        return this.isRealtime;
     }
 
     @Override
