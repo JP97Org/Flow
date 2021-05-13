@@ -25,7 +25,7 @@ public class DataBundle extends RecursiveCheckable implements IDataBundle {
         final DataSignature[] componentSignatures = Arrays.stream(data)
                 .map(x -> x.getDataSignature())
                 .toArray(DataSignature[]::new);
-        if (Arrays.stream(componentSignatures).allMatch(x -> !x.isCheckingRecursive())) {
+        if (Arrays.stream(componentSignatures).anyMatch(x -> !x.isCheckingRecursive())) {
             throw new DataTypeIncompatException("all component signatures must be checking recursive");
         }
         this.dataSignature = new RecursiveSignature(this);

@@ -1,5 +1,6 @@
 package org.jojo.flow.test.model.data;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataArray;
 import org.jojo.flow.model.data.DataBundle;
+import org.jojo.flow.model.data.DataSignature;
 import org.jojo.flow.model.data.DataVector;
 import org.jojo.flow.model.data.RawDataSet;
 import org.jojo.flow.model.data.StringDataSet;
@@ -17,7 +19,7 @@ import org.junit.*;
 
 public class RecursiveCheckablesTest {
     @Test
-    public void createDataArray() throws IllegalUnitOperationException {
+    public void createDataArray() throws IllegalUnitOperationException, ClassNotFoundException, IllegalArgumentException, IOException {
         final RawDataSet dataOne = new RawDataSet(new byte[] {0, 1, 2});
         final RawDataSet dataTwo = new RawDataSet(new byte[] {3, 4, 5});
         try {
@@ -37,6 +39,8 @@ public class RecursiveCheckablesTest {
                     new RawDataSet(new byte[] {0, 1, 2}), 
                     new RawDataSet(new byte[] {3, 4, 5})}, dataOne.getDataSignature().getCopy());
             Assert.assertEquals(arr, arrTwo);
+            
+            Assert.assertEquals(arr.getDataSignature(), DataSignature.of(arr.getDataSignature().toString()));
         } catch (DataTypeIncompatException e) {
             e.printStackTrace();
             assert false;
@@ -76,6 +80,8 @@ public class RecursiveCheckablesTest {
                     new RawDataSet(new byte[] {3, 4, 5}),
                     new RawDataSet(new byte[] {6, 7, 8})}), dataOne.getDataSignature().getCopy());
             Assert.assertEquals(vec, vecTwo);
+            
+            Assert.assertEquals(vec.getDataSignature(), DataSignature.of(vec.getDataSignature().toString()));
         } catch (DataTypeIncompatException e) {
             e.printStackTrace();
             assert false;
@@ -103,6 +109,9 @@ public class RecursiveCheckablesTest {
                     new RawDataSet(new byte[] {0, 1, 2}), 
                     new StringDataSet("Set 2")});
             Assert.assertEquals(arr, arrTwo);
+            
+            DataSignature.of(arr.getDataSignature().toString());
+            Assert.assertEquals(arr.getDataSignature(), DataSignature.of(arr.getDataSignature().toString()));
         } catch (DataTypeIncompatException e) {
             e.printStackTrace();
             assert false;

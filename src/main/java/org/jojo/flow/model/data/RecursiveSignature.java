@@ -2,6 +2,7 @@ package org.jojo.flow.model.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.jojo.flow.model.api.IDataSignature;
@@ -11,6 +12,10 @@ public class RecursiveSignature extends DataSignature {
      * 
      */
     private static final long serialVersionUID = -1286793948272706994L;
+    
+    private static final String DELIM_COMP = "" + '\uFFFD';
+    private static final String DELIM_END = ";";
+    
     private final List<IDataSignature> components;
     
     public RecursiveSignature(final RecursiveCheckable data) {
@@ -51,29 +56,35 @@ public class RecursiveSignature extends DataSignature {
     @Override
     public String toString() { //TODO das und ofString mehr testen insb. auch mit deaktivierten und verschiedenen recursives
         final StringBuilder ret = new StringBuilder(toStringDs());
-        final String componentsString = this.components.toString();
+        final String componentsString = toCompString();
         int level = -1;
         for (final char c : componentsString.toCharArray()) {
             if (c == '[') {
                 level++;
             } else if (c == ']') {
                 level--;
-            } else if ( c == ',') {
+            } else if ( c == DELIM_COMP.charAt(0)) {
                 for (int i = 0; i < level; i++) {
-                    ret.append(',');
+                    ret.append(DELIM_COMP);
                 }
             }
             ret.append(c);
         }
-        return ret.toString().replaceAll(",\\s", ",; ");
+        return ret.toString().replaceAll(DELIM_COMP + "\\s", DELIM_COMP + DELIM_END);
     }
     
+    private String toCompString() {
+        StringJoiner joiner = new StringJoiner(DELIM_COMP + " ", "[", "]");
+        this.components.forEach(c -> joiner.add(c.toString()));
+        return joiner.toString();
+    }
+
     private static String getSplitString(final int level) {
         final StringBuilder ret = new StringBuilder();
         for (int i = 0; i <= level; i++) {
-            ret.append(",");
+            ret.append(DELIM_COMP);
         }
-        return ret.append(";").toString();
+        return ret.append(DELIM_END).toString();
     }
     
     @Override
