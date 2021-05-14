@@ -94,7 +94,11 @@ public abstract class DataSignature implements IDataSignature {
     
     @Override
     public boolean isRecursiveSignature() {
-        return this.dataId == BUNDLE || this.dataId == ARRAY || this.dataId == VECTOR;
+        return isRecursiveSignature(this.dataId);
+    }
+    
+    protected boolean isRecursiveSignature(final int dataId) {
+        return dataId == BUNDLE || dataId == ARRAY || dataId == VECTOR;
     }
     
     @Override
@@ -196,7 +200,7 @@ public abstract class DataSignature implements IDataSignature {
         }
     }
     
-    private static int getDataIdOfName(final String name) {
+    protected static int getDataIdOfName(final String name) {
         if (name.equals(DONT_CARE_STR)) {
             return DONT_CARE;
         } else if (name.equals(NO_SIZES_STR)) {

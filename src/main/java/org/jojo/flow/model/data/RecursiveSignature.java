@@ -1,10 +1,14 @@
 package org.jojo.flow.model.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.jojo.flow.exc.DataTypeIncompatException;
+import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IDataSignature;
 
 public class RecursiveSignature extends DataSignature {
@@ -54,7 +58,7 @@ public class RecursiveSignature extends DataSignature {
     }
     
     @Override
-    public String toString() { //TODO das und ofString mehr testen insb. auch mit deaktivierten und verschiedenen recursives
+    public String toString() {
         final StringBuilder ret = new StringBuilder(toStringDs());
         final String componentsString = toCompString();
         int level = -1;
@@ -70,17 +74,36 @@ public class RecursiveSignature extends DataSignature {
             }
             ret.append(c);
         }
-        return ret.toString().replaceAll(DELIM_COMP + "\\s", DELIM_COMP + DELIM_END);
+        final String preRet = ret.toString().replaceAll(DELIM_COMP + "\\s", DELIM_COMP + DELIM_END);
+        return addSpaceBeforeFirstDelim(preRet);
     }
     
+    private String addSpaceBeforeFirstDelim(final String preRet) {
+        final StringBuilder ret = new StringBuilder();
+        boolean inDelim = false;
+        for (final char c : preRet.toCharArray()) {
+            if (c == DELIM_COMP.charAt(0) && !inDelim) {
+                inDelim = true;
+                ret.append(" ");
+            } else if (inDelim && c == DELIM_END.charAt(0)) {
+                inDelim = false;
+            }
+            ret.append(c);
+        }
+        return ret.toString();
+    }
+
     private String toCompString() {
         StringJoiner joiner = new StringJoiner(DELIM_COMP + " ", "[", "]");
-        this.components.forEach(c -> joiner.add(c.toString()));
+        this.components.forEach(c -> 
+            joiner.add(c instanceof RecursiveSignature ? 
+                    ((DataSignature) c).toStringDs() + ((RecursiveSignature) c).toCompString() 
+                    : c.toString()));
         return joiner.toString();
     }
 
     private static String getSplitString(final int level) {
-        final StringBuilder ret = new StringBuilder();
+        final StringBuilder ret = new StringBuilder(" ");
         for (int i = 0; i <= level; i++) {
             ret.append(DELIM_COMP);
         }
@@ -98,17 +121,40 @@ public class RecursiveSignature extends DataSignature {
         final String[] split = prepared.split(splitString);
         
         List<IDataSignature> retList = new ArrayList<>();
-        final String toStrDs = toStringDs();
         for (final String dsStr : split) {
             IDataSignature local;
-            if (dsStr.startsWith(toStrDs + "[")) {
-                local = ofString(dsStr.replaceFirst(toStrDs, ""), level + 1);
-            } else {
+            final String nameOfComp = dsStr.replaceFirst(REPL_REGEX_NAME_STR, "");
+            final int dataIdOfComp = getDataIdOfName(nameOfComp);
+            if (isRecursiveSignature(dataIdOfComp)) { // recursive signature --> ofString (level aware)
+                local = ofDataId(dataIdOfComp).ofString(dsStr.replaceFirst(Pattern.quote(nameOfComp + DELIM_STR), ""), level + 1);
+            } else { // basic signature --> normal of is ok
                 local = DataSignature.of(dsStr);
             }
             retList.add(local);
         }
         
         return new RecursiveSignature(getDataId(), retList);
+    }
+
+    private RecursiveSignature ofDataId(int dataIdOfComp) {
+        final Data[] data = new Data[0];
+        final DataSignature sign = new StringDataSet("").getDataSignature();
+        try {
+            switch (dataIdOfComp) {
+                case BUNDLE :
+                    return new RecursiveSignature(new DataBundle(data));
+                case ARRAY :
+                    return new RecursiveSignature(new DataArray(data, sign));
+                case VECTOR:
+                    return new RecursiveSignature(new DataVector(Arrays.asList(data), sign));
+                default:
+                    break;
+            }
+        } catch (DataTypeIncompatException e) {
+            //should not happen
+            new Warning(null, e.toString(), true).reportWarning();
+            e.printStackTrace();
+        }
+        return null; //TODO maybe exc --> generally with null values in creating signatures?!
     }
 }
