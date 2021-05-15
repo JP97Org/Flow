@@ -15,8 +15,8 @@ public interface IDocumentString extends IAPI {
     /**
      * Gets the default implementation.
      * 
-     * @param xml - the xml document which should be (it must not be {@code null})
-     * @return the default implementation contatining the given document
+     * @param xml - the xml document which should be contained (it must not be {@code null})
+     * @return the default implementation containing the given document
      */
     public static IDocumentString getDefaultImplementation(final Document xml) {
         return (IDocumentString) IAPI.defaultImplementationOfThisApi(
