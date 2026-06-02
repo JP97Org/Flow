@@ -32,6 +32,7 @@ public interface IAPI {
      * @return a default implementation of the calling IAPI sub-interface created with the given initial arguments
      */
     static IAPI defaultImplementationOfThisApi(final Class<?>[] parameterTypes, final Object... initArgs) {
+        initialize();
         final String iClassName;
         try { 
             throw new RuntimeException();
@@ -41,6 +42,7 @@ public interface IAPI {
         try {
             return FactoryUtil.getImplementationOfApi(iClassName, parameterTypes, initArgs);
         } catch (IllegalArgumentException e) {
+            System.err.println("Error while getting default implementation of API interface " + iClassName + ": " + e.toString());
             new Warning(null, e.toString(), true).reportWarning();
             return null;
         }

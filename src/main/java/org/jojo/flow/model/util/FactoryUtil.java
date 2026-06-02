@@ -23,12 +23,17 @@ public final class FactoryUtil {
      * A Map which maps the API interfaces to respective default implementation classes.
      */
     private static final IFactory defaultFactory = new DefaultFactory();
+
+    private static boolean isInitialized = false;
     
     /**
      * Sets the default mappings for the API interfaces to default implementations map.
      */
-    public static void initialize() {
-        defaultFactory.initialize();
+    public synchronized static void initialize() {
+        if (!isInitialized) {
+            defaultFactory.initialize();
+            isInitialized = true;
+        }
     }
     
     /**
