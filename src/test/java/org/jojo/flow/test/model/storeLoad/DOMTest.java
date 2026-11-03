@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.DOM;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public abstract class DOMTest {
     protected abstract IDOM[] getDomsUnderTest();
@@ -12,9 +12,9 @@ public abstract class DOMTest {
     @Test
     public void resetTest() {
         final var doc = DOM.getDocumentForCreatingElements();
-        Assert.assertTrue(doc == DOM.getDocumentForCreatingElements());
+        Assertions.assertTrue(doc == DOM.getDocumentForCreatingElements());
         IDOM.resetDocument();
-        Assert.assertFalse(doc == DOM.getDocumentForCreatingElements());
+        Assertions.assertFalse(doc == DOM.getDocumentForCreatingElements());
     }
     
     @Test
@@ -22,7 +22,7 @@ public abstract class DOMTest {
         Arrays
             .stream(getDomsUnderTest())
             .forEach(dom -> 
-                Assert.assertEquals(DOM.getDocumentForCreatingElements(), dom.getDocument()));
+                Assertions.assertEquals(DOM.getDocumentForCreatingElements(), dom.getDocument()));
     }
     
     // append tests and more exact DOMMap tests indirectly in integration tests (loading from document
@@ -32,6 +32,6 @@ public abstract class DOMTest {
     public void getDOMMapTest() {
         Arrays
             .stream(getDomsUnderTest())
-            .forEach(dom -> Assert.assertTrue(dom.getDOMMap() != null));
+            .forEach(dom -> Assertions.assertTrue(dom.getDOMMap() != null));
     }
 }

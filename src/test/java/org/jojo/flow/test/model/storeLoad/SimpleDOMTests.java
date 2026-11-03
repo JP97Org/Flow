@@ -13,12 +13,12 @@ import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.PointDOM;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class SimpleDOMTests extends DOMTest {
     private IDOM[] domsUnderTest;
     
-    @Before
+    @BeforeEach
     public void setUp() throws FlowException {
         this.domsUnderTest = new IDOM[]{
                 ConfigDOM.getExternal(), 
@@ -40,7 +40,7 @@ public class SimpleDOMTests extends DOMTest {
     
     @Test
     public void pointTest() {
-        Assert.assertEquals(new Point(0, 0), PointDOM.pointOf(
+        Assertions.assertEquals(new Point(0, 0), PointDOM.pointOf(
                 Arrays.stream(this.domsUnderTest)
                     .filter(x -> x instanceof PointDOM)
                     .findFirst().orElse(null)));

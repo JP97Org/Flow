@@ -8,26 +8,26 @@ import org.jojo.flow.exc.IllegalUnitOperationException;
 import org.jojo.flow.model.api.BasicType;
 import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.MultiMatrix;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class MultiMatrixTest {
     @Test
     public void create() throws IllegalUnitOperationException {
         final MultiMatrix<Double> matrix = new MultiMatrix<>(new int[] {1,2,3}, new Double[] {0.1, 0.2, 0.3, 0.4, 0.5, 0.6}, UnitSignature.FARAD);
-        Assert.assertEquals(BasicType.DOUBLE, matrix.getBasicType());
-        Assert.assertEquals("[[[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]] m^-2 * kg^-1 * s^4 * A^2", matrix.toString());
+        Assertions.assertEquals(BasicType.DOUBLE, matrix.getBasicType());
+        Assertions.assertEquals("[[[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]] m^-2 * kg^-1 * s^4 * A^2", matrix.toString());
         
-        Assert.assertEquals(0.1, matrix.get(new int[] {0,0,0}).doubleValue(), 0);
-        Assert.assertEquals(0.2, matrix.get(new int[] {0,0,1}).doubleValue(), 0);
-        Assert.assertEquals(0.3, matrix.get(new int[] {0,0,2}).doubleValue(), 0);
-        Assert.assertEquals(0.4, matrix.get(new int[] {0,1,0}).doubleValue(), 0);
-        Assert.assertEquals(0.5, matrix.get(new int[] {0,1,1}).doubleValue(), 0);
-        Assert.assertEquals(0.6, matrix.get(new int[] {0,1,2}).doubleValue(), 0);
-        Assert.assertArrayEquals(new Double[] {0.1, 0.2, 0.3}, matrix.getRow(new int[] {0,0}));
-        Assert.assertArrayEquals(new Double[] {0.4, 0.5, 0.6}, matrix.getRow(new int[] {0,1}));
+        Assertions.assertEquals(0.1, matrix.get(new int[] {0,0,0}).doubleValue(), 0);
+        Assertions.assertEquals(0.2, matrix.get(new int[] {0,0,1}).doubleValue(), 0);
+        Assertions.assertEquals(0.3, matrix.get(new int[] {0,0,2}).doubleValue(), 0);
+        Assertions.assertEquals(0.4, matrix.get(new int[] {0,1,0}).doubleValue(), 0);
+        Assertions.assertEquals(0.5, matrix.get(new int[] {0,1,1}).doubleValue(), 0);
+        Assertions.assertEquals(0.6, matrix.get(new int[] {0,1,2}).doubleValue(), 0);
+        Assertions.assertArrayEquals(new Double[] {0.1, 0.2, 0.3}, matrix.getRow(new int[] {0,0}));
+        Assertions.assertArrayEquals(new Double[] {0.4, 0.5, 0.6}, matrix.getRow(new int[] {0,1}));
         matrix.set(2., new int[] {0, 1, 1});
-        Assert.assertEquals(2., matrix.get(new int[] {0,1,1}).doubleValue(), 0);
-        Assert.assertEquals(UnitSignature.FARAD, matrix.getUnitSignature());
+        Assertions.assertEquals(2., matrix.get(new int[] {0,1,1}).doubleValue(), 0);
+        Assertions.assertEquals(UnitSignature.FARAD, matrix.getUnitSignature());
     }
     
     @Test
@@ -55,10 +55,10 @@ public class MultiMatrixTest {
                     .stream(getIndices)
                     .mapToObj(x -> Integer.toString(x))
                     .reduce("", (a, b) -> a + b));
-            Assert.assertEquals(val, matrix.get(getIndices).intValue());
+            Assertions.assertEquals(val, matrix.get(getIndices).intValue());
         }
-        Assert.assertArrayEquals(arr6d, matrix.toArray());
-        Assert.assertEquals(Arrays.deepToString(arr6d) + " " + UnitSignature.FARAD, matrix.toString());
+        Assertions.assertArrayEquals(arr6d, matrix.toArray());
+        Assertions.assertEquals(Arrays.deepToString(arr6d) + " " + UnitSignature.FARAD, matrix.toString());
     }
 
     private void incrementIndex(final int[] indices, final int[] sizes, final int indicesIndex) {

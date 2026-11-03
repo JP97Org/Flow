@@ -7,7 +7,7 @@ import org.jojo.flow.model.data.BasicSignatureComponents;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.DataArray;
 import org.jojo.flow.model.data.RawDataSet;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class DataSignatureTest {
     @Test
@@ -15,32 +15,32 @@ public class DataSignatureTest {
         final RawDataSet dataOne = new RawDataSet(new byte[] {0, 1, 2});
         final RawDataSet dataTwo = new RawDataSet(new byte[] {3, 4, 5});
         final IDataSignature copy = dataOne.getDataSignature().getCopy();
-        Assert.assertEquals(dataOne.getDataSignature(), copy);
-        Assert.assertFalse(dataOne.getDataSignature() == copy);
-        Assert.assertTrue(dataOne.hasSameType(copy));
+        Assertions.assertEquals(dataOne.getDataSignature(), copy);
+        Assertions.assertFalse(dataOne.getDataSignature() == copy);
+        Assertions.assertTrue(dataOne.hasSameType(copy));
         copy.getComponent(BasicSignatureComponents.SIZES.index).deactivateChecking();
-        Assert.assertTrue(dataOne.hasSameType(copy));
+        Assertions.assertTrue(dataOne.hasSameType(copy));
         final RawDataSet dataThree = new RawDataSet(new byte[] {0, 1, 2, 3, 4});
-        Assert.assertTrue(dataThree.hasSameType(copy));
-        Assert.assertFalse(dataThree.hasSameType(dataOne.getDataSignature()));
+        Assertions.assertTrue(dataThree.hasSameType(copy));
+        Assertions.assertFalse(dataThree.hasSameType(dataOne.getDataSignature()));
         try {
             final DataArray arr = new DataArray(new Data[] {dataOne, dataTwo}, dataOne.getDataSignature());
             final IDataSignature arrCopy = arr.getDataSignature().getCopy();
-            Assert.assertEquals(arr.getDataSignature(), arrCopy);
-            Assert.assertFalse(arr.getDataSignature() == arrCopy);
-            Assert.assertEquals(2, arrCopy.size());
-            Assert.assertEquals(dataOne.getDataSignature(), arrCopy.getComponent(0));
-            Assert.assertEquals(dataTwo.getDataSignature(), arrCopy.getComponent(1));
+            Assertions.assertEquals(arr.getDataSignature(), arrCopy);
+            Assertions.assertFalse(arr.getDataSignature() == arrCopy);
+            Assertions.assertEquals(2, arrCopy.size());
+            Assertions.assertEquals(dataOne.getDataSignature(), arrCopy.getComponent(0));
+            Assertions.assertEquals(dataTwo.getDataSignature(), arrCopy.getComponent(1));
             int i = 0;
             for (final IDataSignature data : arrCopy) {
-                Assert.assertEquals(data, arrCopy.getComponent(i));
+                Assertions.assertEquals(data, arrCopy.getComponent(i));
                 i++;
             }
-            Assert.assertEquals(2, i);
+            Assertions.assertEquals(2, i);
             arrCopy.getComponent(0).deactivateChecking();
-            Assert.assertTrue(dataOne.hasSameType(arrCopy.getComponent(0)));
+            Assertions.assertTrue(dataOne.hasSameType(arrCopy.getComponent(0)));
             arrCopy.deactivateChecking();
-            Assert.assertTrue(dataOne.hasSameType(arrCopy));
+            Assertions.assertTrue(dataOne.hasSameType(arrCopy));
             
         } catch (DataTypeIncompatException e) {
             e.printStackTrace();

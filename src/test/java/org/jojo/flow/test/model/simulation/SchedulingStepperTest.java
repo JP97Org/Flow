@@ -10,13 +10,13 @@ import org.jojo.flow.model.simulation.PriorityScheduler;
 import org.jojo.flow.model.simulation.SchedulingStepper;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class SchedulingStepperTest {
     private IFlowChart fc;
     private SchedulingStepper stepper;
     
-    @Before
+    @BeforeEach
     public void setUp() throws FlowException {
         this.fc = DynamicObjectLoader.loadEmptyFlowChart(0);
         for (int i = 0; i < 10; i++) {
@@ -31,22 +31,22 @@ public class SchedulingStepperTest {
     
     @Test
     public void getFrequencyTest() {
-        Assert.assertEquals(Frequency.getFractionConstant(new Fraction(10)), this.stepper.getFrequency());
+        Assertions.assertEquals(Frequency.getFractionConstant(new Fraction(10)), this.stepper.getFrequency());
     }
     
     @Test
     public void stepOnceTest() throws ModuleRunException {
         this.stepper.stepOnce();
-        Assert.assertEquals(1, this.stepper.getStepCount());
-        Assert.assertEquals(Time.getFractionConstant(new Fraction(1L, 10L)), this.stepper.getTimePassed());
+        Assertions.assertEquals(1, this.stepper.getStepCount());
+        Assertions.assertEquals(Time.getFractionConstant(new Fraction(1L, 10L)), this.stepper.getTimePassed());
     }
     
     @Test
     public void performSimulationStepTest() throws ModuleRunException {
         final Time<Fraction> twoSeconds = Time.getFractionConstant(new Fraction(2));
         this.stepper.performSimulationStep(twoSeconds);
-        Assert.assertEquals(20, this.stepper.getStepCount());
-        Assert.assertEquals(twoSeconds, this.stepper.getTimePassed());
+        Assertions.assertEquals(20, this.stepper.getStepCount());
+        Assertions.assertEquals(twoSeconds, this.stepper.getTimePassed());
     }
     
     @Test
@@ -57,21 +57,21 @@ public class SchedulingStepperTest {
             this.stepper.stepForward();
         }
         this.stepper.pause();
-        Assert.assertTrue(this.stepper.isPaused());
-        Assert.assertEquals(20, this.stepper.getStepCount());
-        Assert.assertEquals(twoSeconds, this.stepper.getTimePassed());
+        Assertions.assertTrue(this.stepper.isPaused());
+        Assertions.assertEquals(20, this.stepper.getStepCount());
+        Assertions.assertEquals(twoSeconds, this.stepper.getTimePassed());
     }
 
     @Test
     public void resetTest() throws FlowException {
-        Assert.assertEquals(0, this.stepper.getStepCount());
-        Assert.assertEquals(Time.getFractionConstant(new Fraction(0L, 10L)), this.stepper.getTimePassed());
+        Assertions.assertEquals(0, this.stepper.getStepCount());
+        Assertions.assertEquals(Time.getFractionConstant(new Fraction(0L, 10L)), this.stepper.getTimePassed());
         this.stepper.stepOnce();
-        Assert.assertEquals(1, this.stepper.getStepCount());
-        Assert.assertEquals(Time.getFractionConstant(new Fraction(1L, 10L)), this.stepper.getTimePassed());
+        Assertions.assertEquals(1, this.stepper.getStepCount());
+        Assertions.assertEquals(Time.getFractionConstant(new Fraction(1L, 10L)), this.stepper.getTimePassed());
         this.stepper.reset();
-        Assert.assertEquals(0, this.stepper.getStepCount());
-        Assert.assertEquals(Time.getFractionConstant(new Fraction(0L, 10L)), this.stepper.getTimePassed());
+        Assertions.assertEquals(0, this.stepper.getStepCount());
+        Assertions.assertEquals(Time.getFractionConstant(new Fraction(0L, 10L)), this.stepper.getTimePassed());
     }
     
     @Test
@@ -87,13 +87,13 @@ public class SchedulingStepperTest {
                 }
             }
             stepperThread.join();
-            Assert.assertFalse(stepperThread.isAlive());
+            Assertions.assertFalse(stepperThread.isAlive());
         }
         this.stepper.pause();
         Thread.sleep(50);
-        Assert.assertTrue(this.stepper.isPaused());
-        Assert.assertEquals(20, this.stepper.getStepCount());
-        Assert.assertEquals(twoSeconds, this.stepper.getTimePassed());
+        Assertions.assertTrue(this.stepper.isPaused());
+        Assertions.assertEquals(20, this.stepper.getStepCount());
+        Assertions.assertEquals(twoSeconds, this.stepper.getTimePassed());
     }
 
     private synchronized boolean isCountElapsed(int count) {

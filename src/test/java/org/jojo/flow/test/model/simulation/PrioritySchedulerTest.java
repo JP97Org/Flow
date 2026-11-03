@@ -8,14 +8,14 @@ import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.simulation.PriorityScheduler;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class PrioritySchedulerTest {
     private PriorityScheduler sched;
     private List<IFlowModule> modules;
     private List<IFlowModule> modulesOrdered;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         this.sched = new PriorityScheduler();
         this.modules = new ArrayList<>();
@@ -41,16 +41,16 @@ public class PrioritySchedulerTest {
     @Test
     public void getScheduleTest() {
         List<IFlowModule> schedule = this.sched.getSchedule(this.modules);
-        Assert.assertTrue(schedule != null);
-        Assert.assertTrue(schedule.size() == this.modules.size());
-        Assert.assertEquals(Arrays.asList(this.modulesOrdered.stream().map(m -> m.getId()).toArray()),
+        Assertions.assertTrue(schedule != null);
+        Assertions.assertTrue(schedule.size() == this.modules.size());
+        Assertions.assertEquals(Arrays.asList(this.modulesOrdered.stream().map(m -> m.getId()).toArray()),
                 Arrays.asList(schedule.stream().map(m -> m.getId()).toArray()));
-        Assert.assertEquals(this.modulesOrdered, schedule);
-        Assert.assertArrayEquals(new int[] {40, 30, 20, 20, 10},
+        Assertions.assertEquals(this.modulesOrdered, schedule);
+        Assertions.assertArrayEquals(new int[] {40, 30, 20, 20, 10},
                 schedule.stream().mapToInt(m -> m.getExternalConfig().getPriority()).toArray());
         
         schedule = this.sched.getSchedule(new ArrayList<>());
-        Assert.assertTrue(schedule != null);
-        Assert.assertTrue(schedule.isEmpty());
+        Assertions.assertTrue(schedule != null);
+        Assertions.assertTrue(schedule.isEmpty());
     }
 }

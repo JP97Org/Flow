@@ -13,14 +13,14 @@ import org.jojo.flow.model.simulation.Simulation;
 import org.jojo.flow.model.simulation.SimulationConfiguration;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class SimulationTest {
     private IFlowChart fc;
     private ISimulationConfiguration config;
     private ISimulation simulation;
     
-    @Before
+    @BeforeEach
     public void setUp() throws FlowException {
         this.fc = DynamicObjectLoader.loadEmptyFlowChart(0);
         for (int i = 0; i < 10; i++) {
@@ -39,17 +39,17 @@ public class SimulationTest {
         this.simulation.getStepper().unpause();
         this.simulation.stepOnce();
         this.simulation.getStepper().pause();
-        Assert.assertTrue(this.simulation.getStepper().isPaused());
-        Assert.assertEquals(1, this.simulation.getStepper().getStepCount());
-        Assert.assertEquals(Time.getFractionConstant(new Fraction(1L, 10L)), 
+        Assertions.assertTrue(this.simulation.getStepper().isPaused());
+        Assertions.assertEquals(1, this.simulation.getStepper().getStepCount());
+        Assertions.assertEquals(Time.getFractionConstant(new Fraction(1L, 10L)), 
                 this.simulation.getStepper().getTimePassed());
     }
     
-    @Test(expected=TimeoutException.class)
-    public void stepOnceTimeoutTest() throws ModuleRunException, TimeoutException, FlowException {
+    @Test
+    public void stepOnceTimeoutTest() {
         ((MockModule)this.fc.getModules().get(9)).setSlp(5000);
         this.simulation.getStepper().unpause();
-        this.simulation.stepOnce();
+        Assertions.assertThrows(TimeoutException.class, () -> this.simulation.stepOnce());
     }
     
     @Test
@@ -68,10 +68,10 @@ public class SimulationTest {
         Thread.sleep(200);
         this.simulation.pause();
         Thread.sleep(50);
-        Assert.assertTrue(this.simulation.getStepper().isPaused());
-        Assert.assertEquals(20, this.simulation.getStepper().getStepCount());
-        Assert.assertEquals(twoSeconds, this.simulation.getStepper().getTimePassed());
-        Assert.assertTrue(this.fc.getWarnings().isEmpty());
+        Assertions.assertTrue(this.simulation.getStepper().isPaused());
+        Assertions.assertEquals(20, this.simulation.getStepper().getStepCount());
+        Assertions.assertEquals(twoSeconds, this.simulation.getStepper().getTimePassed());
+        Assertions.assertTrue(this.fc.getWarnings().isEmpty());
         System.out.println(this.fc.getWarnings());
     }
     
@@ -81,8 +81,8 @@ public class SimulationTest {
         ((MockModule)this.fc.getModules().get(9)).setSlp(5000);
         this.simulation.stepForward(twoSeconds);
         Thread.sleep(2500);
-        Assert.assertFalse(this.fc.getWarnings().isEmpty());
-        Assert.assertTrue(this.fc.getWarnings().stream()
+        Assertions.assertFalse(this.fc.getWarnings().isEmpty());
+        Assertions.assertTrue(this.fc.getWarnings().stream()
                 .map(w -> w.toString())
                 .anyMatch(s -> s.contains("timeout")));
         System.out.println(this.fc.getWarnings());
@@ -91,7 +91,7 @@ public class SimulationTest {
     
     @Test
     public void simulationTest() throws InterruptedException {
-        Assert.assertTrue(this.fc.getWarnings().isEmpty());
+        Assertions.assertTrue(this.fc.getWarnings().isEmpty());
         this.simulation.start();
         for (int i = 0; !isCountElapsed(20);) {
             if (!isCountElapsed(19)) {
@@ -105,9 +105,9 @@ public class SimulationTest {
         this.simulation.pause();
         System.out.println("Step-Count= " + this.simulation.getStepper().getStepCount());
         Thread.sleep(50);
-        Assert.assertTrue(this.simulation.getStepper().isPaused());
-        Assert.assertTrue(this.simulation.getStepper().getStepCount() == 20 ||  this.simulation.getStepper().getStepCount() == 21);
-        Assert.assertTrue(this.fc.getWarnings().isEmpty());
+        Assertions.assertTrue(this.simulation.getStepper().isPaused());
+        Assertions.assertTrue(this.simulation.getStepper().getStepCount() == 20 ||  this.simulation.getStepper().getStepCount() == 21);
+        Assertions.assertTrue(this.fc.getWarnings().isEmpty());
         System.out.println(this.fc.getWarnings());
     }
     
@@ -116,8 +116,8 @@ public class SimulationTest {
         ((MockModule)this.fc.getModules().get(9)).setSlp(5000);
         this.simulation.start();
         Thread.sleep(2500);
-        Assert.assertFalse(this.fc.getWarnings().isEmpty());
-        Assert.assertTrue(this.fc.getWarnings().stream()
+        Assertions.assertFalse(this.fc.getWarnings().isEmpty());
+        Assertions.assertTrue(this.fc.getWarnings().stream()
                 .map(w -> w.toString())
                 .anyMatch(s -> s.contains("timeout")));
         System.out.println(this.fc.getWarnings());

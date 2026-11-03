@@ -3,3 +3,10 @@
 .settings/
 bin/
 target/
+.ash_history
+.cache/
+.config/
+.local/
+.m2/
+.npm/
+.redhat

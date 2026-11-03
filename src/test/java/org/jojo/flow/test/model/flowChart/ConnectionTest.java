@@ -17,14 +17,14 @@ import org.jojo.flow.model.flowChart.connections.DefaultArrowGR;
 import org.jojo.flow.model.flowChart.connections.RigidConnectionGR;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class ConnectionTest {
     private MockModule mock;
     private IDefaultArrow arrow;
     private IRigidConnection rig;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mock = (MockModule)DynamicObjectLoader.loadModule(
                 DynamicObjectLoader.MockModule.class.getName(), 100);
@@ -42,59 +42,59 @@ public class ConnectionTest {
     
     @Test
     public void get() {
-        Assert.assertTrue(this.arrow.getName() != null);
-        Assert.assertTrue(this.rig.getName() != null);
-        Assert.assertTrue(this.arrow.getInfo() != null);
-        Assert.assertTrue(this.rig.getInfo() != null);
-        Assert.assertTrue(this.arrow.getFromPin() != null);
-        Assert.assertTrue(this.rig.getFromPin() != null);
-        Assert.assertTrue(this.arrow.getToPins() != null && !this.arrow.getToPins().isEmpty());
-        Assert.assertTrue(this.rig.getToPins() != null && !this.rig.getToPins().isEmpty());
-        Assert.assertTrue(this.arrow.getConnectedModules() != null 
+        Assertions.assertTrue(this.arrow.getName() != null);
+        Assertions.assertTrue(this.rig.getName() != null);
+        Assertions.assertTrue(this.arrow.getInfo() != null);
+        Assertions.assertTrue(this.rig.getInfo() != null);
+        Assertions.assertTrue(this.arrow.getFromPin() != null);
+        Assertions.assertTrue(this.rig.getFromPin() != null);
+        Assertions.assertTrue(this.arrow.getToPins() != null && !this.arrow.getToPins().isEmpty());
+        Assertions.assertTrue(this.rig.getToPins() != null && !this.rig.getToPins().isEmpty());
+        Assertions.assertTrue(this.arrow.getConnectedModules() != null 
                 && this.arrow.getConnectedModules().size() == 1
                 && this.arrow.getConnectedModules().iterator().next() == this.mock);
-        Assert.assertTrue(this.rig.getConnectedModules() != null 
+        Assertions.assertTrue(this.rig.getConnectedModules() != null 
                 && this.rig.getConnectedModules().size() == 1
                 && this.rig.getConnectedModules().iterator().next() == this.mock);
-        Assert.assertTrue(this.arrow.getGraphicalRepresentation() instanceof DefaultArrowGR);
-        Assert.assertTrue(this.rig.getGraphicalRepresentation() instanceof RigidConnectionGR);
+        Assertions.assertTrue(this.arrow.getGraphicalRepresentation() instanceof DefaultArrowGR);
+        Assertions.assertTrue(this.rig.getGraphicalRepresentation() instanceof RigidConnectionGR);
         
-        Assert.assertTrue(this.arrow.getDataSignature() != null);
+        Assertions.assertTrue(this.arrow.getDataSignature() != null);
         final IDataSignature before = this.arrow.getDataSignature().getCopy();
         final var pin = this.mock.getAllOutputs().get(0);
-        Assert.assertTrue(this.arrow.putData(pin.getDefaultData()));
-        Assert.assertTrue(this.arrow.getData() != null);
-        Assert.assertTrue(this.arrow.putData(null));
-        Assert.assertTrue(this.arrow.getData() == null);
+        Assertions.assertTrue(this.arrow.putData(pin.getDefaultData()));
+        Assertions.assertTrue(this.arrow.getData() != null);
+        Assertions.assertTrue(this.arrow.putData(null));
+        Assertions.assertTrue(this.arrow.getData() == null);
         final IDataSignature inactive = new StringDataSet("").getDataSignature().deactivateChecking();
-        Assert.assertFalse(this.arrow.putDataSignature(inactive));
-        Assert.assertFalse(this.arrow.getDataSignature().equals(inactive));
+        Assertions.assertFalse(this.arrow.putDataSignature(inactive));
+        Assertions.assertFalse(this.arrow.getDataSignature().equals(inactive));
         this.arrow.forcePutDataSignature(inactive);
-        Assert.assertTrue(this.arrow.getDataSignature().equals(inactive));
-        Assert.assertTrue(this.arrow.putDataSignature(before));
+        Assertions.assertTrue(this.arrow.getDataSignature().equals(inactive));
+        Assertions.assertTrue(this.arrow.putDataSignature(before));
         
-        Assert.assertTrue(this.arrow.isDOMValid(this.arrow.getDOM()));
-        Assert.assertTrue(this.rig.isDOMValid(this.rig.getDOM()));
+        Assertions.assertTrue(this.arrow.isDOMValid(this.arrow.getDOM()));
+        Assertions.assertTrue(this.rig.isDOMValid(this.rig.getDOM()));
     }
     
     @Test
     public void succeedConnecting() {
-        Assert.assertTrue(this.arrow.connect());
-        Assert.assertTrue(this.rig.connect());
-        Assert.assertTrue(this.arrow.reconnect());
-        Assert.assertTrue(this.rig.reconnect());
+        Assertions.assertTrue(this.arrow.connect());
+        Assertions.assertTrue(this.rig.connect());
+        Assertions.assertTrue(this.arrow.reconnect());
+        Assertions.assertTrue(this.rig.reconnect());
         this.arrow.disconnect();
         this.rig.disconnect();
-        Assert.assertTrue(this.arrow.connect());
-        Assert.assertTrue(this.rig.connect());
+        Assertions.assertTrue(this.arrow.connect());
+        Assertions.assertTrue(this.rig.connect());
     }
     
     @Test
     public void failConnecting() throws FlowException {
-        Assert.assertTrue(this.arrow.connect());
-        Assert.assertTrue(this.rig.connect());
-        Assert.assertFalse(this.arrow.connect());
-        Assert.assertFalse(this.rig.connect());
+        Assertions.assertTrue(this.arrow.connect());
+        Assertions.assertTrue(this.rig.connect());
+        Assertions.assertFalse(this.arrow.connect());
+        Assertions.assertFalse(this.rig.connect());
         this.arrow.disconnect();
         this.rig.disconnect();
         
@@ -104,16 +104,16 @@ public class ConnectionTest {
         final var pin = this.mock.getAllOutputs().get(0);
         ((IDefaultPin)pin.getModulePinImp()).setCheckDataSignature(inactive);
         ((IDefaultPin)pin.getModulePinImp()).setCheckDataSignature(sign);
-        Assert.assertFalse(this.arrow.connect());
-        Assert.assertFalse(this.arrow.reconnect());
+        Assertions.assertFalse(this.arrow.connect());
+        Assertions.assertFalse(this.arrow.reconnect());
         ((IDefaultPin)pin.getModulePinImp()).setCheckDataSignature(inactive);
         ((IDefaultPin)pin.getModulePinImp()).setCheckDataSignature(before);
-        Assert.assertTrue(this.arrow.connect());
-        Assert.assertTrue(this.arrow.reconnect());
-        Assert.assertFalse(this.arrow.connect());
+        Assertions.assertTrue(this.arrow.connect());
+        Assertions.assertTrue(this.arrow.reconnect());
+        Assertions.assertFalse(this.arrow.connect());
         ((IDefaultPin)pin.getModulePinImp()).setCheckDataSignature(inactive);
         ((IDefaultPin)pin.getModulePinImp()).setCheckDataSignature(sign);
-        Assert.assertFalse(this.arrow.reconnect());
+        Assertions.assertFalse(this.arrow.reconnect());
         
         ((IDefaultPin)pin.getModulePinImp()).setCheckDataSignature(inactive);
         ((IDefaultPin)pin.getModulePinImp()).setCheckDataSignature(before);

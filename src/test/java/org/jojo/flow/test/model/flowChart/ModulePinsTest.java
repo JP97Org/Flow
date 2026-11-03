@@ -14,7 +14,7 @@ import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.util.DynamicObjectLoader;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class ModulePinsTest {
     private IFlowModule mock;
@@ -22,7 +22,7 @@ public class ModulePinsTest {
     private IInputPin defIn;
     private IRigidPin rigid;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mock = DynamicObjectLoader.loadModule(DynamicObjectLoader.MockModule.class.getName(), 100);
         this.defOut = (IOutputPin) DynamicObjectLoader.loadPin(OutputPin.class.getName(), DefaultPin.class.getName(),
@@ -34,48 +34,48 @@ public class ModulePinsTest {
 
     @Test
     public void get() {
-        Assert.assertTrue(defOut.getGraphicalRepresentation() != null);
-        Assert.assertTrue(defIn.getGraphicalRepresentation() != null);
-        Assert.assertTrue(defOut.getModule() == mock);
-        Assert.assertTrue(defIn.getModule() == mock);
+        Assertions.assertTrue(defOut.getGraphicalRepresentation() != null);
+        Assertions.assertTrue(defIn.getGraphicalRepresentation() != null);
+        Assertions.assertTrue(defOut.getModule() == mock);
+        Assertions.assertTrue(defIn.getModule() == mock);
         final IOutputPin rigidOut = rigid.getOutputPin();
         final IInputPin rigidIn = rigid.getInputPin();
-        Assert.assertTrue(rigidOut.getModule() == mock);
-        Assert.assertTrue(rigidIn.getModule() == mock);
-        Assert.assertTrue(rigidOut != null && rigidOut == rigid.getOutputPin());
-        Assert.assertTrue(rigidIn != null && rigidIn == rigid.getInputPin());
-        Assert.assertTrue(rigidOut.getGraphicalRepresentation() != null);
-        Assert.assertTrue(rigidIn.getGraphicalRepresentation() != null);
-        Assert.assertTrue(defOut.getConnections().isEmpty());
-        Assert.assertTrue(defIn.getConnections().isEmpty());
-        Assert.assertTrue(rigidOut.getConnections().isEmpty());
-        Assert.assertTrue(rigidIn.getConnections().isEmpty());
-        Assert.assertTrue(defOut.getModulePinImp() instanceof IDefaultPin);
-        Assert.assertTrue(defIn.getModulePinImp() instanceof IDefaultPin);
-        Assert.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature() != null);
-        Assert.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature() != null);
-        Assert.assertTrue(rigidOut.getModulePinImp() == rigid);
-        Assert.assertTrue(rigidIn.getModulePinImp() == rigid);
-        Assert.assertTrue(defOut.isDOMValid(defOut.getDOM()));
-        Assert.assertTrue(defIn.isDOMValid(defIn.getDOM()));
-        Assert.assertTrue(rigidOut.isDOMValid(rigidOut.getDOM()));
-        Assert.assertTrue(rigidIn.isDOMValid(rigidIn.getDOM()));
-        Assert.assertTrue(defIn.getData() == defIn.getDefaultData());
+        Assertions.assertTrue(rigidOut.getModule() == mock);
+        Assertions.assertTrue(rigidIn.getModule() == mock);
+        Assertions.assertTrue(rigidOut != null && rigidOut == rigid.getOutputPin());
+        Assertions.assertTrue(rigidIn != null && rigidIn == rigid.getInputPin());
+        Assertions.assertTrue(rigidOut.getGraphicalRepresentation() != null);
+        Assertions.assertTrue(rigidIn.getGraphicalRepresentation() != null);
+        Assertions.assertTrue(defOut.getConnections().isEmpty());
+        Assertions.assertTrue(defIn.getConnections().isEmpty());
+        Assertions.assertTrue(rigidOut.getConnections().isEmpty());
+        Assertions.assertTrue(rigidIn.getConnections().isEmpty());
+        Assertions.assertTrue(defOut.getModulePinImp() instanceof IDefaultPin);
+        Assertions.assertTrue(defIn.getModulePinImp() instanceof IDefaultPin);
+        Assertions.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature() != null);
+        Assertions.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature() != null);
+        Assertions.assertTrue(rigidOut.getModulePinImp() == rigid);
+        Assertions.assertTrue(rigidIn.getModulePinImp() == rigid);
+        Assertions.assertTrue(defOut.isDOMValid(defOut.getDOM()));
+        Assertions.assertTrue(defIn.isDOMValid(defIn.getDOM()));
+        Assertions.assertTrue(rigidOut.isDOMValid(rigidOut.getDOM()));
+        Assertions.assertTrue(rigidIn.isDOMValid(rigidIn.getDOM()));
+        Assertions.assertTrue(defIn.getData() == defIn.getDefaultData());
     }
 
     @Test
     public void set() throws FlowException {
         final IConnection def = new DefaultArrow(200, defOut, defIn, "def");
         final IConnection rig = new RigidConnection(300, rigid, rigid, "rig");
-        Assert.assertTrue(def.connect());
-        Assert.assertTrue(rig.connect());
-        Assert.assertTrue(defOut.getConnections().size() == 1);
-        Assert.assertTrue(defIn.getConnections().size() == 1);
-        Assert.assertTrue(rigid.getConnections().size() == 1);
-        Assert.assertTrue(defOut.getConnections().get(0) == defIn.getConnections().get(0));
+        Assertions.assertTrue(def.connect());
+        Assertions.assertTrue(rig.connect());
+        Assertions.assertTrue(defOut.getConnections().size() == 1);
+        Assertions.assertTrue(defIn.getConnections().size() == 1);
+        Assertions.assertTrue(rigid.getConnections().size() == 1);
+        Assertions.assertTrue(defOut.getConnections().get(0) == defIn.getConnections().get(0));
         
-        Assert.assertTrue(defOut.putData(defOut.getDefaultData()));
-        Assert.assertTrue(defOut.putData(null));
+        Assertions.assertTrue(defOut.putData(defOut.getDefaultData()));
+        Assertions.assertTrue(defOut.putData(null));
         
         final IDataSignature outOne = ((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().getCopy();
         outOne.deactivateChecking();
@@ -84,20 +84,20 @@ public class ModulePinsTest {
         inOne.deactivateChecking();
         final IDataSignature inTwo = ((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().getCopy();
         def.disconnect();
-        Assert.assertTrue(defOut.getConnections().isEmpty());
-        Assert.assertTrue(defIn.getConnections().isEmpty());
+        Assertions.assertTrue(defOut.getConnections().isEmpty());
+        Assertions.assertTrue(defIn.getConnections().isEmpty());
         ((IDefaultPin) defOut.getModulePinImp()).setCheckDataSignature(outOne);
-        Assert.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().matches(outTwo));
-        Assert.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().equals(outOne));
+        Assertions.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().matches(outTwo));
+        Assertions.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().equals(outOne));
         ((IDefaultPin) defIn.getModulePinImp()).setCheckDataSignature(inOne);
-        Assert.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature().matches(inTwo));
-        Assert.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature().equals(inOne));
-        Assert.assertTrue(def.connect());
+        Assertions.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature().matches(inTwo));
+        Assertions.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature().equals(inOne));
+        Assertions.assertTrue(def.connect());
         ((IDefaultPin) defOut.getModulePinImp()).setCheckDataSignature(outTwo);
-        Assert.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().equals(outTwo));
-        Assert.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().matches(outOne));
+        Assertions.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().equals(outTwo));
+        Assertions.assertTrue(((IDefaultPin) defOut.getModulePinImp()).getCheckDataSignature().matches(outOne));
         ((IDefaultPin) defIn.getModulePinImp()).setCheckDataSignature(inTwo);
-        Assert.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature().equals(inTwo));
-        Assert.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature().matches(inOne));
+        Assertions.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature().equals(inTwo));
+        Assertions.assertTrue(((IDefaultPin) defIn.getModulePinImp()).getCheckDataSignature().matches(inOne));
     }
 }

@@ -18,7 +18,7 @@ import org.jojo.flow.model.flowChart.modules.DefaultOutputPinGR;
 import org.jojo.flow.model.flowChart.modules.RigidPinGR;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModuleGR;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import static org.jojo.flow.model.util.DynamicObjectLoader.loadGR;
 import static org.jojo.flow.model.util.DynamicObjectLoader.loadModule;
@@ -26,7 +26,7 @@ import static org.jojo.flow.model.util.DynamicObjectLoader.loadModule;
 public class GRTest {
     private IGraphicalRepresentation[] grs;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         this.grs = getAllGRs();
         System.out.println(Arrays.stream(this.grs)
@@ -53,12 +53,12 @@ public class GRTest {
     @Test
     public void get() {
         for (final var gr : this.grs) {
-            Assert.assertTrue(gr.getPosition() != null);
+            Assertions.assertTrue(gr.getPosition() != null);
             if (gr instanceof IFlowChartElementGR) {
                 ((IFlowChartElementGR) gr).removeLabel();
-                Assert.assertTrue(((IFlowChartElementGR) gr).getLabel() == null);
+                Assertions.assertTrue(((IFlowChartElementGR) gr).getLabel() == null);
             }
-            Assert.assertTrue(gr.isDOMValid(gr.getDOM()));
+            Assertions.assertTrue(gr.isDOMValid(gr.getDOM()));
         }
     }
 }

@@ -10,12 +10,12 @@ import org.jojo.flow.model.api.UnitSignature;
 import org.jojo.flow.model.data.MultiMatrix;
 import org.jojo.flow.model.data.StringDataSet;
 import org.jojo.flow.model.util.DynamicObjectLoader;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class FlowModuleTest {
     private IFlowModule module;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         this.module = DynamicObjectLoader.loadModule(
                 DynamicObjectLoader.MockModule.class.getName(), 100);
@@ -23,17 +23,17 @@ public class FlowModuleTest {
     
     @Test
     public void get() {
-        Assert.assertTrue(this.module.getAllModulePins() != null);
-        Assert.assertTrue(this.module.getFrequency() != null);
-        Assert.assertTrue(this.module.getFrequency().toFractionUnit().value.doubleValue() > 0.0);
-        Assert.assertTrue(this.module.getExternalConfig() != null);
-        Assert.assertTrue(this.module.getDefaultInputs() != null);
-        Assert.assertTrue(this.module.getDefaultOutputs() != null);
-        Assert.assertTrue(this.module.getAllInputs() != null);
-        Assert.assertTrue(this.module.getAllOutputs() != null);
-        Assert.assertTrue(this.module.getDefaultDependencyList() != null);
-        Assert.assertTrue(this.module.getDefaultAdjacencyList() != null);
-        Assert.assertTrue(this.module.isDOMValid(this.module.getDOM()));
+        Assertions.assertTrue(this.module.getAllModulePins() != null);
+        Assertions.assertTrue(this.module.getFrequency() != null);
+        Assertions.assertTrue(this.module.getFrequency().toFractionUnit().value.doubleValue() > 0.0);
+        Assertions.assertTrue(this.module.getExternalConfig() != null);
+        Assertions.assertTrue(this.module.getDefaultInputs() != null);
+        Assertions.assertTrue(this.module.getDefaultOutputs() != null);
+        Assertions.assertTrue(this.module.getAllInputs() != null);
+        Assertions.assertTrue(this.module.getAllOutputs() != null);
+        Assertions.assertTrue(this.module.getDefaultDependencyList() != null);
+        Assertions.assertTrue(this.module.getDefaultAdjacencyList() != null);
+        Assertions.assertTrue(this.module.isDOMValid(this.module.getDOM()));
     }
     
     @Test
@@ -43,16 +43,16 @@ public class FlowModuleTest {
     
     @Test
     public void validate() throws FlowException {
-        Assert.assertTrue(this.module.validate() == null);
+        Assertions.assertTrue(this.module.validate() == null);
         if (!this.module.getDefaultOutputs().isEmpty() 
                 && !this.module.getDefaultInputs().isEmpty()) {
             final var from = this.module.getDefaultOutputs().get(0);
             final var to = this.module.getDefaultInputs().get(0);
             final IDefaultArrow arrow = DynamicObjectLoader.loadConnection(200, from, to, "Arrow");
-            Assert.assertTrue(arrow.connect());
-            Assert.assertTrue(this.module.validate() == null);
+            Assertions.assertTrue(arrow.connect());
+            Assertions.assertTrue(this.module.validate() == null);
             modWronging(this.module);
-            Assert.assertTrue(this.module.validate() == arrow);
+            Assertions.assertTrue(this.module.validate() == arrow);
         }
     }
     

@@ -25,7 +25,7 @@ import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
 import org.jojo.flow.test.model.flowChart.GRTest;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import static org.jojo.flow.model.util.DynamicObjectLoader.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +35,7 @@ import java.util.List;
 public class DynamicObjectLoaderTest {
     private Object loaded;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         this.loaded = null;
     }
@@ -44,73 +44,73 @@ public class DynamicObjectLoaderTest {
     public void loadAnObjectTest() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         this.loaded = load(getClass().getClassLoader(), String.class.getName(), new Class<?>[] {
             String.class}, "Test");
-        Assert.assertTrue(this.loaded instanceof String);
-        Assert.assertEquals("Test", this.loaded);
+        Assertions.assertTrue(this.loaded instanceof String);
+        Assertions.assertEquals("Test", this.loaded);
     }
     
     @Test
     public void loadTest() {
         this.loaded = loadEmptyFlowChart(100);
-        Assert.assertTrue(this.loaded instanceof IFlowChart);
+        Assertions.assertTrue(this.loaded instanceof IFlowChart);
         checkId();
         
         this.loaded = loadConnection(DefaultArrow.class.getName());
-        Assert.assertTrue(this.loaded instanceof DefaultArrow);
+        Assertions.assertTrue(this.loaded instanceof DefaultArrow);
         this.loaded = loadConnection(RigidConnection.class.getName());
-        Assert.assertTrue(this.loaded instanceof RigidConnection);
+        Assertions.assertTrue(this.loaded instanceof RigidConnection);
         
         final var from = (IOutputPin) loadPin(OutputPin.class.getName(), DefaultPin.class.getName());
         final var to = (IInputPin) loadPin(InputPin.class.getName(), DefaultPin.class.getName());
         this.loaded = loadConnection(100, from, to, "Connection");
-        Assert.assertTrue(this.loaded instanceof IDefaultArrow);
+        Assertions.assertTrue(this.loaded instanceof IDefaultArrow);
         checkId();
-        Assert.assertTrue(((IConnection)this.loaded).getName().equals("Connection"));
+        Assertions.assertTrue(((IConnection)this.loaded).getName().equals("Connection"));
         final var asFrom = loadRigidPin(from.getModule());
         final var asTo = loadRigidPin(to.getModule());
         this.loaded = loadConnection(100, asFrom, asTo, "Connection");
-        Assert.assertTrue(this.loaded instanceof IRigidConnection);
+        Assertions.assertTrue(this.loaded instanceof IRigidConnection);
         checkId();
-        Assert.assertTrue(((IConnection)this.loaded).getName().equals("Connection"));
+        Assertions.assertTrue(((IConnection)this.loaded).getName().equals("Connection"));
         
         final List<IGraphicalRepresentation> grs = Arrays.asList(GRTest.getAllGRs());
-        Assert.assertTrue(grs.size() == 10);
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IFlowChartGR));
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IConnectionLineGR));
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IDefaultArrowGR));
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IOneConnectionGR));
-        Assert.assertTrue(grs.stream().filter(g -> g instanceof IOneConnectionGR)
+        Assertions.assertTrue(grs.size() == 10);
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IFlowChartGR));
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IConnectionLineGR));
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IDefaultArrowGR));
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IOneConnectionGR));
+        Assertions.assertTrue(grs.stream().filter(g -> g instanceof IOneConnectionGR)
                 .map(g -> (IOneConnectionGR)g)
                 .filter(g -> g.getFromPin() instanceof IDefaultOutputPinGR)
                 .filter(g -> g.getToPin() instanceof IDefaultInputPinGR)
                 .count() == 1);
-        Assert.assertTrue(grs.stream().filter(g -> g instanceof IOneConnectionGR)
+        Assertions.assertTrue(grs.stream().filter(g -> g instanceof IOneConnectionGR)
                 .map(g -> (IOneConnectionGR)g)
                 .filter(g -> g.getFromPin() instanceof IRigidPinGR)
                 .filter(g -> g.getToPin() instanceof IRigidPinGR)
                 .count() == 1);
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IRigidConnectionGR));
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IDefaultInputPinGR));
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IDefaultOutputPinGR));
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IRigidPinGR));
-        Assert.assertTrue(grs.stream().anyMatch(g -> g instanceof IModuleGR));
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IRigidConnectionGR));
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IDefaultInputPinGR));
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IDefaultOutputPinGR));
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IRigidPinGR));
+        Assertions.assertTrue(grs.stream().anyMatch(g -> g instanceof IModuleGR));
         
         this.loaded = loadModule(MockModule.class.getName(), 100);
-        Assert.assertTrue(this.loaded instanceof MockModule);
+        Assertions.assertTrue(this.loaded instanceof MockModule);
         checkId();
         this.loaded = null;
         this.loaded = loadModule(getClass().getClassLoader(), MockModule.class.getName(), 
                 100, "Mock", 50);
-        Assert.assertTrue(this.loaded instanceof MockModule);
+        Assertions.assertTrue(this.loaded instanceof MockModule);
         checkId();
         final IFlowModule mod = (IFlowModule)this.loaded;
-        Assert.assertEquals("Mock", mod.getExternalConfig().getName());
-        Assert.assertEquals(50, mod.getExternalConfig().getPriority());
+        Assertions.assertEquals("Mock", mod.getExternalConfig().getName());
+        Assertions.assertEquals(50, mod.getExternalConfig().getPriority());
         
-        Assert.assertTrue(getNewMockExternalConfig() != null);
+        Assertions.assertTrue(getNewMockExternalConfig() != null);
     }
     
     private void checkId() {
-        Assert.assertTrue(getFCE().getId() == 100);
+        Assertions.assertTrue(getFCE().getId() == 100);
     }
     
     private IFlowChartElement getFCE() {

@@ -43,7 +43,7 @@ import org.jojo.flow.model.storeLoad.FlowDOM;
 import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public class IntegrationTest {
     // SETTINGS
@@ -57,7 +57,7 @@ public class IntegrationTest {
 
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // Setting settings
         IAPI.initialize();
@@ -75,7 +75,7 @@ public class IntegrationTest {
         final MockModule mod = (MockModule) DynamicObjectLoader
                 .loadModule(DynamicObjectLoader.MockModule.class.getName(), 100);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        Assert.assertEquals("[]", FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().toString());
+        Assertions.assertEquals("[]", FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().toString());
         flowChart.addModule(mod);
         final IConnection con = DynamicObjectLoader.loadConnection(DefaultArrow.class.getName());
         final IConnection rigidCon = DynamicObjectLoader.loadConnection(RigidConnection.class.getName());
@@ -110,11 +110,11 @@ public class IntegrationTest {
         } catch (ConnectionException e) {
             e.printStackTrace();
         }
-        Assert.assertTrue(flowChart.addConnection(con));
-        Assert.assertTrue(flowChart.addConnection(rigidCon));
+        Assertions.assertTrue(flowChart.addConnection(con));
+        Assertions.assertTrue(flowChart.addConnection(rigidCon));
         final String original0 = flowChart.toString();
         System.out.println(original0);
-        Assert.assertEquals("ID= 0 | " + "modules= [ID= 100 | ModuleName= NAME, priority= 0 | " + "allPins= "
+        Assertions.assertEquals("ID= 0 | " + "modules= [ID= 100 | ModuleName= NAME, priority= 0 | " + "allPins= "
                 + "[InputPin with GR= DefaultInputPinGR with position= java.awt.Point[x=50,y=50] and linePoint= java.awt.Point[x=0,y=0] | "
                 + "IMP= DefaultPin with checkDataSignature= org.jojo.flow.model.data.StringDataSet | [not checking | [0], null, null] | defaultData= , "
                 + "InputPin with GR= RigidPinGR with position= java.awt.Point[x=10,y=10] and linePoint= java.awt.Point[x=10,y=10] | "
@@ -136,62 +136,62 @@ public class IntegrationTest {
                 + "[ID= 1000 | DefaultArrow from \"100\" to \"[100]\", "
                 + "ID= 2000 | RigidConnection from \"100\" to \"[100]\"]" + "", original0);
         final var dom = flowChart.getDOM();
-        Assert.assertTrue(flowChart.isDOMValid(dom));
+        Assertions.assertTrue(flowChart.isDOMValid(dom));
         flowChart.restoreFromDOM(dom);
         System.out.println(flowChart.getWarnings());
-        Assert.assertTrue(flowChart.getWarnings().isEmpty());
+        Assertions.assertTrue(flowChart.getWarnings().isEmpty());
         System.out.println(flowChart.getModules().get(0).getWarnings());
-        Assert.assertTrue(flowChart.getModules().get(0).getWarnings().isEmpty());
+        Assertions.assertTrue(flowChart.getModules().get(0).getWarnings().isEmpty());
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        Assert.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
+        Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
         final IDOM flowDom = new FlowDOM(dom);
         final String originalFcStr = flowChart.toString();
         // System.out.println(originalFcStr);
         new StoreLoadFacade().storeFlowChart(new File(DIRECTORY_OF_FLOW_DOCUMENTS + "flow.xml"), flowDom);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        Assert.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
+        Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
 
         new ModelFacade().setMainFlowChart(
                 new StoreLoadFacade().loadFlowChart(new File(DIRECTORY_OF_FLOW_DOCUMENTS + "flow.xml")));
         flowChart = new ModelFacade().getMainFlowChart();
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        Assert.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
+        Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
         System.out.println(flowChart.getWarnings());
-        Assert.assertTrue(flowChart.getWarnings().isEmpty());
+        Assertions.assertTrue(flowChart.getWarnings().isEmpty());
         final IDOM newFcDom = flowChart.getDOM();
-        Assert.assertTrue(flowChart.isDOMValid(dom));
+        Assertions.assertTrue(flowChart.isDOMValid(dom));
         final IDOM newDom = new FlowDOM(newFcDom);
         System.out.println(newDom.getDOMMap());
         System.out.println(flowChart);
         System.out.println(original0);
         System.out.println(originalFcStr);
-        Assert.assertTrue(flowChart.toString().equals(original0));
-        Assert.assertTrue(original0.equals(originalFcStr));
+        Assertions.assertTrue(flowChart.toString().equals(original0));
+        Assertions.assertTrue(original0.equals(originalFcStr));
 
         final IDefaultArrow arrow = flowChart.validate();
         System.out.println(arrow);
-        Assert.assertNull(arrow);
+        Assertions.assertNull(arrow);
 
         // Simulation Test
         final Time<Double> timeout = Time.getDoubleConstant(1);
         Simulation sim = new Simulation(flowChart, new SimulationConfiguration(timeout));
         sim.start();
-        Assert.assertTrue(sim.isRunning());
+        Assertions.assertTrue(sim.isRunning());
         Thread.sleep(1000);
         sim.stop();
         for (int i = 0; sim.isRunning(); i++) {
             Thread.sleep(10);
             if (i == 500) {
                 System.err.println("TIMEOUT of 5000ms exceeded by waiting for simulation to stop!");
-                Assert.assertFalse(true);
+                Assertions.assertFalse(true);
                 break;
             }
         }
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        Assert.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
+        Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
         System.out.println(flowChart.getWarnings());
-        Assert.assertTrue(flowChart.getWarnings().isEmpty());
-        Assert.assertFalse(sim.isRunning());
+        Assertions.assertTrue(flowChart.getWarnings().isEmpty());
+        Assertions.assertFalse(sim.isRunning());
 
         // Class Loader Test
         final IModuleClassesList list = new StoreLoadFacade()
@@ -199,16 +199,16 @@ public class IntegrationTest {
                 .loadAll();
         final List<Class<? extends IFlowModule>> moduleClasses = list.getModuleClassesList();
         System.out.println(moduleClasses);
-        Assert.assertEquals("[class org.jojo.qfpm.QuadraticFourPinModule]", moduleClasses.toString());
+        Assertions.assertEquals("[class org.jojo.qfpm.QuadraticFourPinModule]", moduleClasses.toString());
         final IFlowModule loaded = DynamicObjectLoader.loadModule(list.getClassLoader().getClassLoader(),
                 moduleClasses.get(0).getName(), 400);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        Assert.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
+        Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
         flowChart = new FlowChart(0, new FlowChartGR());
         new ModelFacade().setMainFlowChart(flowChart);
         flowChart.addModule(loaded);
         System.out.println(flowChart);
-        Assert.assertEquals("ID= 0 | modules= [ID= 400 | ModuleName= NAME, priority= 0 | "
+        Assertions.assertEquals("ID= 0 | modules= [ID= 400 | ModuleName= NAME, priority= 0 | "
                 + "allPins= "
                 + "[InputPin with GR= DefaultInputPinGR with position= java.awt.Point[x=-10,y=100] and linePoint= java.awt.Point[x=-10,y=100] | "
                 + "IMP= DefaultPin with checkDataSignature= org.jojo.flow.model.data.StringDataSet | [sizes | [0], null, null] | defaultData= , "
@@ -230,27 +230,27 @@ public class IntegrationTest {
         // API test
         IDataSignature sign = IDataSignature.getDefaultImplementation();
         System.out.println(sign);
-        Assert.assertEquals("not checking | ", sign.toString());
+        Assertions.assertEquals("not checking | ", sign.toString());
         IFraction frac = IFraction.getDefaultImplementation(3L, 5L);
         System.out.println(frac);
-        Assert.assertEquals("3 / 5", frac.toString());
+        Assertions.assertEquals("3 / 5", frac.toString());
         final IData[] arr = new IData[] { new StringDataSet("A") };
         final IDataArray dataArray = IDataArray.getDefaultImplementation(arr, arr[0].getDataSignature());
         System.out.println(dataArray);
-        Assert.assertEquals("[A]", dataArray.toString());
+        Assertions.assertEquals("[A]", dataArray.toString());
         final IDataBundle dataBundle = IDataBundle.getDefaultImplementation(Arrays.asList(arr));
         System.out.println(dataBundle);
-        Assert.assertEquals("[A]", dataBundle.toString());
+        Assertions.assertEquals("[A]", dataBundle.toString());
         final IMathMatrix<Integer> mm = IMathMatrix.getDefaultImplementation(new Integer[][] { { 1 } },
                 UnitSignature.NO_UNIT);
         System.out.println(mm);
-        Assert.assertEquals("[[1]] ", mm.toString());
+        Assertions.assertEquals("[[1]] ", mm.toString());
         final IMatrix<Integer> m = IMatrix.getDefaultImplementation(new Integer[][] { { 1 } }, UnitSignature.NO_UNIT);
-        Assert.assertEquals("[[1]] ", m.toString());
+        Assertions.assertEquals("[[1]] ", m.toString());
         System.out.println(m);
 
         // Warning Log empty?
         System.out.println(Warning.getWarningLog());
-        Assert.assertTrue(Warning.getWarningLog().isEmpty());
+        Assertions.assertTrue(Warning.getWarningLog().isEmpty());
     }
 }
