@@ -1,0 +1,66 @@
+<main class="shell">
+  <header>
+    <div>
+      <p class="eyebrow">Flow chart calculator</p>
+      <h1>Angular client for the Quarkus API</h1>
+      <p class="subtitle">Generated from the OpenAPI schema exposed by the backend.</p>
+    </div>
+    <div class="status" [class.offline]="!health()">
+      <span class="dot"></span>
+      {{ health()?.status ?? 'UNKNOWN' }}
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <section class="grid">
+    <article>
+      <h2>Backend</h2>
+      <dl>
+        <div><dt>Application</dt><dd>{{ health()?.application ?? '-' }}</dd></div>
+        <div><dt>Version</dt><dd>{{ health()?.version ?? '-' }}</dd></div>
+        <div><dt>Module types</dt><dd>{{ moduleClasses().length }}</dd></div>
+      </dl>
+    </article>
+
+    <article>
+      <h2>Main flow chart</h2>
+      <dl>
+        <div><dt>ID</dt><dd>{{ flowChart()?.id ?? '-' }}</dd></div>
+        <div><dt>Modules</dt><dd>{{ flowChart()?.modules?.length ?? 0 }}</dd></div>
+        <div><dt>Connections</dt><dd>{{ flowChart()?.connections?.length ?? 0 }}</dd></div>
+        <div><dt>Warnings</dt><dd>{{ flowChart()?.warnings?.length ?? 0 }}</dd></div>
+      </dl>
+      <div class="actions">
+        <button type="button" (click)="addMockModule()" [disabled]="loading()">Add mock module</button>
+        <button type="button" class="secondary" (click)="validate()" [disabled]="loading()">Validate</button>
+        <button type="button" class="secondary" (click)="createMainFlowChart()" [disabled]="loading()">New chart</button>
+      </div>
+      @if (validation(); as result) {
+        <p class="validation" [class.invalid]="!result.valid">
+          {{ result.valid ? 'Flow chart is valid.' : (result.errorMessage ?? 'Invalid arrow: ' + result.invalidArrowId) }}
+        </p>
+      }
+    </article>
+  </section>
+
+  <section class="modules">
+    <h2>Available module types</h2>
+    <ul>
+      @for (moduleClass of moduleClasses(); track moduleClass.className) {
+        <li>
+          <strong>{{ moduleClass.displayName }}</strong>
+          <span>{{ moduleClass.className }}</span>
+        </li>
+      } @empty {
+        <li>No module types loaded.</li>
+      }
+    </ul>
+  </section>
+
+  <footer>
+    OpenAPI UI: <a href="/q/swagger-ui" target="_blank" rel="noreferrer">/q/swagger-ui</a>
+  </footer>
+</main>
