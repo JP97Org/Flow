@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.jojo.flow.exc.ConnectionException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IConnection;
@@ -18,6 +17,7 @@ import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IModelFacade;
 import org.jojo.flow.model.api.IOutputPin;
+import org.jojo.flow.model.api.IRigidPin;
 import org.jojo.flow.model.api.ISimulation;
 import org.jojo.flow.model.api.ISimulationConfiguration;
 import org.jojo.flow.model.api.IStoreLoadFacade;
@@ -209,16 +209,22 @@ public class ModelFacade implements IModelFacade {
         Objects.requireNonNull(fc);
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
-        final IConnection con = from.getModulePinImp() instanceof IDefaultPin 
-                ? DynamicObjectLoader.loadConnection(DefaultArrow.class.getName()) 
-                        : DynamicObjectLoader.loadConnection(RigidConnection.class.getName()) ;
-        con.removeToPin(con.getToPins().get(0));
+        final int id = nextFreeId();
         try {
-            con.setFromPin(from);
-            final boolean ok = con.addToPin(to);
-            return ok && fc.addConnection(con);
-        } catch (ConnectionException e) {
-            new Warning(null, e.toString(), true);
+            final IConnection con;
+            if (from.getModulePinImp() instanceof IDefaultPin) {
+                con = DynamicObjectLoader.loadConnection(id, from, to, DefaultArrow.class.getName());
+            } else if (from.getModulePinImp() instanceof IRigidPin
+                    && to.getModulePinImp() instanceof IRigidPin) {
+                con = DynamicObjectLoader.loadConnection(id, (IRigidPin) from.getModulePinImp(),
+                        (IRigidPin) to.getModulePinImp(), RigidConnection.class.getName());
+            } else {
+                new Warning(null, "unsupported connection between the given pins", true).reportWarning();
+                return false;
+            }
+            return fc.addConnection(con);
+        } catch (IllegalArgumentException e) {
+            new Warning(null, e.toString(), true).reportWarning();
             return false;
         }
     }

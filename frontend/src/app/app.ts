@@ -1,15 +1,23 @@
-import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import {
+  Connection,
   FlowChart,
   FlowChartService,
   Health,
   Module,
   ModuleClass,
-  ValidationResult
+  Pin,
+  ValidationResult,
 } from './api';
 import { ModulePaletteComponent, PaletteDragRequest } from './flow-chart/module-palette.component';
-import { FlowChartGridComponent } from './flow-chart/flow-chart-grid.component';
+import {
+  ConnectionPathChangeRequest,
+  ConnectionRejection,
+  FlowChartGridComponent,
+  ModuleDragEndInfo,
+} from './flow-chart/flow-chart-grid.component';
+import { PinConnectionRequest } from './flow-chart/connection-rules';
 
 @Component({
   imports: [ModulePaletteComponent, FlowChartGridComponent],
@@ -27,8 +35,10 @@ export class App implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
+  protected readonly moduleDragging = signal(false);
 
   private readonly grid = viewChild<FlowChartGridComponent>('grid');
+  private readonly trashCan = viewChild<ElementRef<HTMLElement>>('trashCan');
 
   ngOnInit(): void {
     this.refresh();
@@ -40,7 +50,7 @@ export class App implements OnInit {
     forkJoin({
       health: this.api.getHealth(),
       moduleClasses: this.api.getModuleClasses(),
-      flowChart: this.api.getMainFlowChart()
+      flowChart: this.api.getMainFlowChart(),
     }).subscribe({
       next: ({ health, moduleClasses, flowChart }) => {
         this.health.set(health);
@@ -53,7 +63,7 @@ export class App implements OnInit {
         this.error.set(this.describeError(error));
         this.loading.set(false);
         this.saving.set(false);
-      }
+      },
     });
   }
 
@@ -65,37 +75,41 @@ export class App implements OnInit {
     }
     this.saving.set(true);
     this.error.set(null);
-    this.api.addModuleToFlowChart({
-      id: chart.id,
-      addModuleRequest: { className, position }
-    }).subscribe({
-      next: module => {
-        this.addModuleToChart(chart, module);
-      },
-      error: (error: unknown) => {
-        this.error.set(this.describeError(error));
-        this.saving.set(false);
-      }
-    });
+    this.api
+      .addModuleToFlowChart({
+        id: chart.id,
+        addModuleRequest: { className, position },
+      })
+      .subscribe({
+        next: (module) => {
+          this.addModuleToChart(chart, module);
+        },
+        error: (error: unknown) => {
+          this.error.set(this.describeError(error));
+          this.saving.set(false);
+        },
+      });
   }
 
   private addModuleToChart(chart: FlowChart, module: Module): void {
     const modules = [...(chart.modules ?? [])];
-    const others = modules.filter(m => m.id !== module.id);
-    const overlap = others.find(m => this.modulesOverlap(module, m));
+    const others = modules.filter((m) => m.id !== module.id);
+    const overlap = others.find((m) => this.modulesOverlap(module, m));
     this.saving.set(false);
 
     if (overlap) {
       // Do not show the module locally and remove it from the backend again.
-      this.api.removeModuleFromFlowChart({
-        id: chart.id!,
-        moduleId: module.id!
-      }).subscribe({
-        error: () => {
-          this.error.set('Module added but overlaps with another; rollback failed');
-          this.refresh();
-        }
-      });
+      this.api
+        .removeModuleFromFlowChart({
+          id: chart.id!,
+          moduleId: module.id!,
+        })
+        .subscribe({
+          error: () => {
+            this.error.set('Module added but overlaps with another; rollback failed');
+            this.refresh();
+          },
+        });
       this.error.set('That position is occupied by another module');
       return;
     }
@@ -126,31 +140,252 @@ export class App implements OnInit {
     }
     const oldModules = [...(chart.modules ?? [])];
     // Optimistic update so the module immediately shows up at its new cell.
-    const newModules = oldModules.map(m => m.id === moduleId ? { ...m, position } : m);
+    const newModules = oldModules.map((m) => (m.id === moduleId ? { ...m, position } : m));
     this.flowChart.set({ ...chart, modules: newModules });
     this.saving.set(true);
     this.error.set(null);
-    this.api.updateModule({
-      id: chart.id,
-      moduleId,
-      updateModuleRequest: { position }
-    }).subscribe({
-      next: updated => {
-        const current = this.flowChart();
-        if (current) {
+    this.api
+      .updateModule({
+        id: chart.id,
+        moduleId,
+        updateModuleRequest: { position },
+      })
+      .subscribe({
+        next: (updated) => {
+          const current = this.flowChart();
+          if (current) {
+            this.flowChart.set({
+              ...current,
+              modules: (current.modules ?? []).map((m) => (m.id === moduleId ? updated : m)),
+            });
+          }
+          this.saving.set(false);
+        },
+        error: (error: unknown) => {
+          this.flowChart.set({ ...chart, modules: oldModules });
+          this.error.set(this.describeError(error));
+          this.saving.set(false);
+        },
+      });
+  }
+
+  protected deleteModule(moduleId: number): void {
+    const chart = this.flowChart();
+    if (!chart?.id || moduleId === undefined || moduleId === null) {
+      this.error.set('No flow chart available');
+      return;
+    }
+    const oldModules = [...(chart.modules ?? [])];
+    const oldConnections = [...(chart.connections ?? [])];
+    const removedConnectionIds = new Set<number>();
+    const connections = oldConnections.filter((connection) => {
+      const touchesModule = this.connectionTouchesModule(connection, moduleId);
+      if (touchesModule && connection.id !== undefined) {
+        removedConnectionIds.add(connection.id);
+      }
+      return !touchesModule;
+    });
+    const modules = oldModules
+      .filter((module) => module.id !== moduleId)
+      .map((module) => this.removeConnectionIdsFromModule(module, removedConnectionIds));
+    this.flowChart.set({ ...chart, modules, connections });
+    this.saving.set(true);
+    this.error.set(null);
+    this.api
+      .removeModuleFromFlowChart({
+        id: chart.id,
+        moduleId,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+        },
+        error: (error: unknown) => {
+          this.flowChart.set({ ...chart, modules: oldModules, connections: oldConnections });
+          this.error.set(this.describeError(error));
+          this.saving.set(false);
+        },
+      });
+  }
+
+  protected deleteConnection(connectionId: number): void {
+    const chart = this.flowChart();
+    if (!chart?.id || connectionId === undefined || connectionId === null) {
+      this.error.set('No flow chart available');
+      return;
+    }
+    const oldModules = [...(chart.modules ?? [])];
+    const oldConnections = [...(chart.connections ?? [])];
+    const removedIds = new Set<number>([connectionId]);
+    const connections = oldConnections.filter((connection) => connection.id !== connectionId);
+    const modules = oldModules.map((module) =>
+      this.removeConnectionIdsFromModule(module, removedIds),
+    );
+    this.flowChart.set({ ...chart, modules, connections });
+    this.saving.set(true);
+    this.error.set(null);
+    this.api
+      .removeConnectionFromFlowChart({
+        id: chart.id,
+        connectionId,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+        },
+        error: (error: unknown) => {
+          this.flowChart.set({ ...chart, modules: oldModules, connections: oldConnections });
+          this.error.set(this.describeError(error));
+          this.saving.set(false);
+        },
+      });
+  }
+
+  private connectionTouchesModule(connection: Connection, moduleId: number): boolean {
+    return (
+      connection.from?.moduleId === moduleId ||
+      (connection.to ?? []).some((reference) => reference.moduleId === moduleId)
+    );
+  }
+
+  private removeConnectionIdsFromModule(module: Module, removedIds: Set<number>): Module {
+    if (removedIds.size === 0) {
+      return module;
+    }
+    const strip = (pin: Pin): Pin => {
+      const connectionIds = pin.connectionIds ?? [];
+      const remaining = connectionIds.filter((id) => !removedIds.has(id));
+      return remaining.length === connectionIds.length ? pin : { ...pin, connectionIds: remaining };
+    };
+    return {
+      ...module,
+      inputs: (module.inputs ?? []).map(strip),
+      outputs: (module.outputs ?? []).map(strip),
+    };
+  }
+
+  protected connectPins(request: PinConnectionRequest): void {
+    const chart = this.flowChart();
+    if (!chart?.id) {
+      this.error.set('No flow chart available');
+      return;
+    }
+    this.saving.set(true);
+    this.error.set(null);
+    this.api
+      .connectPins({
+        id: chart.id,
+        connectRequest: request,
+      })
+      .subscribe({
+        next: (connection) => {
+          const current = this.flowChart() ?? chart;
+          this.flowChart.set(this.addConnectionToChart(current, connection));
+          this.validation.set(null);
+          this.saving.set(false);
+        },
+        error: (error: unknown) => {
+          this.error.set(this.describeError(error));
+          this.saving.set(false);
+        },
+      });
+  }
+
+  protected updateConnectionPath(request: ConnectionPathChangeRequest): void {
+    const chart = this.flowChart();
+    if (!chart?.id) {
+      this.error.set('No flow chart available');
+      return;
+    }
+    this.saving.set(true);
+    this.error.set(null);
+    this.api
+      .updateConnectionPath({
+        id: chart.id,
+        connectionId: request.connectionId,
+        updateConnectionPathRequest: {
+          to: request.to,
+          diversionPoints: request.diversionPoints,
+        },
+      })
+      .subscribe({
+        next: (connection) => {
+          const current = this.flowChart() ?? chart;
           this.flowChart.set({
             ...current,
-            modules: (current.modules ?? []).map(m => m.id === moduleId ? updated : m)
+            connections: (current.connections ?? []).map((candidate) =>
+              candidate.id === connection.id ? connection : candidate,
+            ),
           });
-        }
-        this.saving.set(false);
-      },
-      error: (error: unknown) => {
-        this.flowChart.set({ ...chart, modules: oldModules });
-        this.error.set(this.describeError(error));
-        this.saving.set(false);
+          this.validation.set(null);
+          this.saving.set(false);
+        },
+        error: (error: unknown) => {
+          this.error.set(this.describeError(error));
+          this.saving.set(false);
+        },
+      });
+  }
+
+  protected onConnectionRejected(rejection: ConnectionRejection): void {
+    this.error.set(rejection.message);
+  }
+
+  private addConnectionToChart(chart: FlowChart, connection: Connection): FlowChart {
+    const connections = [...(chart.connections ?? []), connection].sort(
+      (first, second) => (first.id ?? 0) - (second.id ?? 0),
+    );
+    const modules = (chart.modules ?? []).map((module) =>
+      this.addConnectionToModule(module, connection),
+    );
+    return { ...chart, connections, modules };
+  }
+
+  private addConnectionToModule(module: Module, connection: Connection): Module {
+    if (connection.id === undefined) {
+      return module;
+    }
+    const references = [connection.from, ...(connection.to ?? [])].filter(
+      (reference) => reference?.moduleId === module.id,
+    );
+    if (references.length === 0) {
+      return module;
+    }
+    const addId = (pin: Pin, direction: 'input' | 'output'): Pin => {
+      const belongs = references.some(
+        (reference) => reference?.direction === direction && reference.index === pin.index,
+      );
+      if (!belongs) {
+        return pin;
       }
-    });
+      const connectionIds = pin.connectionIds ?? [];
+      return connectionIds.includes(connection.id!)
+        ? pin
+        : { ...pin, connectionIds: [...connectionIds, connection.id!] };
+    };
+    return {
+      ...module,
+      inputs: (module.inputs ?? []).map((pin) => addId(pin, 'input')),
+      outputs: (module.outputs ?? []).map((pin) => addId(pin, 'output')),
+    };
+  }
+
+  protected onModuleDragStarted(): void {
+    this.moduleDragging.set(true);
+  }
+
+  protected onModuleDroppedOnTrash(info: ModuleDragEndInfo): void {
+    this.moduleDragging.set(false);
+    const trash = this.trashCan()?.nativeElement;
+    if (!trash) {
+      return;
+    }
+    const rect = trash.getBoundingClientRect();
+    const { x, y } = info.pointer;
+    const inside = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    if (inside) {
+      this.deleteModule(info.moduleId);
+    }
   }
 
   protected createMainFlowChart(): void {
@@ -159,14 +394,14 @@ export class App implements OnInit {
         this.validation.set(null);
         this.refresh();
       },
-      error: (error: unknown) => this.error.set(this.describeError(error))
+      error: (error: unknown) => this.error.set(this.describeError(error)),
     });
   }
 
   protected validate(): void {
     this.api.validateMainFlowChart().subscribe({
-      next: validation => this.validation.set(validation),
-      error: (error: unknown) => this.error.set(this.describeError(error))
+      next: (validation) => this.validation.set(validation),
+      error: (error: unknown) => this.error.set(this.describeError(error)),
     });
   }
 

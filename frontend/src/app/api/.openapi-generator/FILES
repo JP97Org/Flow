@@ -12,6 +12,7 @@ index.ts
 model/addModuleRequest.ts
 model/connectRequest.ts
 model/connection.ts
+model/connectionRoute.ts
 model/errorResponse.ts
 model/flowChart.ts
 model/flowChartSummary.ts
@@ -26,6 +27,7 @@ model/simulationConfig.ts
 model/simulationStatus.ts
 model/stepForwardRequest.ts
 model/stepRequest.ts
+model/updateConnectionPathRequest.ts
 model/updateConnectionRequest.ts
 model/updateModuleRequest.ts
 model/validationResult.ts

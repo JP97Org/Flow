@@ -124,6 +124,30 @@ h1 {
   text-align: right;
 }
 
+.trash-can {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.7rem;
+  background: rgba(248, 250, 252, 0.8);
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.trash-can.drag-active {
+  border-color: #f87171;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.trash-icon {
+  font-size: 1.1rem;
+}
+
 .actions {
   display: flex;
   flex-direction: column;

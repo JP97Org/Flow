@@ -69,6 +69,22 @@ public interface IOneConnectionGR extends IGraphicalRepresentation, IDOMable {
     boolean setPath(List<Point> diversionPoints);
 
     /**
+     * Determines whether the path of this connection was customized manually.
+     *
+     * @return whether the path was customized manually
+     */
+    boolean isPathCustomized();
+
+    /**
+     * Sets a customized path through the given diversion points. In contrast to
+     * {@link #setPath(List)}, the path is not checked against the pin line points.
+     *
+     * @param diversionPoints - the given diversion points
+     * @return whether the path was set
+     */
+    boolean setCustomPath(List<Point> diversionPoints);
+
+    /**
      * Gets the color.
      * 
      * @return the color (cannot be {@code null})

@@ -13,5 +13,6 @@ public record ConnectionDto(
         PinReferenceDto from,
         List<PinReferenceDto> to,
         String dataSignature,
+        List<ConnectionRouteDto> routes,
         List<WarningDto> warnings) {
 }

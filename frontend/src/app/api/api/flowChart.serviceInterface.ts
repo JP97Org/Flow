@@ -23,6 +23,7 @@ import { SimulationConfig } from '../model/models';
 import { SimulationStatus } from '../model/models';
 import { StepForwardRequest } from '../model/models';
 import { StepRequest } from '../model/models';
+import { UpdateConnectionPathRequest } from '../model/models';
 import { UpdateConnectionRequest } from '../model/models';
 import { UpdateModuleRequest } from '../model/models';
 import { ValidationResult } from '../model/models';
@@ -126,6 +127,12 @@ export interface UpdateConnectionRequestParams {
     connectionId: number;
     id: number;
     updateConnectionRequest: UpdateConnectionRequest;
+}
+
+export interface UpdateConnectionPathRequestParams {
+    connectionId: number;
+    id: number;
+    updateConnectionPathRequest: UpdateConnectionPathRequest;
 }
 
 export interface UpdateModuleRequestParams {
@@ -381,6 +388,14 @@ export interface FlowChartServiceInterface {
 * @param requestParameters
      */
     updateConnection(requestParameters: UpdateConnectionRequestParams, extraHttpRequestParams?: any): Observable<Connection>;
+
+    /**
+     * Update the path of a connection target
+     * 
+     * @endpoint put /api/flow/{id}/connections/{connectionId}/path
+* @param requestParameters
+     */
+    updateConnectionPath(requestParameters: UpdateConnectionPathRequestParams, extraHttpRequestParams?: any): Observable<Connection>;
 
     /**
      * Update module name, priority, position, scale or icon text

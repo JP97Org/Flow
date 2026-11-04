@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { Warning } from './warning';
+import { ConnectionRoute } from './connectionRoute';
 import { PinReference } from './pinReference';
 
 
@@ -22,6 +23,7 @@ export interface Connection {
     from?: PinReference;
     to?: Array<PinReference>;
     dataSignature?: string;
+    routes?: Array<ConnectionRoute>;
     warnings?: Array<Warning>;
 }
 

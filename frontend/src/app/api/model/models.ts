@@ -1,6 +1,7 @@
 export * from './addModuleRequest';
 export * from './connectRequest';
 export * from './connection';
+export * from './connectionRoute';
 export * from './errorResponse';
 export * from './flowChart';
 export * from './flowChartSummary';
@@ -14,6 +15,7 @@ export * from './simulationConfig';
 export * from './simulationStatus';
 export * from './stepForwardRequest';
 export * from './stepRequest';
+export * from './updateConnectionPathRequest';
 export * from './updateConnectionRequest';
 export * from './updateModuleRequest';
 export * from './validationResult';

@@ -103,10 +103,17 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     
     @Override
     public boolean removeModule(final IFlowModule module) {
-        boolean ret = this.modules.remove(module);
+        final boolean ret = this.modules.remove(module);
         if (ret) {
-            ret = this.gr.removeModule((ModuleGR) module.getGraphicalRepresentation());
-            assert ret;
+            final List<IConnection> attachedConnections = this.connections.stream()
+                    .filter(connection -> connection.getFromPin().getModule().equals(module)
+                            || connection.getToPins().stream()
+                                    .anyMatch(pin -> pin.getModule().equals(module)))
+                    .collect(Collectors.toList());
+            attachedConnections.forEach(this::removeConnection);
+            final boolean grRemoved = this.gr.removeModule(
+                    (ModuleGR) module.getGraphicalRepresentation());
+            assert grRemoved;
             notifyObservers(module);
         }
         return ret;
@@ -116,6 +123,7 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     public boolean removeConnection(final IConnection connection) {
         boolean ret = this.connections.remove(connection);
         if (ret) {
+            connection.disconnect();
             ret = this.gr.removeConnection((ConnectionGR) connection.getGraphicalRepresentation());
             assert ret;
             notifyObservers(connection);

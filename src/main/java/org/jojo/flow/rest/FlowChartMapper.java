@@ -1,10 +1,12 @@
 package org.jojo.flow.rest;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.IConnection;
+import org.jojo.flow.model.api.IConnectionGR;
 import org.jojo.flow.model.api.IData;
 import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IDefaultPin;
@@ -16,7 +18,9 @@ import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.api.IModulePin;
 import org.jojo.flow.model.api.IModulePinGR;
+import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.rest.dto.ConnectionDto;
+import org.jojo.flow.rest.dto.ConnectionRouteDto;
 import org.jojo.flow.rest.dto.FlowChartDto;
 import org.jojo.flow.rest.dto.FlowChartSummary;
 import org.jojo.flow.rest.dto.ModuleDto;
@@ -105,7 +109,35 @@ final class FlowChartMapper {
                 toReference(connection.getFromPin(), "output"),
                 connection.getToPins().stream().map(pin -> toReference(pin, "input")).toList(),
                 dataSignature,
+                toRoutes(connection),
                 toWarnings(connection.getWarnings()));
+    }
+
+    private static List<ConnectionRouteDto> toRoutes(final IConnection connection) {
+        if (!(connection.getGraphicalRepresentation() instanceof IConnectionGR connectionGR)) {
+            return List.of();
+        }
+        final List<ConnectionRouteDto> routes = new ArrayList<>();
+        for (final IOneConnectionGR singleConnection : connectionGR.getSingleConnections()) {
+            final PinReferenceDto to = toReference(connection, singleConnection.getToPin());
+            if (to == null) {
+                continue;
+            }
+            routes.add(new ConnectionRouteDto(
+                    to,
+                    singleConnection.getDiversionPoints().stream().map(PointDto::from).toList(),
+                    singleConnection.isPathCustomized()));
+        }
+        return routes;
+    }
+
+    private static PinReferenceDto toReference(final IConnection connection,
+            final IModulePinGR toPinGR) {
+        return connection.getToPins().stream()
+                .filter(pin -> pin.getGraphicalRepresentation() == toPinGR)
+                .findFirst()
+                .map(pin -> toReference(pin, "input"))
+                .orElse(null);
     }
 
     static List<WarningDto> toWarnings(final List<Warning> warnings) {

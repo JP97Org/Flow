@@ -23,6 +23,7 @@ import org.jboss.logging.Logger;
 import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.model.api.IConnection;
+import org.jojo.flow.model.api.IConnectionGR;
 import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDynamicClassLoader;
@@ -33,6 +34,7 @@ import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IModelFacade;
 import org.jojo.flow.model.api.IModuleClassesList;
 import org.jojo.flow.model.api.IModuleGR;
+import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.api.IOutputPin;
 import org.jojo.flow.model.api.ISimulation;
 import org.jojo.flow.model.api.ISimulationConfiguration;
@@ -59,6 +61,7 @@ import org.jojo.flow.rest.dto.SimulationConfigDto;
 import org.jojo.flow.rest.dto.SimulationStatusDto;
 import org.jojo.flow.rest.dto.StepForwardRequest;
 import org.jojo.flow.rest.dto.StepRequest;
+import org.jojo.flow.rest.dto.UpdateConnectionPathRequest;
 import org.jojo.flow.rest.dto.UpdateConnectionRequest;
 import org.jojo.flow.rest.dto.UpdateModuleRequest;
 import org.jojo.flow.rest.dto.ValidationResult;
@@ -239,6 +242,43 @@ public class ModelFacadeService {
         final IConnection connection = requireConnection(requireFlowChart(flowChartId), connectionId);
         if (request.name() != null) {
             connection.setName(request.name());
+        }
+        return FlowChartMapper.toDto(connection);
+    }
+
+    public ConnectionDto updateConnectionPath(final int flowChartId, final int connectionId,
+            final UpdateConnectionPathRequest request) {
+        Objects.requireNonNull(request);
+        final IFlowChart flowChart = requireFlowChart(flowChartId);
+        final IConnection connection = requireConnection(flowChart, connectionId);
+        if (request.to() == null || request.diversionPoints() == null) {
+            throw apiException(Response.Status.BAD_REQUEST,
+                    "A target pin and diversion points are required");
+        }
+        final IFlowModule module = requireModule(flowChart, request.to().moduleId());
+        final List<IInputPin> inputs = module.getAllInputs();
+        final int index = request.to().index();
+        if (index < 0 || index >= inputs.size()) {
+            throw apiException(Response.Status.BAD_REQUEST, "Input pin index out of range: " + index);
+        }
+        final IInputPin target = inputs.get(index);
+        if (connection.getToPins().stream().noneMatch(pin -> pin == target)) {
+            throw apiException(Response.Status.BAD_REQUEST,
+                    "The connection does not end at the requested pin");
+        }
+        if (!(connection.getGraphicalRepresentation() instanceof IConnectionGR connectionGR)) {
+            throw apiException(Response.Status.BAD_REQUEST,
+                    "The connection has no editable graphical representation");
+        }
+        final IOneConnectionGR route = connectionGR.getSingleConnections().stream()
+                .filter(single -> single.getToPin() == target.getGraphicalRepresentation())
+                .findFirst()
+                .orElseThrow(() -> apiException(Response.Status.BAD_REQUEST,
+                        "The connection route could not be located"));
+        if (!route.setCustomPath(request.diversionPoints().stream()
+                .map(point -> point == null ? null : point.toPoint())
+                .toList())) {
+            throw apiException(Response.Status.BAD_REQUEST, "The connection path is invalid");
         }
         return FlowChartMapper.toDto(connection);
     }

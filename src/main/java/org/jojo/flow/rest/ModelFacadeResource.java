@@ -33,6 +33,7 @@ import org.jojo.flow.rest.dto.SimulationConfigDto;
 import org.jojo.flow.rest.dto.SimulationStatusDto;
 import org.jojo.flow.rest.dto.StepForwardRequest;
 import org.jojo.flow.rest.dto.StepRequest;
+import org.jojo.flow.rest.dto.UpdateConnectionPathRequest;
 import org.jojo.flow.rest.dto.UpdateConnectionRequest;
 import org.jojo.flow.rest.dto.UpdateModuleRequest;
 import org.jojo.flow.rest.dto.ValidationResult;
@@ -176,6 +177,15 @@ public class ModelFacadeResource {
     public ConnectionDto updateConnection(@PathParam("id") final int id,
             @PathParam("connectionId") final int connectionId, final UpdateConnectionRequest request) {
         return service.updateConnection(id, connectionId, request);
+    }
+
+    @PUT
+    @Path("/{id}/connections/{connectionId}/path")
+    @Operation(operationId = "updateConnectionPath", summary = "Update the path of a connection target")
+    public ConnectionDto updateConnectionPath(@PathParam("id") final int id,
+            @PathParam("connectionId") final int connectionId,
+            final UpdateConnectionPathRequest request) {
+        return service.updateConnectionPath(id, connectionId, request);
     }
 
     @DELETE

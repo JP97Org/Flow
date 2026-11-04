@@ -29,6 +29,11 @@
       (dragEnded)="onPaletteDragEnded($event)"
     ></app-module-palette>
 
+    <div #trashCan class="trash-can" [class.drag-active]="moduleDragging()">
+      <span class="trash-icon">🗑</span>
+      <span>Drop module here to delete</span>
+    </div>
+
     <div class="actions">
       <button type="button" class="secondary" (click)="validate()" [disabled]="loading() || saving()">Validate</button>
       <button type="button" class="secondary" (click)="createMainFlowChart()" [disabled]="loading() || saving()">New chart</button>
@@ -49,6 +54,13 @@
       [cellSize]="20"
       (moduleDropped)="addModule($event.className, $event.position)"
       (moduleMoved)="moveModule($event.moduleId, $event.position)"
+      (moduleDragStarted)="onModuleDragStarted()"
+      (moduleDragEnded)="onModuleDroppedOnTrash($event)"
+      (connectionRequested)="connectPins($event)"
+      (connectionRejected)="onConnectionRejected($event)"
+      (moduleDeleteRequested)="deleteModule($event)"
+      (connectionDeleteRequested)="deleteConnection($event)"
+      (connectionPathChangeRequested)="updateConnectionPath($event)"
     ></app-flow-chart-grid>
   </main>
 </div>

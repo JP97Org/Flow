@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,6 +35,7 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
     private final List<ConnectionLineGR> lines;
     private final List<Point> diversionPoints;
     private Color color;
+    private boolean customized;
     
     public OneConnectionGR(final ModulePinGR fromPin, final IModulePinGR toPin) { 
         super(fromPin.getPosition());
@@ -86,6 +88,67 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
         return ret;
     }
 
+    @Override
+    public boolean isPathCustomized() {
+        return this.customized;
+    }
+
+    @Override
+    public boolean setCustomPath(final List<Point> diversionPoints) {
+        if (diversionPoints == null) {
+            return false;
+        }
+        final List<Point> points = diversionPoints.stream()
+                .filter(Objects::nonNull)
+                .map(point -> new Point(point))
+                .collect(Collectors.toList());
+        this.lines.clear();
+        this.diversionPoints.clear();
+        final List<Point> fullPath = orthogonalRoute(this.fromPin.getLinePoint(),
+                this.toPin.getLinePoint(), points);
+        for (int index = 1; index < fullPath.size(); index++) {
+            final Point start = fullPath.get(index - 1);
+            final Point end = fullPath.get(index);
+            if (!start.equals(end)) {
+                this.lines.add(new ConnectionLineGR(start, end));
+            }
+        }
+        this.diversionPoints.addAll(points);
+        this.customized = true;
+        notifyObservers(getLines());
+        return true;
+    }
+
+    private static List<Point> orthogonalRoute(final Point start, final Point end,
+            final List<Point> diversionPoints) {
+        final List<Point> fullPath = new ArrayList<>();
+        fullPath.add(new Point(start));
+        Point current = start;
+        for (final Point next : diversionPoints) {
+            if (current.equals(next)) {
+                continue;
+            }
+            if (current.x != next.x && current.y != next.y) {
+                fullPath.add(new Point(next.x, current.y));
+            }
+            fullPath.add(new Point(next));
+            current = next;
+        }
+        if (!current.equals(end)) {
+            if (current.x != end.x && current.y != end.y) {
+                fullPath.add(new Point(end.x, current.y));
+            }
+            fullPath.add(new Point(end));
+        }
+        final List<Point> result = new ArrayList<>();
+        for (final Point point : fullPath) {
+            if (result.isEmpty() || !result.get(result.size() - 1).equals(point)) {
+                result.add(point);
+            }
+        }
+        return result;
+    }
+
     private void setPath(final List<Point> diversionPoints, final boolean ok) {
         if (ok) {
             this.lines.clear();
@@ -108,6 +171,23 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
             notifyObservers(getLines());
         } else {
             new Warning(null, "path of connection could not be set", false).reportWarning();
+        }
+    }
+
+    private static int diversionPointOrder(final String key) {
+        if (!key.startsWith(PointDOM.NAME)) {
+            return Integer.MAX_VALUE;
+        }
+        final String suffix = key.substring(PointDOM.NAME.length());
+        if (suffix.isEmpty()) {
+            return 0;
+        }
+        final int separator = suffix.indexOf('_');
+        final String number = separator >= 0 ? suffix.substring(0, separator) : suffix;
+        try {
+            return Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            return Integer.MAX_VALUE;
         }
     }
 
@@ -153,6 +233,7 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
                 .map(x -> PointDOM.of("diversionPoint", x))
                 .collect(Collectors.toList()));
         dom.appendInt("color", getColor().getRGB());
+        dom.appendString("customized", Boolean.toString(this.customized));
         return dom;
     }
 
@@ -189,15 +270,22 @@ public class OneConnectionGR extends GraphicalRepresentation implements IOneConn
             }
             final IDOM pointsDom = (IDOM)domMap.get("diversionPoints").getValue();
             final Map<String, DOMStringUnion> pointsMap = pointsDom.getDOMMap();
-            for (final var pointObj : pointsMap.values()) {
-                if (pointObj.isDOM()) {
-                    final IDOM pointDom = (IDOM) pointObj.getValue();
+            final List<Map.Entry<String, DOMStringUnion>> pointEntries =
+                    new ArrayList<>(pointsMap.entrySet());
+            pointEntries.sort(Comparator.comparingInt(entry -> diversionPointOrder(entry.getKey())));
+            for (final var pointEntry : pointEntries) {
+                if (pointEntry.getValue().isDOM()) {
+                    final IDOM pointDom = (IDOM) pointEntry.getValue().getValue();
                     this.diversionPoints.add(PointDOM.pointOf(pointDom));
                 }
             }
             final IDOM colorDom = (IDOM)domMap.get("color").getValue();
             final String rgbStr = colorDom.elemGet();
             this.color = Color.getColor(rgbStr, Color.BLACK);
+            if (domMap.containsKey("customized")) {
+                final IDOM customizedDom = (IDOM)domMap.get("customized").getValue();
+                this.customized = Boolean.parseBoolean(customizedDom.elemGet());
+            }
             notifyObservers();
         }
     }
