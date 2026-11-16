@@ -26,5 +26,6 @@ RUN mvn -B -DskipTests package
 FROM eclipse-temurin:21-jre
 WORKDIR /workspace
 COPY --from=final /workspace/target/flow.jar ./flow.jar
+COPY lib ./lib
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "flow.jar"]

@@ -114,17 +114,41 @@ public interface IXMLSerialTransform extends IAPI {
      */
     static Object deserialize(final String serializedString) throws IOException, ClassNotFoundException {
         final int times = 10;
-        ByteArrayInputStream bais = new ByteArrayInputStream (
-                Base64.getDecoder().decode(serializedString
+        final byte[] serialized = Base64.getDecoder().decode(serializedString
                 .replaceAll("(semicolon){"+times+"}", ";")
                 .replaceAll("(quote){"+times+"}", "\"")
-                .replaceAll("(newline){"+times+"}", "\n")));
+                .replaceAll("(newline){"+times+"}", "\n"));
+        normalizeArrayClassDescriptorNames(serialized);
+        ByteArrayInputStream bais = new ByteArrayInputStream (serialized);
         try (ObjectInputStream ois = new ObjectInputStream (bais)) {
             Object o = ois.readObject();
             return o;
         }
     }
     
+    private static void normalizeArrayClassDescriptorNames(final byte[] serialized) {
+        final int classDescMarker = 0x72;
+        for (int i = 0; i + 3 < serialized.length; i++) {
+            if (serialized[i] != classDescMarker) {
+                continue;
+            }
+            final int length = ((serialized[i + 1] & 0xFF) << 8) | (serialized[i + 2] & 0xFF);
+            final int start = i + 3;
+            final int end = start + length;
+            if (length <= 0 || end > serialized.length || serialized[start] != '[') {
+                continue;
+            }
+            if (serialized[end - 1] != ';') {
+                continue;
+            }
+            for (int j = start; j < end; j++) {
+                if (serialized[j] == '/') {
+                    serialized[j] = '.';
+                }
+            }
+        }
+    }
+
     /**
      * Transforms a serial string to a xml string (quoted).
      * 

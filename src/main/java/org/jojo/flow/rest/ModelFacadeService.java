@@ -38,6 +38,7 @@ import org.jojo.flow.model.api.IOneConnectionGR;
 import org.jojo.flow.model.api.IOutputPin;
 import org.jojo.flow.model.api.ISimulation;
 import org.jojo.flow.model.api.ISimulationConfiguration;
+import org.jojo.flow.model.api.ISettings;
 import org.jojo.flow.model.api.IStepper;
 import org.jojo.flow.model.api.IStoreLoadFacade;
 import org.jojo.flow.model.data.Fraction;
@@ -79,10 +80,27 @@ public class ModelFacadeService {
 
     @PostConstruct
     void init() {
+        configureXmlSerialTransformer();
         if (facade.getMainFlowChart() == null || facade.getMainFlowChart().getId() == -1) {
             facade.setMainFlowChart(IFlowChart.getDefaultImplementation());
         }
         loadModuleCatalog();
+    }
+
+    private void configureXmlSerialTransformer() {
+        final String configuredJar = ConfigProvider.getConfig()
+                .getOptionalValue("flow.xmlserial.jar", String.class)
+                .orElse("lib/xmlSerial.jar");
+        if (configuredJar.isBlank()) {
+            return;
+        }
+        final File jar = new File(configuredJar).getAbsoluteFile();
+        if (!jar.isFile()) {
+            LOG.warnf("Configured XML serial transformer jar does not exist: %s", configuredJar);
+            return;
+        }
+        ISettings.getDefaultImplementation().setLocationXMLSerialTransformerJar(jar);
+        LOG.infof("Using XML serial transformer jar: %s", jar.getAbsolutePath());
     }
 
     public FlowChartDto getMainFlowChart() {

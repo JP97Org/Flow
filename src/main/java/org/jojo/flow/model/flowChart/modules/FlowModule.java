@@ -22,6 +22,7 @@ import org.jojo.flow.model.api.IDefaultArrow;
 import org.jojo.flow.model.api.IDefaultPin;
 import org.jojo.flow.model.api.IExternalConfig;
 import org.jojo.flow.model.api.IFlowModule;
+import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IObserver;
 import org.jojo.flow.model.api.IOutputPin;
@@ -288,7 +289,11 @@ public abstract class FlowModule extends FlowChartElement implements IObserver, 
             final IDOM extDom = (IDOM)domMap.get(ConfigDOM.NAME_EXT_CONFIG).getValue();
             this.externalConfig.restoreFromDOM(extDom);
             final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue();
-            getGraphicalRepresentation().restoreFromDOM(grDom);
+            final IGraphicalRepresentation gr = getGraphicalRepresentation();
+            gr.restoreFromDOM(grDom);
+            if (gr instanceof ModuleGR moduleGR) {
+                moduleGR.setModule(this);
+            }
             final IDOM pinsDom = (IDOM)domMap.get(ModuleDOM.NAME_PINS).getValue();
             setAllModulePins(pinsDom);
             notifyObservers();

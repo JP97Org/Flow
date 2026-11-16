@@ -133,12 +133,14 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                     final IDOM conIdDom = (IDOM)conIdObj.getValue();
                     final int conId = Integer.parseInt(conIdDom.elemGet());
                     final Connection con = (Connection)new ModelFacade().getElementById(conId);
-                    try {
-                        addConnection(con);
-                    } catch (ListSizeException e) {
-                        // should not happen
-                    	new Warning(null, e.toString(), true).reportWarning();
-                        e.printStackTrace();
+                    if (con != null) {
+                        try {
+                            addConnection(con);
+                        } catch (ListSizeException e) {
+                            // should not happen
+                            new Warning(null, e.toString(), true).reportWarning();
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -191,13 +193,15 @@ public abstract class ModulePin extends Subject implements IDOMable, IModulePin 
                     final IDOM conIdDom = (IDOM)conIdObj.getValue();
                     final int conId = ok(x -> Integer.parseInt(conIdDom.elemGet()), "");
                     final Connection con = ok(x -> (Connection)new ModelFacade().getElementById(conId), "");
-                    ok(ok(x -> {try {
-                        addConnection(con);
-                        removeConnection(con);
-                        return true;
-                    } catch (ListSizeException e) {
-                        return false;
-                    }}, "").booleanValue(), "connection could not be added to due ListSizeException");
+                    if (con != null) {
+                        ok(ok(x -> {try {
+                            addConnection(con);
+                            removeConnection(con);
+                            return true;
+                        } catch (ListSizeException e) {
+                            return false;
+                        }}, "").booleanValue(), "connection could not be added to due ListSizeException");
+                    }
                 }
             }
             if (domMap.containsKey("defaultData")) {

@@ -46,7 +46,7 @@ public abstract class ModuleGR extends FlowChartElementGR implements IModuleGR {
         setCorners();
     }
     
-    protected void setModule(final FlowModule module) {
+    public void setModule(final FlowModule module) {
         this.module = module;
     }
     

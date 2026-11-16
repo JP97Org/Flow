@@ -957,6 +957,12 @@ export class FlowChartGridComponent {
     this.resetExternal();
   }
 
+  resetSelection(): void {
+    this._selectedPin.set(null);
+    this._selectedElement.set(null);
+    this._segmentDrag.set(null);
+  }
+
   private resetDrag(): void {
     this._draggingModuleId.set(null);
     this._moveTarget.set(null);

@@ -35,8 +35,45 @@
     </div>
 
     <div class="actions">
-      <button type="button" class="secondary" (click)="validate()" [disabled]="loading() || saving()">Validate</button>
-      <button type="button" class="secondary" (click)="createMainFlowChart()" [disabled]="loading() || saving()">New chart</button>
+      <button
+        type="button"
+        class="secondary"
+        (click)="validate()"
+        [disabled]="loading() || saving()"
+      >
+        Validate
+      </button>
+      <button
+        type="button"
+        class="secondary"
+        (click)="saveXml()"
+        [disabled]="loading() || saving()"
+      >
+        Save XML
+      </button>
+      <button
+        type="button"
+        class="secondary"
+        (click)="xmlFileInput.click()"
+        [disabled]="loading() || saving()"
+      >
+        Load XML
+      </button>
+      <input
+        #xmlFileInput
+        type="file"
+        class="file-input"
+        accept=".xml,application/xml,text/xml"
+        (change)="onXmlSelected($event)"
+      />
+      <button
+        type="button"
+        class="secondary"
+        (click)="createMainFlowChart()"
+        [disabled]="loading() || saving()"
+      >
+        New chart
+      </button>
     </div>
 
     @if (validation(); as result) {

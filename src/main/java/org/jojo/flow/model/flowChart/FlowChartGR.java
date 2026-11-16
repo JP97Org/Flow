@@ -18,11 +18,13 @@ import org.jojo.flow.model.api.IFlowChartGR;
 import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
+import org.jojo.flow.model.flowChart.modules.FlowModule;
 import org.jojo.flow.model.flowChart.modules.ModuleGR;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModuleDOM;
+import org.jojo.flow.model.storeLoad.ModulePinDOM;
 import org.jojo.flow.model.storeLoad.PointDOM;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.OK;
@@ -192,11 +194,34 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
                     final String moduleToLoad = cnDom.elemGet();
                     final IGraphicalRepresentation module = DynamicObjectLoader.loadGR(moduleToLoad);
                     module.restoreFromDOM(modDom);
-                    this.modules.add((ModuleGR) module);
+                    final ModuleGR moduleGR = (ModuleGR) module;
+                    linkModuleToFlowChart(moduleGR, modDom);
+                    this.modules.add(moduleGR);
                 }
             }
             notifyObservers();
         }
+    }
+
+    private void linkModuleToFlowChart(final ModuleGR moduleGR, final IDOM moduleDom) {
+        if (this.fc == null) {
+            return;
+        }
+        final DOMStringUnion moduleIdUnion = moduleDom.getDOMMap().get(ModulePinDOM.NAME_MODULE_ID);
+        if (moduleIdUnion == null || !moduleIdUnion.isDOM()) {
+            return;
+        }
+        final String moduleIdStr = ((IDOM) moduleIdUnion.getValue()).elemGet();
+        if (moduleIdStr == null) {
+            return;
+        }
+        final int moduleId = Integer.parseInt(moduleIdStr);
+        this.fc.getModules().stream()
+                .filter(module -> module.getId() == moduleId)
+                .filter(FlowModule.class::isInstance)
+                .map(FlowModule.class::cast)
+                .findFirst()
+                .ifPresent(moduleGR::setModule);
     }
     
     @Override

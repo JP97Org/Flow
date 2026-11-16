@@ -62,8 +62,19 @@ public abstract class Data implements IData {
                 | IllegalArgumentException | InvocationTargetException e) {
             new Warning(null, e.toString(), true).reportWarning();
         }
-        final String base64 = transform == null ? serializedString : transform.toSerialString(serializedString);
-        return deserialize(base64);
+        try {
+            return deserialize(serializedString);
+        } catch (IllegalArgumentException e) {
+            if (transform == null) {
+                throw e;
+            }
+            final String base64 = transform.toSerialString(serializedString);
+            if (base64 == null) {
+                throw new IllegalArgumentException(
+                        "serialized data is neither BASE64 nor XML-serialized", e);
+            }
+            return deserialize(base64);
+        }
     }
     
     private static Data deserialize(final String serializedString) throws IOException, ClassNotFoundException {

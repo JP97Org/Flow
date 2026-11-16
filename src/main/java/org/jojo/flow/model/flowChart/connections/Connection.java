@@ -2,6 +2,7 @@ package org.jojo.flow.model.flowChart.connections;
 
 import static org.jojo.flow.model.util.OK.ok;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.jojo.flow.exc.Warning;
 import org.jojo.flow.model.api.DOMStringUnion;
 import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDataSignature;
+import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IInputPin;
 import org.jojo.flow.model.api.IModulePin;
@@ -25,6 +27,7 @@ import org.jojo.flow.model.api.IOutputPin;
 import org.jojo.flow.model.flowChart.FlowChartElement;
 import org.jojo.flow.model.flowChart.modules.InputPin;
 import org.jojo.flow.model.flowChart.modules.ModulePin;
+import org.jojo.flow.model.flowChart.modules.ModulePinGR;
 import org.jojo.flow.model.flowChart.modules.OutputPin;
 import org.jojo.flow.model.flowChart.modules.DefaultPin;
 import org.jojo.flow.model.storeLoad.ConnectionDOM;
@@ -32,6 +35,7 @@ import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.storeLoad.FlowChartDOM;
 import org.jojo.flow.model.storeLoad.GraphicalRepresentationDOM;
 import org.jojo.flow.model.storeLoad.ModulePinDOM;
+import org.jojo.flow.model.storeLoad.PointDOM;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.OK;
 
@@ -39,6 +43,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
     private final List<IInputPin> toPins;
     private IOutputPin fromPin;
     private String name;
+    private IFlowChart restoreFlowChart;
 
     public Connection(final int id, final IOutputPin fromPin, final String name) throws ConnectionException {
         super(id);
@@ -211,6 +216,16 @@ public abstract class Connection extends FlowChartElement implements IConnection
         return dom;
     }
 
+    public void restoreFromDOM(final IDOM dom, final IFlowChart flowChart) {
+        final IFlowChart before = this.restoreFlowChart;
+        this.restoreFlowChart = flowChart;
+        try {
+            restoreFromDOM(dom);
+        } finally {
+            this.restoreFlowChart = before;
+        }
+    }
+
     @Override
     public void restoreFromDOM(final IDOM dom) {
         if (isDOMValid(dom)) {
@@ -224,12 +239,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
             setId(id);
             IDOM fromDom = (IDOM) domMap.get(ConnectionDOM.NAME_FROM_PIN).getValue();
             fromDom = (IDOM) fromDom.getDOMMap().get(ModulePinDOM.NAME).getValue();
-            final IDOM cnFromDom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue());
-            final String pinToLoadFrom = cnFromDom.elemGet();
-            final IDOM cnDomImpFrom = (IDOM) (fromDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
-            final String pinToLoadImpFrom = cnDomImpFrom.elemGet();
-            final IModulePin pinFrom = DynamicObjectLoader.loadPin(pinToLoadFrom, pinToLoadImpFrom);
-            pinFrom.restoreFromDOM(fromDom);
+            final IModulePin pinFrom = restorePin(fromDom);
             final IDataSignature fromBeforeSign = pinFrom.getModulePinImp() instanceof DefaultPin
                     ? ((DefaultPin) pinFrom.getModulePinImp()).getCheckDataSignature().getCopy()
                     : null;
@@ -251,12 +261,7 @@ public abstract class Connection extends FlowChartElement implements IConnection
             for (final var toObj : toMap.values()) {
                 if (toObj.isDOM()) {
                     final IDOM toDom = (IDOM) toObj.getValue();
-                    final IDOM cnDom = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue());
-                    final String pinToLoad = cnDom.elemGet();
-                    final IDOM cnDomImp = (IDOM) (toDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
-                    final String pinToLoadImp = cnDomImp.elemGet();
-                    final IModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
-                    pin.restoreFromDOM(toDom);
+                    final IModulePin pin = restorePin(toDom);
                     final IDataSignature toBeforeSign = pin.getModulePinImp() instanceof DefaultPin
                             ? ((DefaultPin) pin.getModulePinImp()).getCheckDataSignature().getCopy()
                             : null;
@@ -279,6 +284,50 @@ public abstract class Connection extends FlowChartElement implements IConnection
             getGraphicalRepresentation().restoreFromDOM(grDom);
             notifyObservers();
         }
+    }
+
+    private IModulePin restorePin(final IDOM pinDom) {
+        final IModulePin pinFromChart = findPinInRestoreChart(pinDom);
+        if (pinFromChart != null) {
+            return pinFromChart;
+        }
+        final IDOM cnDom = (IDOM) (pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME).getValue());
+        final String pinToLoad = cnDom.elemGet();
+        final IDOM cnDomImp = (IDOM) (pinDom.getDOMMap().get(ModulePinDOM.NAME_CLASSNAME_IMP).getValue());
+        final String pinToLoadImp = cnDomImp.elemGet();
+        final IModulePin pin = DynamicObjectLoader.loadPin(pinToLoad, pinToLoadImp);
+        pin.restoreFromDOM(pinDom);
+        return pin;
+    }
+
+    private IModulePin findPinInRestoreChart(final IDOM pinDom) {
+        if (this.restoreFlowChart == null) {
+            return null;
+        }
+        final Map<String, DOMStringUnion> pinMap = pinDom.getDOMMap();
+        final IDOM moduleIdDom = (IDOM) pinMap.get(ModulePinDOM.NAME_MODULE_ID).getValue();
+        final IDOM classNameDom = (IDOM) pinMap.get(ModulePinDOM.NAME_CLASSNAME).getValue();
+        final IDOM grDom = (IDOM) pinMap.get(GraphicalRepresentationDOM.NAME).getValue();
+        final IDOM linePointDom = (IDOM) grDom.getDOMMap().get("linePoint").getValue();
+        final int moduleId = Integer.parseInt(moduleIdDom.elemGet());
+        final String className = classNameDom.elemGet();
+        final Point linePoint = PointDOM.pointOf(linePointDom);
+        final IFlowModule module = this.restoreFlowChart.getModules().stream()
+                .filter(candidate -> candidate.getId() == moduleId)
+                .findFirst()
+                .orElse(null);
+        if (module == null) {
+            return null;
+        }
+        final List<IModulePin> pins = new ArrayList<>();
+        pins.addAll(module.getAllInputs());
+        pins.addAll(module.getAllOutputs());
+        return pins.stream()
+                .filter(pin -> pin.getClass().getName().equals(className))
+                .filter(pin -> pin.getGraphicalRepresentation() instanceof ModulePinGR gr
+                        && gr.getLinePoint().equals(linePoint))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

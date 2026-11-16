@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -314,13 +315,13 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
     }
 
     private boolean removeDuplicatePins() {
-        final Map<IModulePin, IFlowModule> modulePins = new HashMap<>();
+        final Map<IModulePin, IFlowModule> modulePins = new IdentityHashMap<>();
         this.modules.stream()
             .map(m -> m.getAllModulePins())
             .flatMap(l -> l.stream())
             .collect(Collectors.toList())
             .forEach(p -> modulePins.put(p, p.getModule()));
-        final Map<IModulePin, List<IConnection>> connectionPins = new HashMap<>();
+        final Map<IModulePin, List<IConnection>> connectionPins = new IdentityHashMap<>();
         final List<IModulePin> list = new ArrayList<>(Arrays.asList(this.connections.stream()
                                         .map(c -> c.getToPins())
                                         .flatMap(l -> l.stream())
@@ -412,20 +413,6 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
             final String idStr = idDom.elemGet();
             final int id = Integer.parseInt(idStr);
             setId(id);
-            final IDOM connectionsDom = (IDOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS).getValue();
-            final Map<String, DOMStringUnion> connectionsMap = connectionsDom.getDOMMap();
-            for (final var conObj : connectionsMap.values()) {
-                if (conObj.isDOM()) {
-                    final IDOM connnectionDom = (IDOM) conObj.getValue();
-                    final IDOM cnDom = (IDOM) (connnectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME)).getValue();
-                    final String conToLoad = cnDom.elemGet();
-                    final Connection connection = (Connection) DynamicObjectLoader.loadConnection(conToLoad);
-                    this.connections.add(connection);
-                    final IDOM connectionIdDom = (IDOM)connnectionDom.getDOMMap().get(ConnectionDOM.NAME_ID).getValue();
-                    connection.setId(Integer.parseInt(connectionIdDom.elemGet()));
-                    connection.restoreFromDOM(connnectionDom);
-                }
-            }
             final IDOM modulesDom = (IDOM)domMap.get(FlowChartDOM.NAME_MODULES).getValue();
             final Map<String, DOMStringUnion> modulesMap = modulesDom.getDOMMap();
             for (final var modObj : modulesMap.values()) {
@@ -438,6 +425,25 @@ public class FlowChart extends FlowChartElement implements IFlowChart{
                     final IDOM moduleIdDom = (IDOM)modDom.getDOMMap().get(ConnectionDOM.NAME_ID).getValue();
                     module.setId(Integer.parseInt(moduleIdDom.elemGet()));
                     module.restoreFromDOM(modDom);
+                }
+            }
+            for (final IFlowModule module : this.modules) {
+                for (final IModulePin pin : module.getAllModulePins()) {
+                    pin.getConnections().forEach(pin::removeConnection);
+                }
+            }
+            final IDOM connectionsDom = (IDOM)domMap.get(FlowChartDOM.NAME_CONNECTIONS).getValue();
+            final Map<String, DOMStringUnion> connectionsMap = connectionsDom.getDOMMap();
+            for (final var conObj : connectionsMap.values()) {
+                if (conObj.isDOM()) {
+                    final IDOM connnectionDom = (IDOM) conObj.getValue();
+                    final IDOM cnDom = (IDOM) (connnectionDom.getDOMMap().get(ConnectionDOM.NAME_CLASSNAME)).getValue();
+                    final String conToLoad = cnDom.elemGet();
+                    final Connection connection = (Connection) DynamicObjectLoader.loadConnection(conToLoad);
+                    this.connections.add(connection);
+                    final IDOM connectionIdDom = (IDOM)connnectionDom.getDOMMap().get(ConnectionDOM.NAME_ID).getValue();
+                    connection.setId(Integer.parseInt(connectionIdDom.elemGet()));
+                    connection.restoreFromDOM(connnectionDom, this);
                 }
             }
             final IDOM grDom = (IDOM)domMap.get(GraphicalRepresentationDOM.NAME).getValue();

@@ -18,6 +18,7 @@ import {
   ModuleDragEndInfo,
 } from './flow-chart/flow-chart-grid.component';
 import { PinConnectionRequest } from './flow-chart/connection-rules';
+import { downloadXml } from './flow-chart/xml-file';
 
 @Component({
   imports: [ModulePaletteComponent, FlowChartGridComponent],
@@ -69,7 +70,7 @@ export class App implements OnInit {
 
   protected addModule(className: string, position: { x: number; y: number }): void {
     const chart = this.flowChart();
-    if (!chart || !chart.id) {
+    if (!this.hasFlowChartId(chart)) {
       this.error.set('No flow chart available');
       return;
     }
@@ -134,7 +135,7 @@ export class App implements OnInit {
 
   protected moveModule(moduleId: number, position: { x: number; y: number }): void {
     const chart = this.flowChart();
-    if (!chart?.id) {
+    if (!this.hasFlowChartId(chart)) {
       this.error.set('No flow chart available');
       return;
     }
@@ -171,7 +172,7 @@ export class App implements OnInit {
 
   protected deleteModule(moduleId: number): void {
     const chart = this.flowChart();
-    if (!chart?.id || moduleId === undefined || moduleId === null) {
+    if (!this.hasFlowChartId(chart) || moduleId === undefined || moduleId === null) {
       this.error.set('No flow chart available');
       return;
     }
@@ -210,7 +211,7 @@ export class App implements OnInit {
 
   protected deleteConnection(connectionId: number): void {
     const chart = this.flowChart();
-    if (!chart?.id || connectionId === undefined || connectionId === null) {
+    if (!this.hasFlowChartId(chart) || connectionId === undefined || connectionId === null) {
       this.error.set('No flow chart available');
       return;
     }
@@ -266,7 +267,7 @@ export class App implements OnInit {
 
   protected connectPins(request: PinConnectionRequest): void {
     const chart = this.flowChart();
-    if (!chart?.id) {
+    if (!this.hasFlowChartId(chart)) {
       this.error.set('No flow chart available');
       return;
     }
@@ -293,7 +294,7 @@ export class App implements OnInit {
 
   protected updateConnectionPath(request: ConnectionPathChangeRequest): void {
     const chart = this.flowChart();
-    if (!chart?.id) {
+    if (!this.hasFlowChartId(chart)) {
       this.error.set('No flow chart available');
       return;
     }
@@ -388,6 +389,68 @@ export class App implements OnInit {
     }
   }
 
+  protected saveXml(): void {
+    const chart = this.flowChart();
+    if (!chart) {
+      this.error.set('No flow chart available');
+      return;
+    }
+    this.saving.set(true);
+    this.error.set(null);
+    this.api.exportMainFlowChartXml().subscribe({
+      next: (xml) => {
+        const id = this.flowChart()?.id ?? chart.id;
+        downloadXml(xml, id === undefined ? 'flow-chart.xml' : `flow-chart-${id}.xml`);
+        this.saving.set(false);
+      },
+      error: (error: unknown) => {
+        this.error.set(this.describeError(error));
+        this.saving.set(false);
+      },
+    });
+  }
+
+  protected onXmlSelected(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (input) {
+      input.value = '';
+    }
+    if (!file) {
+      return;
+    }
+    if (!window.confirm('Loading a flow chart replaces the current main flow chart. Continue?')) {
+      return;
+    }
+    this.saving.set(true);
+    this.error.set(null);
+    file
+      .text()
+      .then((xml) => {
+        if (!xml.trim()) {
+          this.error.set('The selected XML file is empty');
+          this.saving.set(false);
+          return;
+        }
+        this.api.importMainFlowChartXml({ body: xml }).subscribe({
+          next: (flowChart) => {
+            this.flowChart.set(flowChart);
+            this.validation.set(null);
+            this.grid()?.resetSelection();
+            this.saving.set(false);
+          },
+          error: (error: unknown) => {
+            this.error.set(this.describeError(error));
+            this.saving.set(false);
+          },
+        });
+      })
+      .catch((error: unknown) => {
+        this.error.set(this.describeError(error));
+        this.saving.set(false);
+      });
+  }
+
   protected createMainFlowChart(): void {
     this.api.createMainFlowChart().subscribe({
       next: () => {
@@ -416,6 +479,10 @@ export class App implements OnInit {
     // The grid validates the drop cell and emits (moduleDropped), which calls addModule().
     // Do not add the module here as well, otherwise it is created twice.
     this.grid()?.onExternalDragEnded(request?.className ?? '', request?.pointer ?? { x: 0, y: 0 });
+  }
+
+  private hasFlowChartId(chart: FlowChart | null | undefined): chart is FlowChart & { id: number } {
+    return chart?.id !== undefined && chart.id !== null;
   }
 
   private describeError(error: unknown): string {
