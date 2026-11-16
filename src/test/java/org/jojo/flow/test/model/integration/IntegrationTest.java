@@ -2,6 +2,7 @@ package org.jojo.flow.test.model.integration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,21 +45,27 @@ import org.jojo.flow.model.storeLoad.StoreLoadFacade;
 import org.jojo.flow.model.util.DynamicObjectLoader;
 import org.jojo.flow.model.util.DynamicObjectLoader.MockModule;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
 
 public class IntegrationTest {
     // SETTINGS
     // //////////////////////////////////////////////////////////////////////////////
 
-    private static final File XML_SERIAL_LOCATION = new File(
-            "/home/jojo/Dokumente/NewMainWorkspace/xmlSerial/target/xmlSerial.jar");
-    private static final File QFPM_LOCATION = new File("/home/jojo/Dokumente/NewMainWorkspace/qfpm/target/qfpm.jar");
+    private static final File XML_SERIAL_LOCATION = new File("lib/xmlSerial.jar");
+    private static final File QFPM_LOCATION = new File("lib/qfpm.jar");
 
-    private static final String DIRECTORY_OF_FLOW_DOCUMENTS = "/home/jojo/Schreibtisch/";
+    @TempDir
+    Path tempDirectory;
 
     //////////////////////////////////////////////////////////////////////////////////////////
 
     @BeforeEach
     public void setUp() {
+        IDOM.resetDocument();
+        Warning.clearWarningLog();
+        for (final Warning warning : FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings()) {
+            FlowChartElement.GENERIC_ERROR_ELEMENT.warningResolved(warning);
+        }
         // Setting settings
         IAPI.initialize();
         ISettings settings = ISettings.getDefaultImplementation();
@@ -147,12 +154,13 @@ public class IntegrationTest {
         final IDOM flowDom = new FlowDOM(dom);
         final String originalFcStr = flowChart.toString();
         // System.out.println(originalFcStr);
-        new StoreLoadFacade().storeFlowChart(new File(DIRECTORY_OF_FLOW_DOCUMENTS + "flow.xml"), flowDom);
+        final File flowXml = this.tempDirectory.resolve("flow.xml").toFile();
+        new StoreLoadFacade().storeFlowChart(flowXml, flowDom);
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
         Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
 
         new ModelFacade().setMainFlowChart(
-                new StoreLoadFacade().loadFlowChart(new File(DIRECTORY_OF_FLOW_DOCUMENTS + "flow.xml")));
+                new StoreLoadFacade().loadFlowChart(flowXml));
         flowChart = new ModelFacade().getMainFlowChart();
         System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
         Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
@@ -193,40 +201,6 @@ public class IntegrationTest {
         Assertions.assertTrue(flowChart.getWarnings().isEmpty());
         Assertions.assertFalse(sim.isRunning());
 
-        // Class Loader Test
-        final IModuleClassesList list = new StoreLoadFacade()
-                .getNewModuleClassesList(QFPM_LOCATION)
-                .loadAll();
-        final List<Class<? extends IFlowModule>> moduleClasses = list.getModuleClassesList();
-        System.out.println(moduleClasses);
-        Assertions.assertEquals("[class org.jojo.qfpm.QuadraticFourPinModule]", moduleClasses.toString());
-        final IFlowModule loaded = DynamicObjectLoader.loadModule(list.getClassLoader().getClassLoader(),
-                moduleClasses.get(0).getName(), 400);
-        System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
-        Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
-        flowChart = new FlowChart(0, new FlowChartGR());
-        new ModelFacade().setMainFlowChart(flowChart);
-        flowChart.addModule(loaded);
-        System.out.println(flowChart);
-        Assertions.assertEquals("ID= 0 | modules= [ID= 400 | ModuleName= NAME, priority= 0 | "
-                + "allPins= "
-                + "[InputPin with GR= DefaultInputPinGR with position= java.awt.Point[x=-10,y=100] and linePoint= java.awt.Point[x=-10,y=100] | "
-                + "IMP= DefaultPin with checkDataSignature= org.jojo.flow.model.data.StringDataSet | [sizes | [0], null, null] | defaultData= , "
-                + "InputPin with GR= RigidPinGR with position= java.awt.Point[x=100,y=-10] and linePoint= java.awt.Point[x=100,y=-10] | "
-                + "IMP= RigidPin with defaultData= null, OutputPin with GR= RigidPinGR with position= java.awt.Point[x=100,y=-10] and linePoint= java.awt.Point[x=100,y=-10] | "
-                + "IMP= RigidPin with defaultData= null, "
-                + "InputPin with GR= RigidPinGR with position= java.awt.Point[x=100,y=200] and linePoint= java.awt.Point[x=100,y=200] | "
-                + "IMP= RigidPin with defaultData= null, OutputPin with GR= DefaultOutputPinGR with position= java.awt.Point[x=200,y=100] and linePoint= java.awt.Point[x=200,y=100] | "
-                + "IMP= DefaultPin with checkDataSignature= org.jojo.flow.model.data.StringDataSet | [sizes | [0], null, null] | defaultData= , "
-                + "OutputPin with GR= RigidPinGR with position= java.awt.Point[x=100,y=200] and linePoint= java.awt.Point[x=100,y=200] | "
-                + "IMP= RigidPin with defaultData= null] | "
-                + "allConnectionsOfAllPins= [[], [], [], [], [], []]] | "
-                + "connections= []"
-                + "", flowChart.toString());
-        IDOM.resetDocument();
-        final IDOM flowDom2 = new FlowDOM(flowChart.getDOM());
-        new StoreLoadFacade().storeFlowChart(new File(DIRECTORY_OF_FLOW_DOCUMENTS + "flow2.xml"), flowDom2);
-        
         // API test
         IDataSignature sign = IDataSignature.getDefaultImplementation();
         System.out.println(sign);
@@ -252,5 +226,42 @@ public class IntegrationTest {
         // Warning Log empty?
         System.out.println(Warning.getWarningLog());
         Assertions.assertTrue(Warning.getWarningLog().isEmpty());
+    }
+
+    @Test
+    public void loadsExternalModuleJar() throws Exception {
+        // Class Loader Test
+        final IModuleClassesList list = new StoreLoadFacade()
+                .getNewModuleClassesList(QFPM_LOCATION)
+                .loadAll();
+        final List<Class<? extends IFlowModule>> moduleClasses = list.getModuleClassesList();
+        System.out.println(moduleClasses);
+        Assertions.assertEquals("[class org.jojo.qfpm.QuadraticFourPinModule]", moduleClasses.toString());
+        final IFlowModule loaded = DynamicObjectLoader.loadModule(list.getClassLoader().getClassLoader(),
+                moduleClasses.get(0).getName(), 400);
+        System.out.println(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings());
+        Assertions.assertTrue(FlowChartElement.GENERIC_ERROR_ELEMENT.getWarnings().isEmpty());
+        final IFlowChart externalFlowChart = new FlowChart(0, new FlowChartGR());
+        new ModelFacade().setMainFlowChart(externalFlowChart);
+        externalFlowChart.addModule(loaded);
+        System.out.println(externalFlowChart);
+        Assertions.assertEquals("ID= 0 | modules= [ID= 400 | ModuleName= NAME, priority= 0 | "
+                + "allPins= "
+                + "[InputPin with GR= DefaultInputPinGR with position= java.awt.Point[x=-10,y=100] and linePoint= java.awt.Point[x=-10,y=100] | "
+                + "IMP= DefaultPin with checkDataSignature= org.jojo.flow.model.data.StringDataSet | [sizes | [0], null, null] | defaultData= , "
+                + "InputPin with GR= RigidPinGR with position= java.awt.Point[x=100,y=-10] and linePoint= java.awt.Point[x=100,y=-10] | "
+                + "IMP= RigidPin with defaultData= null, OutputPin with GR= RigidPinGR with position= java.awt.Point[x=100,y=-10] and linePoint= java.awt.Point[x=100,y=-10] | "
+                + "IMP= RigidPin with defaultData= null, "
+                + "InputPin with GR= RigidPinGR with position= java.awt.Point[x=100,y=200] and linePoint= java.awt.Point[x=100,y=200] | "
+                + "IMP= RigidPin with defaultData= null, OutputPin with GR= DefaultOutputPinGR with position= java.awt.Point[x=200,y=100] and linePoint= java.awt.Point[x=200,y=100] | "
+                + "IMP= DefaultPin with checkDataSignature= org.jojo.flow.model.data.StringDataSet | [sizes | [0], null, null] | defaultData= , "
+                + "OutputPin with GR= RigidPinGR with position= java.awt.Point[x=100,y=200] and linePoint= java.awt.Point[x=100,y=200] | "
+                + "IMP= RigidPin with defaultData= null] | "
+                + "allConnectionsOfAllPins= [[], [], [], [], [], []]] | "
+                + "connections= []"
+                + "", externalFlowChart.toString());
+        IDOM.resetDocument();
+        final IDOM flowDom2 = new FlowDOM(externalFlowChart.getDOM());
+        new StoreLoadFacade().storeFlowChart(this.tempDirectory.resolve("flow2.xml").toFile(), flowDom2);
     }
 }

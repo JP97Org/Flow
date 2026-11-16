@@ -1,14 +1,37 @@
 package org.jojo.flow.test.model.data;
 
+import java.io.File;
 import java.util.Base64;
 
+import org.jojo.flow.model.api.ISettings;
 import org.jojo.flow.model.api.IXMLSerialTransform;
 import org.jojo.flow.model.data.Data;
 import org.jojo.flow.model.data.StringDataSet;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DataSerializationCompatibilityTest {
+    private static final File TRANSFORMER_JAR = new File("lib/xmlSerial.jar");
+
+    private File previousTransformer;
+
+    @BeforeEach
+    public void setUp() {
+        final ISettings settings = ISettings.getDefaultImplementation();
+        this.previousTransformer = settings.getLocationXMLSerialTransformerJar();
+        Assumptions.assumeTrue(TRANSFORMER_JAR.isFile(),
+                "lib/xmlSerial.jar is required for this test");
+        settings.setLocationXMLSerialTransformerJar(TRANSFORMER_JAR);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        ISettings.getDefaultImplementation()
+                .setLocationXMLSerialTransformerJar(this.previousTransformer);
+    }
 
     @Test
     public void loadsArrayClassDescriptorsWithSlashSeparatedNames() throws Exception {

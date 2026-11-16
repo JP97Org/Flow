@@ -37,6 +37,9 @@ class SizesDataSignature extends BasicSignatureComponentSignature {
     @Override
     public DataSignature getCopy() {
         final SizesDataSignature ret = new SizesDataSignature(Arrays.stream(this.sizes).toArray());
+        if (!isChecking()) {
+            ret.deactivateChecking();
+        }
         for (int i = 0; i < this.sizes.length; i++) {
             if (!this.sizesSignatures[i].isChecking()) {
                 ret.getComponent(i).deactivateChecking();
@@ -94,7 +97,11 @@ class SizesDataSignature extends BasicSignatureComponentSignature {
 
         @Override
         public DataSignature getCopy() {
-            return new OneSizeDataSignature(this.size, this.dataIDOffset);
+            final OneSizeDataSignature ret = new OneSizeDataSignature(this.size, this.dataIDOffset);
+            if (!isChecking()) {
+                ret.deactivateChecking();
+            }
+            return ret;
         }
         
         @Override
