@@ -4,15 +4,19 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
@@ -20,6 +24,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.jojo.flow.exc.FlowException;
 import org.jojo.flow.exc.ValidationException;
 import org.jojo.flow.model.api.IConnection;
@@ -58,6 +63,7 @@ import org.jojo.flow.rest.dto.FlowChartDto;
 import org.jojo.flow.rest.dto.FlowChartSummary;
 import org.jojo.flow.rest.dto.ModuleClassDto;
 import org.jojo.flow.rest.dto.ModuleDto;
+import org.jojo.flow.rest.dto.ModuleJarUploadResultDto;
 import org.jojo.flow.rest.dto.SimulationConfigDto;
 import org.jojo.flow.rest.dto.SimulationStatusDto;
 import org.jojo.flow.rest.dto.StepForwardRequest;
@@ -75,6 +81,9 @@ public class ModelFacadeService {
     private final IDynamicClassLoader dynamicClassLoader = IDynamicClassLoader.DEFAULT_DYNAMIC_LOADER;
     private final Map<Integer, SimulationSession> simulations = new LinkedHashMap<>();
     private final Map<String, ModuleClassDto> moduleClasses = new LinkedHashMap<>();
+    private final Set<String> loadedModuleJarNames = new LinkedHashSet<>();
+    private final List<Path> temporaryModuleJars = new ArrayList<>();
+    private final Object moduleCatalogLock = new Object();
 
     private IModuleClassesList moduleClassesList;
 
@@ -85,6 +94,16 @@ public class ModelFacadeService {
             facade.setMainFlowChart(IFlowChart.getDefaultImplementation());
         }
         loadModuleCatalog();
+    }
+
+    @PreDestroy
+    void cleanupTemporaryModuleJars() {
+        synchronized (moduleCatalogLock) {
+            for (final Path temporaryJar : temporaryModuleJars) {
+                deleteQuietly(temporaryJar);
+            }
+            temporaryModuleJars.clear();
+        }
     }
 
     private void configureXmlSerialTransformer() {
@@ -158,12 +177,115 @@ public class ModelFacadeService {
     }
 
     public List<ModuleClassDto> getModuleClasses() {
-        return new ArrayList<>(moduleClasses.values());
+        synchronized (moduleCatalogLock) {
+            return new ArrayList<>(moduleClasses.values());
+        }
+    }
+
+    private boolean isModuleClassAvailable(final String className) {
+        synchronized (moduleCatalogLock) {
+            return className != null && moduleClasses.containsKey(className);
+        }
+    }
+
+    public ModuleJarUploadResultDto uploadModuleJar(final FileUpload file) {
+        if (file == null || file.fileName() == null || file.fileName().isBlank()) {
+            throw apiException(Response.Status.BAD_REQUEST, "A module jar file is required");
+        }
+        final Path uploadedFile = file.uploadedFile();
+        if (uploadedFile == null || !Files.isRegularFile(uploadedFile)) {
+            throw apiException(Response.Status.BAD_REQUEST, "The uploaded module jar could not be read");
+        }
+        return loadModuleJar(sanitizeJarFileName(file.fileName()), uploadedFile);
+    }
+
+    ModuleJarUploadResultDto loadModuleJar(final String jarFileName, final Path source) {
+        synchronized (moduleCatalogLock) {
+            if (moduleClassesList == null) {
+                throw apiException(Response.Status.INTERNAL_SERVER_ERROR, "The module catalog is not initialized");
+            }
+            final String normalizedName = jarFileName.toLowerCase(Locale.ROOT);
+            if (loadedModuleJarNames.contains(normalizedName)) {
+                throw apiException(Response.Status.CONFLICT, "Module jar already loaded: " + jarFileName);
+            }
+
+            Path temporaryJar = null;
+            try {
+                temporaryJar = Files.createTempFile("flow-module-", ".jar");
+                Files.copy(source, temporaryJar, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                if (temporaryJar != null) {
+                    deleteQuietly(temporaryJar);
+                }
+                throw apiException(Response.Status.BAD_REQUEST,
+                        "Unable to store the module jar: " + e.getMessage());
+            }
+
+            try {
+                final List<Class<? extends IFlowModule>> classesToLoad = new ArrayList<>();
+                for (final Class<?> loadedClass : dynamicClassLoader.loadClasses(temporaryJar.toFile())) {
+                    if (IFlowModule.class.isAssignableFrom(loadedClass)) {
+                        @SuppressWarnings("unchecked")
+                        final Class<? extends IFlowModule> moduleClass =
+                                (Class<? extends IFlowModule>) loadedClass;
+                        classesToLoad.add(moduleClass);
+                    }
+                }
+                if (classesToLoad.isEmpty()) {
+                    throw apiException(Response.Status.BAD_REQUEST,
+                            "No module types found in jar: " + jarFileName);
+                }
+                for (final Class<? extends IFlowModule> moduleClass : classesToLoad) {
+                    if (moduleClasses.containsKey(moduleClass.getName())) {
+                        throw apiException(Response.Status.CONFLICT,
+                                "Module class already loaded: " + moduleClass.getName());
+                    }
+                }
+
+                moduleClassesList.loadJarFile(temporaryJar.toFile());
+                final List<ModuleClassDto> addedClasses = new ArrayList<>();
+                for (final Class<? extends IFlowModule> moduleClass : classesToLoad) {
+                    final ModuleClassDto dto = toModuleClassDto(moduleClass, false);
+                    moduleClasses.put(moduleClass.getName(), dto);
+                    addedClasses.add(dto);
+                }
+                loadedModuleJarNames.add(normalizedName);
+                temporaryModuleJars.add(temporaryJar);
+                return new ModuleJarUploadResultDto(jarFileName, addedClasses);
+            } catch (WebApplicationException e) {
+                deleteQuietly(temporaryJar);
+                throw e;
+            } catch (ClassNotFoundException | IOException | RuntimeException | LinkageError e) {
+                deleteQuietly(temporaryJar);
+                throw apiException(Response.Status.BAD_REQUEST,
+                        "Unable to load module jar " + jarFileName + ": " + e.getMessage());
+            }
+        }
+    }
+
+    private String sanitizeJarFileName(final String rawFileName) {
+        final String normalized = rawFileName.replace('\\', '/');
+        final String fileName = normalized.substring(normalized.lastIndexOf('/') + 1).trim();
+        if (fileName.isEmpty()) {
+            throw apiException(Response.Status.BAD_REQUEST, "The module jar has no file name");
+        }
+        if (!fileName.toLowerCase(Locale.ROOT).endsWith(".jar")) {
+            throw apiException(Response.Status.BAD_REQUEST, "Only .jar files can be loaded as module jars");
+        }
+        return fileName;
+    }
+
+    private void deleteQuietly(final Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            LOG.debugf("Unable to delete temporary module jar %s: %s", path, e.getMessage());
+        }
     }
 
     public ModuleDto addModule(final int flowChartId, final AddModuleRequest request) {
         Objects.requireNonNull(request);
-        if (request.className() == null || !moduleClasses.containsKey(request.className())) {
+        if (!isModuleClassAvailable(request.className())) {
             throw apiException(Response.Status.BAD_REQUEST, "Unknown module class: " + request.className());
         }
         if (request.position() == null) {
@@ -543,25 +665,36 @@ public class ModelFacadeService {
 
     private void loadModuleCatalog() {
         final List<File> jars = parseModuleJars();
-        try {
-            moduleClassesList = new ModuleClassesList(dynamicClassLoader, true, jars.toArray(File[]::new));
-        } catch (ClassNotFoundException | IOException e) {
-            LOG.warnf("Unable to load configured module jars: %s", e.getMessage());
-            moduleClassesList = new ModuleClassesList(dynamicClassLoader, jars.toArray(File[]::new));
-        }
-        moduleClasses.clear();
-        addModuleClass(DynamicObjectLoader.MockModule.class, true);
-        for (final Class<? extends IFlowModule> moduleClass : moduleClassesList.getModuleClassesList()) {
-            addModuleClass(moduleClass, false);
+        synchronized (moduleCatalogLock) {
+            loadedModuleJarNames.clear();
+            for (final File jar : jars) {
+                loadedModuleJarNames.add(jar.getName().toLowerCase(Locale.ROOT));
+            }
+            try {
+                moduleClassesList = new ModuleClassesList(dynamicClassLoader, true, jars.toArray(File[]::new));
+            } catch (ClassNotFoundException | IOException e) {
+                LOG.warnf("Unable to load configured module jars: %s", e.getMessage());
+                moduleClassesList = new ModuleClassesList(dynamicClassLoader, jars.toArray(File[]::new));
+            }
+            moduleClasses.clear();
+            addModuleClass(DynamicObjectLoader.MockModule.class, true);
+            for (final Class<? extends IFlowModule> moduleClass : moduleClassesList.getModuleClassesList()) {
+                addModuleClass(moduleClass, false);
+            }
         }
     }
 
     private void addModuleClass(final Class<? extends IFlowModule> moduleClass, final boolean builtIn) {
-        moduleClasses.put(moduleClass.getName(), new ModuleClassDto(
+        moduleClasses.put(moduleClass.getName(), toModuleClassDto(moduleClass, builtIn));
+    }
+
+    private ModuleClassDto toModuleClassDto(final Class<? extends IFlowModule> moduleClass,
+            final boolean builtIn) {
+        return new ModuleClassDto(
                 moduleClass.getName(),
                 moduleClass.getSimpleName(),
                 moduleClass.getSimpleName(),
-                builtIn));
+                builtIn);
     }
 
     private List<File> parseModuleJars() {

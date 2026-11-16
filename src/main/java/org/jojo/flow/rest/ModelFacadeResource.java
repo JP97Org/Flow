@@ -21,6 +21,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.jojo.flow.rest.dto.AddModuleRequest;
 import org.jojo.flow.rest.dto.ConnectRequest;
 import org.jojo.flow.rest.dto.ConnectionDto;
@@ -29,6 +31,7 @@ import org.jojo.flow.rest.dto.FlowChartSummary;
 import org.jojo.flow.rest.dto.HealthDto;
 import org.jojo.flow.rest.dto.ModuleClassDto;
 import org.jojo.flow.rest.dto.ModuleDto;
+import org.jojo.flow.rest.dto.ModuleJarUploadResultDto;
 import org.jojo.flow.rest.dto.SimulationConfigDto;
 import org.jojo.flow.rest.dto.SimulationStatusDto;
 import org.jojo.flow.rest.dto.StepForwardRequest;
@@ -66,6 +69,18 @@ public class ModelFacadeResource {
     @Operation(operationId = "getModuleClasses", summary = "List all available module types")
     public List<ModuleClassDto> getModuleClasses() {
         return service.getModuleClasses();
+    }
+
+    @POST
+    @Path("/module-jars")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Operation(operationId = "uploadModuleJar", summary = "Load a module jar into the running application")
+    @APIResponse(responseCode = "200", description = "Module types loaded from the jar")
+    public ModuleJarUploadResultDto uploadModuleJar(
+            @RestForm("file")
+            @Parameter(description = "Module jar file", required = true)
+            @Schema(type = SchemaType.STRING, format = "binary") final FileUpload file) {
+        return service.uploadModuleJar(file);
     }
 
     @GET

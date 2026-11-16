@@ -19,6 +19,7 @@ import { FlowChartSummary } from '../model/models';
 import { Health } from '../model/models';
 import { Module } from '../model/models';
 import { ModuleClass } from '../model/models';
+import { ModuleJarUploadResult } from '../model/models';
 import { SimulationConfig } from '../model/models';
 import { SimulationStatus } from '../model/models';
 import { StepForwardRequest } from '../model/models';
@@ -139,6 +140,10 @@ export interface UpdateModuleRequestParams {
     id: number;
     moduleId: number;
     updateModuleRequest: UpdateModuleRequest;
+}
+
+export interface UploadModuleJarRequestParams {
+    file?: Blob;
 }
 
 export interface ValidateFlowChartRequestParams {
@@ -404,6 +409,14 @@ export interface FlowChartServiceInterface {
 * @param requestParameters
      */
     updateModule(requestParameters: UpdateModuleRequestParams, extraHttpRequestParams?: any): Observable<Module>;
+
+    /**
+     * Load a module jar into the running application
+     * 
+     * @endpoint post /api/flow/module-jars
+* @param requestParameters
+     */
+    uploadModuleJar(requestParameters: UploadModuleJarRequestParams, extraHttpRequestParams?: any): Observable<ModuleJarUploadResult>;
 
     /**
      * Validate a flow chart

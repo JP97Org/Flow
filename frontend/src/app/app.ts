@@ -34,6 +34,7 @@ export class App implements OnInit {
   protected readonly flowChart = signal<FlowChart | null>(null);
   protected readonly validation = signal<ValidationResult | null>(null);
   protected readonly error = signal<string | null>(null);
+  protected readonly notice = signal<string | null>(null);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly moduleDragging = signal(false);
@@ -449,6 +450,50 @@ export class App implements OnInit {
         this.error.set(this.describeError(error));
         this.saving.set(false);
       });
+  }
+
+  protected onModuleJarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (input) {
+      input.value = '';
+    }
+    if (!file) {
+      return;
+    }
+    if (!file.name.toLowerCase().endsWith('.jar')) {
+      this.error.set('Please select a .jar file');
+      return;
+    }
+    this.saving.set(true);
+    this.error.set(null);
+    this.notice.set(null);
+    this.api.uploadModuleJar({ file }).subscribe({
+      next: (result) => {
+        const loaded = result.moduleClasses ?? [];
+        this.moduleClasses.update((current) => {
+          const byClassName = new Map(
+            current.map((moduleClass) => [moduleClass.className, moduleClass]),
+          );
+          for (const moduleClass of loaded) {
+            if (moduleClass.className) {
+              byClassName.set(moduleClass.className, moduleClass);
+            }
+          }
+          return Array.from(byClassName.values());
+        });
+        this.notice.set(
+          loaded.length === 0
+            ? `No module types found in ${result.jarFileName ?? 'the selected jar'}`
+            : `Loaded ${loaded.length} module type(s) from ${result.jarFileName ?? 'the selected jar'}`,
+        );
+        this.saving.set(false);
+      },
+      error: (error: unknown) => {
+        this.error.set(this.describeError(error));
+        this.saving.set(false);
+      },
+    });
   }
 
   protected createMainFlowChart(): void {

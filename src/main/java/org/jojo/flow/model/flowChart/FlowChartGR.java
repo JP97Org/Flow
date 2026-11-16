@@ -15,6 +15,7 @@ import org.jojo.flow.model.api.IConnectionGR;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IFlowChartGR;
+import org.jojo.flow.model.api.IFlowModule;
 import org.jojo.flow.model.api.IGraphicalRepresentation;
 import org.jojo.flow.model.api.IModuleGR;
 import org.jojo.flow.model.flowChart.connections.ConnectionGR;
@@ -187,16 +188,24 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
             }
             final IDOM modulesDom = (IDOM)domMap.get(FlowChartDOM.NAME_MODULES).getValue();
             final Map<String, DOMStringUnion> modulesMap = modulesDom.getDOMMap();
-            for (final var modObj : modulesMap.values()) {
-                if (modObj.isDOM()) {
-                    final IDOM modDom = (IDOM) modObj.getValue();
-                    final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
-                    final String moduleToLoad = cnDom.elemGet();
-                    final IGraphicalRepresentation module = DynamicObjectLoader.loadGR(moduleToLoad);
-                    module.restoreFromDOM(modDom);
-                    final ModuleGR moduleGR = (ModuleGR) module;
-                    linkModuleToFlowChart(moduleGR, modDom);
-                    this.modules.add(moduleGR);
+            if (this.fc == null) {
+                for (final var modObj : modulesMap.values()) {
+                    if (modObj.isDOM()) {
+                        final IDOM modDom = (IDOM) modObj.getValue();
+                        final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
+                        final String moduleToLoad = cnDom.elemGet();
+                        final IGraphicalRepresentation module = DynamicObjectLoader.loadGR(moduleToLoad);
+                        module.restoreFromDOM(modDom);
+                        final ModuleGR moduleGR = (ModuleGR) module;
+                        linkModuleToFlowChart(moduleGR, modDom);
+                        this.modules.add(moduleGR);
+                    }
+                }
+            } else {
+                for (final IFlowModule module : this.fc.getModules()) {
+                    if (module.getGraphicalRepresentation() instanceof ModuleGR moduleGR) {
+                        this.modules.add(moduleGR);
+                    }
                 }
             }
             notifyObservers();
@@ -255,15 +264,17 @@ public class FlowChartGR extends FlowChartElementGR implements IFlowChartGR {
             ok(domMap.get(FlowChartDOM.NAME_MODULES).isDOM(), OK.ERR_MSG_WRONG_CAST);
             final IDOM modulesDom = (IDOM)domMap.get(FlowChartDOM.NAME_MODULES).getValue();
             final Map<String, DOMStringUnion> modulesMap = modulesDom.getDOMMap();
-            for (final var modObj : modulesMap.values()) {
-                if (modObj.isDOM()) {
-                    final IDOM modDom = (IDOM) modObj.getValue();
-                    ok(modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
-                    final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
-                    final String moduleToLoad = cnDom.elemGet();
-                    ok(moduleToLoad != null, OK.ERR_MSG_NULL);
-                    final ModuleGR module = ok(m -> (ModuleGR)DynamicObjectLoader.loadGR(m), moduleToLoad);
-                    ok(module.isDOMValid(modDom), "ModuleGR " + OK.ERR_MSG_DOM_NOT_VALID);
+            if (this.fc == null) {
+                for (final var modObj : modulesMap.values()) {
+                    if (modObj.isDOM()) {
+                        final IDOM modDom = (IDOM) modObj.getValue();
+                        ok(modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).isDOM(), OK.ERR_MSG_WRONG_CAST);
+                        final IDOM cnDom = (IDOM) (modDom.getDOMMap().get(ModuleDOM.NAME_CLASSNAME).getValue());
+                        final String moduleToLoad = cnDom.elemGet();
+                        ok(moduleToLoad != null, OK.ERR_MSG_NULL);
+                        final ModuleGR module = ok(m -> (ModuleGR)DynamicObjectLoader.loadGR(m), moduleToLoad);
+                        ok(module.isDOMValid(modDom), "ModuleGR " + OK.ERR_MSG_DOM_NOT_VALID);
+                    }
                 }
             }
             return true;

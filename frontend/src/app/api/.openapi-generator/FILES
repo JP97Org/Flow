@@ -20,6 +20,7 @@ model/health.ts
 model/models.ts
 model/module.ts
 model/moduleClass.ts
+model/moduleJarUploadResult.ts
 model/pin.ts
 model/pinReference.ts
 model/point.ts

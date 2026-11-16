@@ -8,6 +8,7 @@ export * from './flowChartSummary';
 export * from './health';
 export * from './module';
 export * from './moduleClass';
+export * from './moduleJarUploadResult';
 export * from './pin';
 export * from './pinReference';
 export * from './point';

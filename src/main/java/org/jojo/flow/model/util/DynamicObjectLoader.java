@@ -20,6 +20,7 @@ import org.jojo.flow.model.api.IConnection;
 import org.jojo.flow.model.api.IDOM;
 import org.jojo.flow.model.api.IDataSignature;
 import org.jojo.flow.model.api.IDefaultArrow;
+import org.jojo.flow.model.api.IDynamicClassLoader;
 import org.jojo.flow.model.api.IExternalConfig;
 import org.jojo.flow.model.api.IFlowChart;
 import org.jojo.flow.model.api.IFlowModule;
@@ -348,7 +349,7 @@ public final class DynamicObjectLoader {
      * @see #loadModule(ClassLoader, String, int, String, int)
      */
     public static IFlowModule loadModule(final String className, final int id) {
-        return loadModule(DynamicObjectLoader.class.getClassLoader(), className, id);
+        return loadModule(IDynamicClassLoader.DEFAULT_DYNAMIC_LOADER.getClassLoader(), className, id);
     }
     
     /**

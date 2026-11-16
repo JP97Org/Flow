@@ -220,6 +220,14 @@ a {
   background: #fee2e2;
 }
 
+.notice {
+  margin: 1rem 0 0;
+  padding: 0.8rem 1rem;
+  border-radius: 0.7rem;
+  color: #166534;
+  background: #dcfce7;
+}
+
 @media (max-width: 768px) {
   header {
     flex-direction: column;
